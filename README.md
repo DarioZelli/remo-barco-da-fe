@@ -17,6 +17,6 @@ Sistema de gestão e formação de intercessores do projeto Barco da Fé — REM
 
 ## Deploy
 
-Hospedado no Netlify. Branch de produção: `main`.
+Hospedado no Netlify. Branch de produção: `principal`.
 
 Atualização 13/04/2026.
