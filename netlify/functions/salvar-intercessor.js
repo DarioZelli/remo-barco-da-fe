@@ -8,15 +8,14 @@ exports.handler = async function(event) {
   try {
     const dados = JSON.parse(event.body);
 
-    // Validação mínima
-    if (!dados.nomeSolicitante || !dados.telefone || !dados.descricao || !dados.tema) {
+    if (!dados.nomeCompleto || !dados.email || !dados.telefone) {
       return { statusCode: 400, body: JSON.stringify({ erro: 'Campos obrigatórios ausentes' }) };
     }
 
-    const id = 'pedido_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    const id = 'intercessor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
     const registro = { id, ...dados, criadoEm: new Date().toISOString(), status: 'ativo' };
 
-    const store = createClient({ name: 'pedidos-oracao', siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_API_TOKEN });
+    const store = createClient({ name: 'intercessores', siteID: process.env.NETLIFY_SITE_ID, token: process.env.NETLIFY_API_TOKEN });
     await store.setJSON(id, registro);
 
     return {
@@ -25,7 +24,7 @@ exports.handler = async function(event) {
       body: JSON.stringify({ sucesso: true, id })
     };
   } catch (err) {
-    console.error('Erro ao salvar pedido:', err);
+    console.error('Erro ao salvar intercessor:', err);
     return { statusCode: 500, body: JSON.stringify({ erro: 'Erro interno', detalhe: err.message }) };
   }
 };
