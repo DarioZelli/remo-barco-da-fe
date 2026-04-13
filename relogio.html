@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relógio de Oração — REMO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:var(--vinho);color:var(--creme);min-height:100vh}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 3rem;background:rgba(44,15,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,0.2)}
+    .nav-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+    .nav-logo img{height:40px;width:40px;object-fit:contain;border-radius:50%}
+    .nav-logo-text{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--ouro-lt);line-height:1.2}
+    .nav-logo-text span{display:block;font-size:0.58rem;font-weight:400;letter-spacing:0.2em;color:var(--ouro-pale);text-transform:uppercase}
+    .nav-back{font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--creme);text-decoration:none;opacity:0.7;transition:opacity 0.2s}
+    .nav-back:hover{opacity:1;color:var(--ouro-lt)}
+    .page-hero{padding:7rem 2rem 3rem;text-align:center;position:relative;overflow:hidden}
+    .page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 0%,rgba(90,32,32,0.5) 0%,transparent 70%)}
+    .page-hero-content{position:relative;z-index:1}
+    .page-eyebrow{font-size:0.68rem;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;color:var(--ouro);margin-bottom:0.8rem;display:block}
+    .page-title{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3.2rem);font-weight:900;color:var(--creme-lt);margin-bottom:1rem;line-height:1.1}
+    .page-title em{font-style:normal;color:var(--ouro-lt)}
+    .page-desc{font-size:1rem;font-weight:300;line-height:1.8;color:rgba(245,236,215,0.72);max-width:580px;margin:0 auto}
+    .page-divider{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:1.5rem auto 0}
+
+    /* RELÓGIO VISUAL */
+    .relogio-visual{display:flex;justify-content:center;margin:2rem 0}
+    .clock-face{width:160px;height:160px;border-radius:50%;border:2px solid rgba(201,149,42,0.4);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 10px rgba(201,149,42,0.06),0 0 40px rgba(201,149,42,0.1)}
+    .clock-face::before{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(201,149,42,0.15)}
+    .clock-inner{text-align:center}
+    .clock-num{font-family:'Cinzel',serif;font-size:2.2rem;font-weight:900;color:var(--ouro-lt);display:block;line-height:1}
+    .clock-label{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ouro-pale);margin-top:4px}
+
+    /* GRADE DE HORÁRIOS */
+    .horarios-section{padding:0 2rem 2rem;max-width:780px;margin:0 auto}
+    .horarios-title{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--ouro);text-align:center;margin-bottom:1.2rem;letter-spacing:0.1em;text-transform:uppercase}
+    .horarios-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0.5rem;margin-bottom:2rem}
+    .horario-btn{
+      background:rgba(44,15,15,0.6);border:1px solid rgba(201,149,42,0.2);border-radius:3px;
+      padding:0.55rem 0.3rem;text-align:center;cursor:pointer;
+      font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;color:rgba(245,236,215,0.65);
+      transition:all 0.2s;user-select:none;
+    }
+    .horario-btn:hover{border-color:var(--ouro);color:var(--ouro-lt);background:rgba(201,149,42,0.08)}
+    .horario-btn.selecionado{background:var(--ouro);color:var(--vinho);border-color:var(--ouro)}
+    .horario-btn.ocupado{opacity:0.4;cursor:not-allowed;border-color:rgba(201,149,42,0.1)}
+
+    .form-section{padding:0 2rem 5rem}
+    .form-container{max-width:600px;margin:0 auto}
+    .form-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:6px;padding:2.5rem;position:relative;overflow:hidden}
+    .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+    .horario-selecionado-display{background:rgba(201,149,42,0.12);border:1px solid rgba(201,149,42,0.3);border-radius:3px;padding:0.8rem 1rem;margin-bottom:1.4rem;font-family:'Cinzel',serif;font-size:1rem;color:var(--ouro-lt);text-align:center}
+    .form-group{margin-bottom:1.4rem}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.4rem}
+    label{display:block;font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:0.5rem}
+    input,select{width:100%;background:rgba(44,15,15,0.6);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.75rem 1rem;font-family:'Lato',sans-serif;font-size:0.95rem;font-weight:300;color:var(--creme);transition:border-color 0.2s,box-shadow 0.2s;outline:none}
+    input::placeholder{color:rgba(245,236,215,0.35)}
+    input:focus,select:focus{border-color:var(--ouro);box-shadow:0 0 0 3px rgba(201,149,42,0.1)}
+    select option{background:#3D1515;color:var(--creme)}
+    .form-divider{height:1px;background:rgba(201,149,42,0.12);margin:1.5rem 0}
+    .check-item{display:flex;align-items:center;gap:0.7rem;cursor:pointer}
+    .check-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;accent-color:var(--ouro);cursor:pointer}
+    .check-item span{font-size:0.93rem;font-weight:300;color:rgba(245,236,215,0.8);line-height:1.4}
+    .btn-submit{width:100%;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:1rem 2rem;border-radius:3px;cursor:pointer;box-shadow:0 4px 20px rgba(201,149,42,0.3);transition:background 0.2s,transform 0.2s;display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-top:1.5rem}
+    .btn-submit:hover{background:var(--ouro-lt);transform:translateY(-1px)}
+    .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+    .msg{display:none;padding:1rem 1.4rem;border-radius:3px;font-size:0.92rem;margin-top:1.2rem;text-align:center}
+    .msg.sucesso{background:rgba(60,120,60,0.25);border:1px solid rgba(100,200,100,0.3);color:#a0e0a0}
+    .msg.erro{background:rgba(120,40,40,0.25);border:1px solid rgba(200,80,80,0.3);color:#e0a0a0}
+    .page-footer{text-align:center;padding:2rem;border-top:1px solid rgba(201,149,42,0.1);font-size:0.78rem;color:rgba(245,236,215,0.3)}
+    .page-footer a{color:rgba(245,236,215,0.3);text-decoration:none}
+    .page-footer a:hover{color:var(--ouro)}
+    @media(max-width:600px){nav{padding:0.9rem 1.2rem}.horarios-grid{grid-template-columns:repeat(4,1fr)}.form-row{grid-template-columns:1fr}.form-card{padding:1.5rem}}
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="logo-remo.png" alt="REMO"/>
+      <div class="nav-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+    </a>
+    <a href="index.html" class="nav-back">← Voltar</a>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-content">
+      <span class="page-eyebrow">REMO — Intercessão Contínua</span>
+      <h1 class="page-title">Relógio de <em>Oração</em></h1>
+      <p class="page-desc">Escolha um horário de oração e dedique-se a buscar a face de Deus junto com a REMO. Unidos, manteremos a chama acesa dia e noite — 24 horas de clamor ininterrupto.</p>
+      <div class="page-divider"></div>
+    </div>
+  </section>
+
+  <div class="relogio-visual">
+    <div class="clock-face">
+      <div class="clock-inner">
+        <span class="clock-num" id="clockDisplay">00:00</span>
+        <span class="clock-label">Horário atual</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="horarios-section">
+    <div class="horarios-title">⏱️ Selecione seu horário de oração</div>
+    <div class="horarios-grid" id="horariosGrid"></div>
+  </div>
+
+  <section class="form-section">
+    <div class="form-container">
+      <div class="form-card">
+        <form id="formRelogio" novalidate>
+
+          <div class="horario-selecionado-display" id="horarioDisplay">Nenhum horário selecionado</div>
+          <input type="hidden" id="horarioSelecionado" name="horario"/>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nome">Nome *</label>
+              <input type="text" id="nome" name="nome" placeholder="Seu nome" required/>
+            </div>
+            <div class="form-group">
+              <label for="telefone">Telefone / WhatsApp *</label>
+              <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="duracaoIntercessao">Tempo de Intercessão *</label>
+              <select id="duracaoIntercessao" name="duracaoIntercessao" required>
+                <option value="">Selecione</option>
+                <option>15 minutos</option>
+                <option>30 minutos</option>
+                <option>1 hora</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="duracaoCompromisso">Duração do Compromisso *</label>
+              <select id="duracaoCompromisso" name="duracaoCompromisso" required>
+                <option value="">Selecione</option>
+                <option>1 semana</option>
+                <option>1 mês</option>
+                <option>3 meses</option>
+                <option>6 meses</option>
+                <option>1 ano</option>
+                <option>Indeterminado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <label class="check-item">
+            <input type="checkbox" id="anonimo" name="anonimo"/>
+            <span>Quero me manter anônimo (meu nome não aparecerá publicamente)</span>
+          </label>
+
+          <button type="submit" class="btn-submit" id="btnEnviar">
+            ⏱️ Assumir Horário de Oração
+          </button>
+          <div class="msg sucesso" id="msgSucesso">✅ Horário assumido com sucesso! Obrigado por manter a chama acesa. Deus honrará sua dedicação.</div>
+          <div class="msg erro" id="msgErro">❌ Erro ao enviar. Verifique os campos e tente novamente.</div>
+
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <p>© 2025 REMO — Rede Mundial de Orações &nbsp;·&nbsp; <a href="index.html">Página inicial</a> &nbsp;·&nbsp; contato@globalremo.com</p>
+  </footer>
+
+  <script>
+    // Relógio
+    function atualizarRelogio() {
+      const agora = new Date();
+      const h = String(agora.getHours()).padStart(2,'0');
+      const m = String(agora.getMinutes()).padStart(2,'0');
+      document.getElementById('clockDisplay').textContent = h + ':' + m;
+    }
+    atualizarRelogio();
+    setInterval(atualizarRelogio, 1000);
+
+    // Grade de horários
+    const horarios = [];
+    for (let h = 0; h < 24; h++) {
+      horarios.push(String(h).padStart(2,'0') + ':00');
+    }
+    const grid = document.getElementById('horariosGrid');
+    let horarioAtual = null;
+    horarios.forEach(h => {
+      const btn = document.createElement('div');
+      btn.className = 'horario-btn';
+      btn.textContent = h;
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('selecionado'));
+        btn.classList.add('selecionado');
+        horarioAtual = h;
+        document.getElementById('horarioSelecionado').value = h;
+        document.getElementById('horarioDisplay').textContent = '⏱️ Horário selecionado: ' + h;
+      });
+      grid.appendChild(btn);
+    });
+
+    // Submit
+    document.getElementById('formRelogio').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnEnviar');
+      const msgOk = document.getElementById('msgSucesso');
+      const msgErr = document.getElementById('msgErro');
+      msgOk.style.display = 'none';
+      msgErr.style.display = 'none';
+
+      if (!horarioAtual) {
+        msgErr.textContent = '❌ Selecione um horário na grade acima.';
+        msgErr.style.display = 'block';
+        return;
+      }
+
+      const dados = {
+        nome: document.getElementById('nome').value,
+        telefone: document.getElementById('telefone').value,
+        horario: horarioAtual,
+        duracaoIntercessao: document.getElementById('duracaoIntercessao').value,
+        duracaoCompromisso: document.getElementById('duracaoCompromisso').value,
+        anonimo: document.getElementById('anonimo').checked,
+        dataEnvio: new Date().toISOString()
+      };
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+
+      try {
+        const res = await fetch('/.netlify/functions/salvar-relogio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        });
+        if (res.ok) {
+          msgOk.style.display = 'block';
+          document.getElementById('formRelogio').reset();
+          document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('selecionado'));
+          document.getElementById('horarioDisplay').textContent = 'Nenhum horário selecionado';
+          horarioAtual = null;
+        } else { throw new Error(); }
+      } catch {
+        msgErr.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '⏱️ Assumir Horário de Oração';
+      }
+    });
+  </script>
+</body>
+</html>
