@@ -1,9 +1,0 @@
-{
-  "name": "remo-redemundial",
-  "version": "1.0.0",
-  "description": "Site institucional da REMO - Rede Mundial de Orações",
-  "private": true,
-  "dependencies": {
-    "@netlify/blobs": "^8.1.0"
-  }
-}
