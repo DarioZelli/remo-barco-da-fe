@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin — REMO</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
-  <style>
+    <style>
     :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Lato',sans-serif;background:#1A0808;color:var(--creme);min-height:100vh}
@@ -51,7 +51,16 @@
 
     /* STATS */
     .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
-    .stat-card{background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.18);border-radius:4px;padding:1.4rem;text-align:center}
+    .stat-card{
+      background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));
+      border:1px solid rgba(201,149,42,0.18);
+      border-radius:4px;
+      padding:1.4rem;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .stat-card:hover{border-color:rgba(201,149,42,0.35);background:rgba(201,149,42,0.06)}
     .stat-card .num{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--ouro-lt);display:block}
     .stat-card .lbl{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,236,215,0.45);margin-top:0.3rem}
 
@@ -74,7 +83,18 @@
     .loading{text-align:center;padding:3rem;color:rgba(245,236,215,0.4);font-size:0.9rem}
     .vazio{text-align:center;padding:3rem;color:rgba(245,236,215,0.35);font-size:0.9rem;font-style:italic}
 
-    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.admin-sidebar{display:none}.admin-main{padding:1.2rem}}
+    @media(max-width:900px){
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .admin-body{flex-direction:column}
+      .admin-sidebar{
+        display:block;
+        width:100%;
+        border-right:none;
+        border-bottom:1px solid rgba(201,149,42,0.12);
+        padding:0.8rem 0;
+      }
+      .admin-main{padding:1.2rem}
+    }
   </style>
 </head>
 <body>
@@ -132,10 +152,22 @@
         <div class="admin-page ativo" id="pageDashboard">
           <h2 style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--creme-lt);margin-bottom:1.5rem">Dashboard</h2>
           <div class="stats-grid">
-            <div class="stat-card"><span class="num" id="statPedidos">—</span><span class="lbl">Pedidos de Oração</span></div>
-            <div class="stat-card"><span class="num" id="statCandidaturas">—</span><span class="lbl">Candidaturas BF</span></div>
-            <div class="stat-card"><span class="num" id="statIntercessores">—</span><span class="lbl">Intercessores</span></div>
-            <div class="stat-card"><span class="num" id="statRelogio">—</span><span class="lbl">Horários Assumidos</span></div>
+            <div class="stat-card" onclick="abrirDashboardSecao('pedidos','tabelaPedidos','pedidos-oracao',1)">
+              <span class="num" id="statPedidos">—</span>
+              <span class="lbl">Pedidos de Oração</span>
+            </div>
+            <div class="stat-card" onclick="abrirDashboardSecao('candidaturas','tabelaCandidaturas','candidaturas-bf',2)">
+              <span class="num" id="statCandidaturas">—</span>
+              <span class="lbl">Candidaturas BF</span>
+            </div>
+            <div class="stat-card" onclick="abrirDashboardSecao('intercessores','tabelaIntercessores','intercessores',3)">
+              <span class="num" id="statIntercessores">—</span>
+              <span class="lbl">Intercessores</span>
+            </div>
+            <div class="stat-card" onclick="abrirDashboardSecao('relogio','tabelaRelogio','relogio-oracao',4)">
+              <span class="num" id="statRelogio">—</span>
+              <span class="lbl">Horários Assumidos</span>
+            </div>
           </div>
           <p style="font-size:0.88rem;color:rgba(245,236,215,0.4);font-style:italic">Selecione uma seção no menu para visualizar os registros detalhados.</p>
         </div>
@@ -231,6 +263,18 @@
       el.classList.add('ativo');
     }
 
+    function abrirDashboardSecao(paginaId, tabelaId, colecao, indiceSidebar) {
+      const sidebarLinks = document.querySelectorAll('.sidebar-link');
+      const linkAlvo = sidebarLinks[indiceSidebar];
+      if (linkAlvo) {
+        mostrarPagina(paginaId, linkAlvo);
+      } else {
+        document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('ativo'));
+        document.getElementById('page' + paginaId.charAt(0).toUpperCase() + paginaId.slice(1)).classList.add('ativo');
+      }
+      carregarTabela(colecao, tabelaId);
+    }
+
     async function buscarColecao(colecao) {
       const res = await fetch('/.netlify/functions/admin-listar?colecao=' + colecao, {
         headers: { 'x-admin-token': ADMIN_TOKEN }
@@ -262,7 +306,9 @@
           const d = await buscarColecao(col);
           document.getElementById(statId).textContent = d.total;
           document.getElementById(badgeId).textContent = d.total;
-        } catch { document.getElementById(statId).textContent = '?'; }
+        } catch {
+          document.getElementById(statId).textContent = '?';
+        }
       }
     }
 
