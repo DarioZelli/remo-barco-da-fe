@@ -1,26 +1,25 @@
 const { getStore } = require('@netlify/blobs');
 
-function abrirStore(nome) {
-  const siteID = process.env.BLOBS_SITE_ID;
-  const token = process.env.BLOBS_TOKEN;
-
-  if (siteID && token) {
-    return getStore(nome, { siteID, token });
-  }
-
-  return getStore(nome);
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    },
+    body: JSON.stringify(body)
+  };
 }
 
 exports.handler = async function (event) {
+  if (event.httpMethod === 'OPTIONS') {
+    return json(200, { ok: true });
+  }
+
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ erro: 'Method Not Allowed' })
-    };
+    return json(405, { erro: 'Method Not Allowed' });
   }
 
   try {
@@ -33,14 +32,7 @@ exports.handler = async function (event) {
       !dados.tema ||
       !dados.causa
     ) {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ erro: 'Campos obrigatórios ausentes' })
-      };
+      return json(400, { erro: 'Campos obrigatórios ausentes' });
     }
 
     const id =
@@ -51,12 +43,12 @@ exports.handler = async function (event) {
 
     const registro = {
       id,
-      nomeSolicitante: dados.nomeSolicitante,
-      telefone: dados.telefone,
-      paraQuem: dados.paraQuem || '',
-      tema: dados.tema,
-      causa: dados.causa,
-      descricao: dados.descricao,
+      nomeSolicitante: String(dados.nomeSolicitante).trim(),
+      telefone: String(dados.telefone).trim(),
+      paraQuem: String(dados.paraQuem || '').trim(),
+      tema: String(dados.tema).trim(),
+      causa: String(dados.causa).trim(),
+      descricao: String(dados.descricao).trim(),
       compartilhar: !!dados.compartilhar,
       oracaoContinua: !!dados.oracaoContinua,
       campanhaColetiva: !!dados.campanhaColetiva,
@@ -65,30 +57,24 @@ exports.handler = async function (event) {
       status: 'ativo'
     };
 
-    const store = abrirStore('pedidos-oracao');
+    // Em Netlify Functions do mesmo site, o Blobs injeta credenciais automaticamente.
+    const store = getStore('pedidos-oracao');
+
     await store.setJSON(id, registro);
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ sucesso: true, id })
-    };
+    return json(200, {
+      sucesso: true,
+      id
+    });
   } catch (err) {
-    console.error('Erro ao salvar pedido:', err);
+    console.error('Erro ao salvar pedido:', {
+      message: err?.message,
+      stack: err?.stack
+    });
 
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        erro: 'Erro interno',
-        detalhe: err.message || 'Falha ao salvar pedido'
-      })
-    };
+    return json(500, {
+      erro: 'Erro interno',
+      detalhe: err?.message || 'Falha ao salvar pedido'
+    });
   }
 };
