@@ -192,58 +192,113 @@
   <footer class="page-footer">
     <p>© 2025 REMO — Rede Mundial de Orações &nbsp;·&nbsp; <a href="index.html">Página inicial</a> &nbsp;·&nbsp; contato@globalremo.com</p>
   </footer>
+<script>
+  // ===== CARREGAR CSV E MONTAR TEMA / CAUSA =====
+  async function carregarCausas() {
+    const res = await fetch('/causas-csm.csv');
+    const texto = await res.text();
 
-  <script>
-    document.getElementById('formPedido').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnEnviar');
-      const msgOk = document.getElementById('msgSucesso');
-      const msgErr = document.getElementById('msgErro');
-      msgOk.style.display = 'none';
-      msgErr.style.display = 'none';
+    const linhas = texto.split('\n').slice(1);
+    const mapa = {};
 
-      if (!document.getElementById('aceiteTermos').checked) {
-        msgErr.textContent = '❌ Você precisa autorizar o uso dos dados para continuar.';
-        msgErr.style.display = 'block';
-        return;
-      }
+    linhas.forEach(linha => {
+      const [tema, causa] = linha.split(',');
+      if (!tema || !causa) return;
 
-      const dados = {
-        nomeSolicitante: document.getElementById('nomeSolicitante').value,
-        telefone: document.getElementById('telefone').value,
-        paraQuem: document.getElementById('paraQuem').value,
-        tema: document.getElementById('tema').value,
-        causa: document.getElementById('causa').value,
-        descricao: document.getElementById('descricao').value,
-        compartilhar: document.querySelector('[name=compartilhar]').checked,
-        oracaoContinua: document.querySelector('[name=oracaoContinua]').checked,
-        campanhaColetiva: document.querySelector('[name=campanhaColetiva]').checked,
-        dataEnvio: new Date().toISOString()
-      };
+      if (!mapa[tema]) mapa[tema] = [];
+      mapa[tema].push(causa);
+    });
 
-      btn.disabled = true;
-      btn.textContent = 'Enviando...';
+    const selectTema = document.getElementById('tema');
+    const selectCausa = document.getElementById('causa');
 
-      try {
-        const res = await fetch('/.netlify/functions/salvar-pedido', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dados)
+    // Limpa antes
+    selectTema.innerHTML = '<option value="">Selecione</option>';
+
+    Object.keys(mapa).forEach(tema => {
+      const opt = document.createElement('option');
+      opt.value = tema;
+      opt.textContent = tema;
+      selectTema.appendChild(opt);
+    });
+
+    selectTema.addEventListener('change', () => {
+      const temaSelecionado = selectTema.value;
+
+      selectCausa.innerHTML = '<option value="">Selecione</option>';
+
+      if (mapa[temaSelecionado]) {
+        mapa[temaSelecionado].forEach(causa => {
+          const opt = document.createElement('option');
+          opt.value = causa;
+          opt.textContent = causa;
+          selectCausa.appendChild(opt);
         });
-        if (res.ok) {
-          msgOk.style.display = 'block';
-          document.getElementById('formPedido').reset();
-          window.scrollTo({ top: document.getElementById('formPedido').offsetTop, behavior: 'smooth' });
-        } else {
-          throw new Error('Erro no servidor');
-        }
-      } catch {
-        msgErr.style.display = 'block';
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '🙏 Enviar Pedido de Oração';
       }
     });
-  </script>
+  }
+
+  carregarCausas();
+
+  // ===== ENVIO DO FORMULÁRIO (SEU ORIGINAL PRESERVADO) =====
+  document.getElementById('formPedido').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('btnEnviar');
+    const msgOk = document.getElementById('msgSucesso');
+    const msgErr = document.getElementById('msgErro');
+
+    msgOk.style.display = 'none';
+    msgErr.style.display = 'none';
+
+    if (!document.getElementById('aceiteTermos').checked) {
+      msgErr.textContent = '❌ Você precisa autorizar o uso dos dados para continuar.';
+      msgErr.style.display = 'block';
+      return;
+    }
+
+    const dados = {
+      nomeSolicitante: document.getElementById('nomeSolicitante').value,
+      telefone: document.getElementById('telefone').value,
+      paraQuem: document.getElementById('paraQuem').value,
+      tema: document.getElementById('tema').value,
+      causa: document.getElementById('causa').value,
+      descricao: document.getElementById('descricao').value,
+      compartilhar: document.querySelector('[name=compartilhar]').checked,
+      oracaoContinua: document.querySelector('[name=oracaoContinua]').checked,
+      campanhaColetiva: document.querySelector('[name=campanhaColetiva]').checked,
+      dataEnvio: new Date().toISOString()
+    };
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      const res = await fetch('/.netlify/functions/salvar-pedido', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+
+      if (res.ok) {
+        msgOk.style.display = 'block';
+        document.getElementById('formPedido').reset();
+        window.scrollTo({
+          top: document.getElementById('formPedido').offsetTop,
+          behavior: 'smooth'
+        });
+      } else {
+        throw new Error('Erro no servidor');
+      }
+
+    } catch {
+      msgErr.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '🙏 Enviar Pedido de Oração';
+    }
+  });
+</script>
+  
  </body>
 </html>
