@@ -71,8 +71,20 @@
     .tag-pendente{background:rgba(201,149,42,0.2);color:var(--ouro-lt)}
     .tag-ativo{background:rgba(60,120,60,0.25);color:#a0e0a0}
     .tag-aprovado{background:rgba(60,100,180,0.25);color:#a0c0f0}
+    .tag-inativo{background:rgba(140,140,140,0.2);color:#cfcfcf}
     .loading{text-align:center;padding:3rem;color:rgba(245,236,215,0.4);font-size:0.9rem}
     .vazio{text-align:center;padding:3rem;color:rgba(245,236,215,0.35);font-size:0.9rem;font-style:italic}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.9rem}
+    .form-group{display:flex;flex-direction:column;gap:0.35rem}
+    .form-group label{font-size:0.66rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro)}
+    .form-group input,.form-group textarea,.form-group select{
+      width:100%;background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.25);border-radius:3px;
+      padding:0.65rem 0.8rem;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--creme)
+    }
+    .form-group textarea{min-height:90px;resize:vertical}
+    .form-actions{display:flex;gap:0.7rem;align-items:center;margin-top:1rem}
+    .msg-ok{font-size:0.8rem;color:#a0e0a0}
+    .msg-erro{font-size:0.8rem;color:#e0a0a0}
 
     @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.admin-sidebar{display:none}.admin-main{padding:1.2rem}}
   </style>
@@ -121,6 +133,11 @@
         <div class="sidebar-link" onclick="mostrarPagina('candidaturas',this);carregarTabela('candidaturas-bf','tabelaCandidaturas')">⚓ Candidaturas BF <span class="badge" id="badgeCandidaturas">…</span></div>
         <div class="sidebar-link" onclick="mostrarPagina('intercessores',this);carregarTabela('intercessores','tabelaIntercessores')">🌐 Intercessores <span class="badge" id="badgeIntercessores">…</span></div>
         <div class="sidebar-link" onclick="mostrarPagina('relogio',this);carregarTabela('relogio-oracao','tabelaRelogio')">⏱️ Relógio de Oração <span class="badge" id="badgeRelogio">…</span></div>
+
+        <div class="sidebar-section">Conteúdo</div>
+        <div class="sidebar-link" onclick="mostrarPagina('homeConfig',this);carregarHomeConfig()">🏠 Configuração da Home</div>
+        <div class="sidebar-link" onclick="mostrarPagina('homeCards',this);carregarHomeCards()">🧩 Cards da Home</div>
+        <div class="sidebar-link" onclick="mostrarPagina('aulasGravadas',this);carregarAulasGravadas()">🎬 Aulas Gravadas</div>
 
         <div class="sidebar-section">Acesso</div>
         <div class="sidebar-link" onclick="window.open('index.html','_blank')">🏠 Ver Site</div>
@@ -196,6 +213,142 @@
           </div>
         </div>
 
+        <!-- HOME CONFIG -->
+        <div class="admin-page" id="pageHomeConfig">
+          <div class="tabela-header">
+            <div class="tabela-title">🏠 Configuração da Home</div>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="homeTituloPrincipal">Título principal</label>
+                <input id="homeTituloPrincipal" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="homeSubtitulo">Subtítulo</label>
+                <input id="homeSubtitulo" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="homeVideoPrincipal">URL vídeo principal</label>
+                <input id="homeVideoPrincipal" type="url" />
+              </div>
+              <div class="form-group">
+                <label for="homeImagemPrincipal">URL imagem principal</label>
+                <input id="homeImagemPrincipal" type="url" />
+              </div>
+              <div class="form-group">
+                <label for="homeBotaoPrincipal">Texto botão principal</label>
+                <input id="homeBotaoPrincipal" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="homeLinkBotao">Link do botão</label>
+                <input id="homeLinkBotao" type="url" />
+              </div>
+              <div class="form-group">
+                <label for="homeMostrarVideo">Mostrar vídeo</label>
+                <select id="homeMostrarVideo">
+                  <option value="true">Sim</option>
+                  <option value="false">Não</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarHomeConfig()">Salvar configuração</button>
+              <span id="msgHomeConfig"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOME CARDS -->
+        <div class="admin-page" id="pageHomeCards">
+          <div class="tabela-header">
+            <div class="tabela-title">🧩 Cards da Home</div>
+            <button class="btn-refresh" onclick="carregarHomeCards()">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <input type="hidden" id="cardId" />
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="cardTitulo">Título</label>
+                <input id="cardTitulo" type="text" />
+              </div>
+              <div class="form-group">
+                <label for="cardOrdem">Ordem</label>
+                <input id="cardOrdem" type="number" value="0" />
+              </div>
+              <div class="form-group">
+                <label for="cardIcone">Ícone</label>
+                <input id="cardIcone" type="text" placeholder="🙏" />
+              </div>
+              <div class="form-group">
+                <label for="cardLink">Link</label>
+                <input id="cardLink" type="url" />
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label for="cardDescricao">Descrição</label>
+                <textarea id="cardDescricao"></textarea>
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label for="cardImagem">URL da imagem</label>
+                <input id="cardImagem" type="url" />
+              </div>
+              <div class="form-group">
+                <label for="cardAtivo">Status</label>
+                <select id="cardAtivo">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarHomeCard()">Salvar card</button>
+              <button class="btn-refresh" onclick="limparFormCard()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Novo card</button>
+              <span id="msgHomeCard"></span>
+            </div>
+          </div>
+
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Ordem</th><th>Título</th><th>Ícone</th><th>Link</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaHomeCards"><tr><td colspan="6" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AULAS GRAVADAS -->
+        <div class="admin-page" id="pageAulasGravadas">
+          <div class="tabela-header">
+            <div class="tabela-title">🎬 Aulas Gravadas</div>
+            <button class="btn-refresh" onclick="carregarAulasGravadas()">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <input type="hidden" id="aulaId" />
+            <div class="form-grid">
+              <div class="form-group"><label for="aulaTitulo">Título</label><input id="aulaTitulo" type="text" /></div>
+              <div class="form-group"><label for="aulaModulo">Módulo</label><input id="aulaModulo" type="text" /></div>
+              <div class="form-group"><label for="aulaProfessor">Professor</label><input id="aulaProfessor" type="text" /></div>
+              <div class="form-group"><label for="aulaOrdem">Ordem</label><input id="aulaOrdem" type="number" value="0" /></div>
+              <div class="form-group" style="grid-column:1/-1"><label for="aulaDescricao">Descrição</label><textarea id="aulaDescricao"></textarea></div>
+              <div class="form-group" style="grid-column:1/-1"><label for="aulaLinkVideo">Link do vídeo</label><input id="aulaLinkVideo" type="url" /></div>
+              <div class="form-group"><label for="aulaThumbnail">Thumbnail</label><input id="aulaThumbnail" type="url" /></div>
+              <div class="form-group"><label for="aulaPdf">PDF / Material</label><input id="aulaPdf" type="url" /></div>
+              <div class="form-group"><label for="aulaPublicado">Publicado</label><select id="aulaPublicado"><option value="true">Sim</option><option value="false">Não</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarAulaGravada()">Salvar aula</button>
+              <button class="btn-refresh" onclick="limparFormAula()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Nova aula</button>
+              <span id="msgAulas"></span>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Ordem</th><th>Título</th><th>Módulo</th><th>Professor</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaAulas"><tr><td colspan="6" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+
       </main>
     </div>
   </div>
@@ -246,8 +399,28 @@
     }
 
     function tag(status) {
-      const cls = status === 'pendente' ? 'tag-pendente' : status === 'aprovado' ? 'tag-aprovado' : 'tag-ativo';
+      const cls = status === 'pendente' ? 'tag-pendente' : status === 'aprovado' ? 'tag-aprovado' : status === 'inativo' ? 'tag-inativo' : 'tag-ativo';
       return '<span class="tag ' + cls + '">' + (status||'—') + '</span>';
+    }
+    function limparMsg(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = '';
+      el.textContent = '';
+    }
+    function msg(id, texto, erro = false) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = erro ? 'msg-erro' : 'msg-ok';
+      el.textContent = texto;
+    }
+    function escapeHtml(v) {
+      return String(v || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     async function carregarContadores() {
@@ -289,6 +462,239 @@
         }).join('');
       } catch(err) {
         tbody.innerHTML = '<tr><td colspan="7" class="vazio">Erro ao carregar dados. Verifique a conexão.</td></tr>';
+      }
+    }
+
+    async function carregarHomeConfig() {
+      limparMsg('msgHomeConfig');
+      try {
+        const res = await fetch('/.netlify/functions/home-config-listar');
+        if (!res.ok) throw new Error('Erro ' + res.status);
+        const data = await res.json();
+        const c = data.config || {};
+        document.getElementById('homeTituloPrincipal').value = c.tituloPrincipal || '';
+        document.getElementById('homeSubtitulo').value = c.subtitulo || '';
+        document.getElementById('homeVideoPrincipal').value = c.videoPrincipal || '';
+        document.getElementById('homeImagemPrincipal').value = c.imagemPrincipal || '';
+        document.getElementById('homeBotaoPrincipal').value = c.botaoPrincipal || '';
+        document.getElementById('homeLinkBotao').value = c.linkBotao || '';
+        document.getElementById('homeMostrarVideo').value = String(!!c.mostrarVideo);
+      } catch (err) {
+        msg('msgHomeConfig', 'Erro ao carregar configuração da home.', true);
+      }
+    }
+
+    async function salvarHomeConfig() {
+      limparMsg('msgHomeConfig');
+      const payload = {
+        tituloPrincipal: document.getElementById('homeTituloPrincipal').value,
+        subtitulo: document.getElementById('homeSubtitulo').value,
+        videoPrincipal: document.getElementById('homeVideoPrincipal').value,
+        imagemPrincipal: document.getElementById('homeImagemPrincipal').value,
+        botaoPrincipal: document.getElementById('homeBotaoPrincipal').value,
+        linkBotao: document.getElementById('homeLinkBotao').value,
+        mostrarVideo: document.getElementById('homeMostrarVideo').value === 'true'
+      };
+      try {
+        const res = await fetch('/.netlify/functions/home-config-salvar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar');
+        msg('msgHomeConfig', 'Configuração salva com sucesso.');
+      } catch (err) {
+        msg('msgHomeConfig', err.message || 'Erro ao salvar configuração.', true);
+      }
+    }
+
+    function limparFormCard() {
+      limparMsg('msgHomeCard');
+      document.getElementById('cardId').value = '';
+      document.getElementById('cardTitulo').value = '';
+      document.getElementById('cardOrdem').value = '0';
+      document.getElementById('cardIcone').value = '';
+      document.getElementById('cardLink').value = '';
+      document.getElementById('cardDescricao').value = '';
+      document.getElementById('cardImagem').value = '';
+      document.getElementById('cardAtivo').value = 'true';
+    }
+
+    function editarCard(id) {
+      const card = window.__homeCardsCache?.find(c => c.id === id);
+      if (!card) return;
+      document.getElementById('cardId').value = card.id || '';
+      document.getElementById('cardTitulo').value = card.titulo || '';
+      document.getElementById('cardOrdem').value = Number(card.ordem) || 0;
+      document.getElementById('cardIcone').value = card.icone || '';
+      document.getElementById('cardLink').value = card.link || '';
+      document.getElementById('cardDescricao').value = card.descricao || '';
+      document.getElementById('cardImagem').value = card.imagem || '';
+      document.getElementById('cardAtivo').value = String(card.ativo !== false);
+      msg('msgHomeCard', 'Card carregado para edição.');
+    }
+
+    async function carregarHomeCards() {
+      const tbody = document.getElementById('tabelaHomeCards');
+      tbody.innerHTML = '<tr><td colspan="6" class="loading">Carregando...</td></tr>';
+      limparMsg('msgHomeCard');
+      try {
+        const res = await fetch('/.netlify/functions/home-cards-listar');
+        if (!res.ok) throw new Error('Erro ' + res.status);
+        const data = await res.json();
+        const cards = Array.isArray(data.cards) ? data.cards : [];
+        window.__homeCardsCache = cards;
+        if (!cards.length) {
+          tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum card cadastrado.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = cards.map(card => {
+          const idSeguro = JSON.stringify(card.id || '');
+          return `<tr>
+            <td>${Number(card.ordem) || 0}</td>
+            <td>${escapeHtml(card.titulo)}</td>
+            <td>${escapeHtml(card.icone)}</td>
+            <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(card.link)}</td>
+            <td>${tag(card.ativo === false ? 'inativo' : 'ativo')}</td>
+            <td><button class="btn-refresh" onclick='editarCard(${idSeguro})'>Editar</button></td>
+          </tr>`;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar cards.</td></tr>';
+      }
+    }
+
+
+
+    function limparFormAula() {
+      limparMsg('msgAulas');
+      document.getElementById('aulaId').value = '';
+      document.getElementById('aulaTitulo').value = '';
+      document.getElementById('aulaModulo').value = '';
+      document.getElementById('aulaProfessor').value = '';
+      document.getElementById('aulaDescricao').value = '';
+      document.getElementById('aulaLinkVideo').value = '';
+      document.getElementById('aulaThumbnail').value = '';
+      document.getElementById('aulaPdf').value = '';
+      document.getElementById('aulaOrdem').value = '0';
+      document.getElementById('aulaPublicado').value = 'true';
+    }
+
+    function editarAula(id) {
+      const aula = window.__aulasCache?.find(item => item.id === id);
+      if (!aula) return;
+      document.getElementById('aulaId').value = aula.id || '';
+      document.getElementById('aulaTitulo').value = aula.titulo || '';
+      document.getElementById('aulaModulo').value = aula.modulo || '';
+      document.getElementById('aulaProfessor').value = aula.professor || '';
+      document.getElementById('aulaDescricao').value = aula.descricao || '';
+      document.getElementById('aulaLinkVideo').value = aula.linkVideo || '';
+      document.getElementById('aulaThumbnail').value = aula.thumbnail || '';
+      document.getElementById('aulaPdf').value = aula.pdf || '';
+      document.getElementById('aulaOrdem').value = Number(aula.ordem) || 0;
+      document.getElementById('aulaPublicado').value = String(aula.publicado !== false);
+      msg('msgAulas', 'Aula carregada para edição.');
+    }
+
+    async function carregarAulasGravadas() {
+      const tbody = document.getElementById('tabelaAulas');
+      tbody.innerHTML = '<tr><td colspan="6" class="loading">Carregando...</td></tr>';
+      limparMsg('msgAulas');
+      try {
+        const res = await fetch('/.netlify/functions/aulas-gravadas-listar?incluirOcultos=true', {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        if (!res.ok) throw new Error('Erro ' + res.status);
+        const data = await res.json();
+        const aulas = Array.isArray(data.aulas) ? data.aulas : [];
+        window.__aulasCache = aulas;
+
+        if (!aulas.length) {
+          tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhuma aula cadastrada.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = aulas.map(aula => {
+          const idSeguro = JSON.stringify(aula.id || '');
+          return `<tr>
+            <td>${Number(aula.ordem) || 0}</td>
+            <td>${escapeHtml(aula.titulo)}</td>
+            <td>${escapeHtml(aula.modulo)}</td>
+            <td>${escapeHtml(aula.professor)}</td>
+            <td>${tag(aula.publicado === false ? 'inativo' : 'ativo')}</td>
+            <td><button class="btn-refresh" onclick='editarAula(${idSeguro})'>Editar</button></td>
+          </tr>`;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar aulas.</td></tr>';
+      }
+    }
+
+    async function salvarAulaGravada() {
+      limparMsg('msgAulas');
+      const payload = {
+        id: document.getElementById('aulaId').value,
+        titulo: document.getElementById('aulaTitulo').value,
+        modulo: document.getElementById('aulaModulo').value,
+        professor: document.getElementById('aulaProfessor').value,
+        descricao: document.getElementById('aulaDescricao').value,
+        linkVideo: document.getElementById('aulaLinkVideo').value,
+        thumbnail: document.getElementById('aulaThumbnail').value,
+        pdf: document.getElementById('aulaPdf').value,
+        ordem: Number(document.getElementById('aulaOrdem').value) || 0,
+        publicado: document.getElementById('aulaPublicado').value === 'true'
+      };
+      try {
+        const res = await fetch('/.netlify/functions/aulas-gravadas-salvar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar aula');
+        msg('msgAulas', 'Aula salva com sucesso.');
+        await carregarAulasGravadas();
+        limparFormAula();
+      } catch (err) {
+        msg('msgAulas', err.message || 'Erro ao salvar aula.', true);
+      }
+    }
+
+    async function salvarHomeCard() {
+      limparMsg('msgHomeCard');
+      const payload = {
+        id: document.getElementById('cardId').value,
+        titulo: document.getElementById('cardTitulo').value,
+        ordem: Number(document.getElementById('cardOrdem').value) || 0,
+        icone: document.getElementById('cardIcone').value,
+        link: document.getElementById('cardLink').value,
+        descricao: document.getElementById('cardDescricao').value,
+        imagem: document.getElementById('cardImagem').value,
+        ativo: document.getElementById('cardAtivo').value === 'true'
+      };
+      try {
+        const res = await fetch('/.netlify/functions/home-cards-salvar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar');
+        msg('msgHomeCard', 'Card salvo com sucesso.');
+        await carregarHomeCards();
+        limparFormCard();
+      } catch (err) {
+        msg('msgHomeCard', err.message || 'Erro ao salvar card.', true);
       }
     }
   </script>
