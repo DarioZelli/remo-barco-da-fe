@@ -50,7 +50,7 @@
     .admin-page.ativo{display:block}
 
     /* STATS */
-    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
     .stat-card{background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.18);border-radius:4px;padding:1.4rem;text-align:center}
     .stat-card .num{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--ouro-lt);display:block}
     .stat-card .lbl{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,236,215,0.45);margin-top:0.3rem}
@@ -141,6 +141,10 @@
         <div class="sidebar-link" onclick="mostrarPagina('homeCards',this);carregarHomeCards()">🧩 Cards da Home</div>
         <div class="sidebar-link" onclick="mostrarPagina('aulasGravadas',this);carregarAulasGravadas()">🎬 Aulas Gravadas</div>
 
+        <div class="sidebar-section">Usuários</div>
+        <div class="sidebar-link" onclick="mostrarPagina('professores',this);carregarTabela('professores','tabelaProfessores')">👨‍🏫 Professores <span class="badge" id="badgeProfessores">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('alunos',this);carregarTabela('alunos','tabelaAlunos')">🎓 Alunos <span class="badge" id="badgeAlunos">…</span></div>
+
         <div class="sidebar-section">Estudantes</div>
         <div class="sidebar-link" onclick="window.open('aluno.html','_blank')">📚 Área do Aluno</div>
         <div class="sidebar-link" onclick="window.open('index.html','_blank')">🏠 Ver Site</div>
@@ -156,6 +160,8 @@
             <div class="stat-card"><span class="num" id="statCandidaturas">—</span><span class="lbl">Candidaturas BF</span></div>
             <div class="stat-card"><span class="num" id="statIntercessores">—</span><span class="lbl">Intercessores</span></div>
             <div class="stat-card"><span class="num" id="statRelogio">—</span><span class="lbl">Horários Assumidos</span></div>
+            <div class="stat-card"><span class="num" id="statProfessores">—</span><span class="lbl">Professores</span></div>
+            <div class="stat-card"><span class="num" id="statAlunos">—</span><span class="lbl">Alunos</span></div>
           </div>
           <p style="font-size:0.88rem;color:rgba(245,236,215,0.4);font-style:italic">Selecione uma seção no menu para visualizar os registros detalhados.</p>
         </div>
@@ -378,6 +384,34 @@
           </div>
         </div>
 
+        <!-- PROFESSORES -->
+        <div class="admin-page" id="pageProfessores">
+          <div class="tabela-header">
+            <div class="tabela-title">👨‍🏫 Professores</div>
+            <button class="btn-refresh" onclick="carregarTabela('professores','tabelaProfessores')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Email</th><th>Turmas</th><th>Status</th><th>Cadastro</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaProfessores"><tr><td colspan="6" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ALUNOS -->
+        <div class="admin-page" id="pageAlunos">
+          <div class="tabela-header">
+            <div class="tabela-title">🎓 Alunos Matriculados</div>
+            <button class="btn-refresh" onclick="carregarTabela('alunos','tabelaAlunos')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Email</th><th>Turma</th><th>Progresso</th><th>Status</th><th>Cadastro</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaAlunos"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
 
       </main>
     </div>
@@ -468,23 +502,58 @@
         ['pedidos-oracao','statPedidos','badgePedidos'],
         ['candidaturas-bf','statCandidaturas','badgeCandidaturas'],
         ['intercessores','statIntercessores','badgeIntercessores'],
-        ['relogio-oracao','statRelogio','badgeRelogio']
+        ['relogio-oracao','statRelogio','badgeRelogio'],
+        ['professores','statProfessores','badgeProfessores'],
+        ['alunos','statAlunos','badgeAlunos']
       ];
       for (const [col, statId, badgeId] of cols) {
         try {
-          const d = await buscarColecao(col);
-          document.getElementById(statId).textContent = d.total;
-          document.getElementById(badgeId).textContent = d.total;
-        } catch { document.getElementById(statId).textContent = '?'; }
+          let d;
+          if (col === 'professores' || col === 'alunos') {
+            const res = await fetch('/.netlify/functions/usuarios-listar?colecao=' + col, {
+              headers: { 'x-admin-token': ADMIN_TOKEN }
+            });
+            if (res.ok) {
+              const registros = await res.json();
+              d = { total: registros.length };
+            } else {
+              throw new Error('Erro na API');
+            }
+          } else {
+            d = await buscarColecao(col);
+          }
+          const el = document.getElementById(statId);
+          if (el) el.textContent = d.total;
+          const badge = document.getElementById(badgeId);
+          if (badge) badge.textContent = d.total;
+        } catch { 
+          const el = document.getElementById(statId);
+          if (el) el.textContent = '?';
+        }
       }
     }
 
     async function carregarTabela(colecao, tbodyId) {
       const tbody = document.getElementById(tbodyId);
-      const colspan = colecao === 'candidaturas-bf' ? 8 : 7;
+      let colspan = 7; // padrão
+      if (colecao === 'candidaturas-bf') colspan = 8;
+      if (colecao === 'professores') colspan = 6;
+      if (colecao === 'alunos') colspan = 7;
+
       tbody.innerHTML = `<tr><td colspan="${colspan}" class="loading">Carregando...</td></tr>`;
       try {
-        const data = await buscarColecao(colecao);
+        let data;
+        if (colecao === 'professores' || colecao === 'alunos') {
+          // Usar nova função para usuários
+          const res = await fetch('/.netlify/functions/usuarios-listar?colecao=' + colecao, {
+            headers: { 'x-admin-token': ADMIN_TOKEN }
+          });
+          if (!res.ok) throw new Error('Erro ' + res.status);
+          data = { registros: await res.json() };
+        } else {
+          data = await buscarColecao(colecao);
+        }
+
         if (!data.registros.length) {
           tbody.innerHTML = `<tr><td colspan="${colspan}" class="vazio">Nenhum registro encontrado.</td></tr>`;
           return;
@@ -500,6 +569,10 @@
           } else if (colecao === 'intercessores') {
             const temas = Array.isArray(r.temas) ? r.temas.join(', ') : (r.temas||'—');
             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${r.cidade||'—'}</td><td>${r.experiencia||'—'}</td><td style="max-width:160px;font-size:0.78rem">${temas}</td></tr>`;
+          } else if (colecao === 'professores') {
+            return `<tr><td>${r.nome||'—'}</td><td>${r.email||'—'}</td><td>${r.turmas ? r.turmas.join(', ') : '—'}</td><td>${tag(r.status || 'ativo')}</td><td>${fmt(r.createdAt)}</td><td><button class="btn-refresh" onclick='editarUsuario("${colecao}", "${r.id}")'>Editar</button></td></tr>`;
+          } else if (colecao === 'alunos') {
+            return `<tr><td>${r.nome||'—'}</td><td>${r.email||'—'}</td><td>${r.turma||'—'}</td><td>${r.progresso ? r.progresso + '%' : '—'}</td><td>${tag(r.status || 'ativo')}</td><td>${fmt(r.createdAt)}</td><td><button class="btn-refresh" onclick='editarUsuario("${colecao}", "${r.id}")'>Editar</button></td></tr>`;
           } else {
             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.anonimo?'Anônimo':r.nome||'—'}</td><td>${r.anonimo?'—':r.telefone||'—'}</td><td style="font-family:'Cinzel',serif;color:var(--ouro-lt)">${r.horario||'—'}</td><td>${r.duracaoIntercessao||'—'}</td><td>${r.duracaoCompromisso||'—'}</td><td>${r.anonimo?'✓':'—'}</td></tr>`;
           }
@@ -828,6 +901,11 @@
       } catch (err) {
         msg('msgHomeCard', err.message || 'Erro ao salvar card.', true);
       }
+    }
+
+    function editarUsuario(colecao, id) {
+      // Por enquanto apenas um alert - pode ser expandido para modal de edição
+      alert(`Editar ${colecao}: ${id}\n\nFuncionalidade em desenvolvimento. Em breve será possível editar usuários diretamente.`);
     }
   </script>
 </body>

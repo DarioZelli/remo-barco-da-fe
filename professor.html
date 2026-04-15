@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Área do Professor — REMO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --vinho:    #2C0F0F;
+      --vinho-md: #3D1515;
+      --vinho-lt: #5A2020;
+      --ouro:     #C9952A;
+      --ouro-lt:  #E8B84B;
+      --ouro-pale:#F5D98B;
+      --creme:    #F5ECD7;
+      --creme-lt: #FAF4E8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--vinho);
+      color: var(--creme);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 3rem;
+      background: rgba(44,15,15,0.93);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,149,42,0.2);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+    .nav-logo img { height: 42px; width: 42px; object-fit: contain; border-radius: 50%; }
+    .nav-logo-text { font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:var(--ouro-lt); line-height:1.2; }
+    .nav-logo-text span { display:block; font-size:0.6rem; font-weight:400; letter-spacing:0.2em; color:var(--ouro-pale); text-transform:uppercase; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a { font-size:0.8rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--creme); text-decoration:none; transition:color 0.2s; position:relative; }
+    .nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; width:0; height:1px; background:var(--ouro); transition:width 0.3s; }
+    .nav-links a:hover { color:var(--ouro-lt); }
+    .nav-links a:hover::after { width:100%; }
+    .nav-cta { background:var(--ouro) !important; color:var(--vinho) !important; padding:0.45rem 1.1rem; border-radius:2px; }
+    .nav-cta:hover { background:var(--ouro-lt) !important; }
+    .nav-cta::after { display:none !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 60vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(90,32,32,0.8) 0%, rgba(44,15,15,0.9) 100%);
+    }
+    .hero-content { position:relative; z-index:2; max-width:800px; }
+    .hero-eyebrow { font-size:0.7rem; font-weight:700; letter-spacing:0.35em; text-transform:uppercase; color:var(--ouro); margin-bottom:1rem; }
+    .hero-title { font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; line-height:1.1; color:var(--creme-lt); margin-bottom:0.5rem; }
+    .hero-title em { font-style:normal; color:var(--ouro-lt); }
+    .hero-desc { font-size:1rem; font-weight:300; line-height:1.7; color:rgba(245,236,215,0.75); margin-bottom:2rem; }
+
+    /* DASHBOARD */
+    .dashboard { padding:4rem 3rem; background:var(--vinho-md); }
+    .dashboard-grid { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:2rem; }
+    .dashboard-card {
+      background: linear-gradient(135deg, rgba(61,21,21,0.9), rgba(44,15,15,0.95));
+      border: 1px solid rgba(201,149,42,0.2);
+      border-radius: 6px;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .dashboard-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .dashboard-title { font-family:'Cinzel',serif; font-size:1.2rem; font-weight:700; color:var(--creme-lt); margin-bottom:0.5rem; }
+    .dashboard-desc { font-size:0.9rem; font-weight:300; line-height:1.6; color:rgba(245,236,215,0.7); }
+
+    /* TURMAS */
+    .turmas { padding:4rem 3rem; background:linear-gradient(180deg,var(--vinho-md) 0%,var(--vinho) 100%); }
+    .turmas-grid { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:2rem; }
+    .turma-card {
+      background: linear-gradient(135deg, rgba(61,21,21,0.8), rgba(44,15,15,0.9));
+      border: 1px solid rgba(201,149,42,0.15);
+      border-radius: 6px;
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .turma-card:hover { border-color: rgba(201,149,42,0.4); transform: translateY(-2px); }
+    .turma-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
+    .turma-icon { font-size:2rem; }
+    .turma-info h3 { font-family:'Cinzel',serif; font-size:1.1rem; font-weight:700; color:var(--creme-lt); margin-bottom:0.3rem; }
+    .turma-info .status { font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--ouro); }
+    .turma-desc { font-size:0.9rem; font-weight:300; line-height:1.6; color:rgba(245,236,215,0.7); margin-bottom:1.5rem; }
+    .turma-stats { display:flex; gap:1rem; flex-wrap:wrap; }
+    .stat { text-align:center; }
+    .stat-num { font-family:'Cinzel',serif; font-size:1.5rem; font-weight:900; color:var(--ouro-lt); display:block; }
+    .stat-label { font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(245,236,215,0.5); }
+
+    /* FOOTER */
+    footer { background:#1A0808; border-top:1px solid rgba(201,149,42,0.14); padding:3rem 3rem 2rem; text-align:center; }
+    footer p { font-size:0.8rem; color:rgba(245,236,215,0.4); }
+
+    /* RESPONSIVO */
+    @media(max-width:768px){
+      nav { padding:0.9rem 1.5rem; }
+      .nav-links { display:none; }
+      .hero, .dashboard, .turmas { padding-left:1.5rem; padding-right:1.5rem; }
+      .dashboard-grid, .turmas-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="logo-remo.png" alt="Logo REMO" />
+      <div class="nav-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Início</a></li>
+      <li><a href="aulas-gravadas.html">Aulas</a></li>
+      <li><a href="admin.html">Admin</a></li>
+      <li><a href="index.html" class="nav-cta">Sair</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Área do Professor</p>
+      <h1 class="hero-title">Bem-vindo, <em>Professor</em></h1>
+      <p class="hero-desc">Gerencie suas turmas, publique aulas e acompanhe o progresso dos seus alunos na Escola Barco da Fé.</p>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="dashboard">
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <div class="dashboard-icon">📚</div>
+        <h3 class="dashboard-title">Minhas Turmas</h3>
+        <p class="dashboard-desc">Gerencie alunos matriculados e progresso das turmas.</p>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-icon">🎬</div>
+        <h3 class="dashboard-title">Publicar Aulas</h3>
+        <p class="dashboard-desc">Suba novas aulas e materiais para os alunos.</p>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-icon">📝</div>
+        <h3 class="dashboard-title">Atividades</h3>
+        <p class="dashboard-desc">Crie tarefas e avalie entregas dos alunos.</p>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-icon">📊</div>
+        <h3 class="dashboard-title">Relatórios</h3>
+        <p class="dashboard-desc">Acompanhe desempenho e progresso dos alunos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TURMAS -->
+  <section class="turmas">
+    <div class="turmas-grid">
+      <!-- TURMA N1 -->
+      <div class="turma-card">
+        <div class="turma-header">
+          <div class="turma-icon">⚓</div>
+          <div class="turma-info">
+            <h3>Turma N1 — Fundamentação</h3>
+            <div class="status">Ativa</div>
+          </div>
+        </div>
+        <p class="turma-desc">Turma de fundamentos espirituais da intercessão.</p>
+        <div class="turma-stats">
+          <div class="stat">
+            <span class="stat-num">24</span>
+            <span class="stat-label">Alunos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">85%</span>
+            <span class="stat-label">Progresso</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">3</span>
+            <span class="stat-label">Atividades</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TURMA N2 -->
+      <div class="turma-card">
+        <div class="turma-header">
+          <div class="turma-icon">🌊</div>
+          <div class="turma-info">
+            <h3>Turma N2 — Aprofundamento</h3>
+            <div class="status">Ativa</div>
+          </div>
+        </div>
+        <p class="turma-desc">Turma avançada de técnicas de oração e guerra espiritual.</p>
+        <div class="turma-stats">
+          <div class="stat">
+            <span class="stat-num">18</span>
+            <span class="stat-label">Alunos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">62%</span>
+            <span class="stat-label">Progresso</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">5</span>
+            <span class="stat-label">Atividades</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TURMA N3 -->
+      <div class="turma-card">
+        <div class="turma-header">
+          <div class="turma-icon">🧭</div>
+          <div class="turma-info">
+            <h3>Turma N3 — Prática</h3>
+            <div class="status">Preparando</div>
+          </div>
+        </div>
+        <p class="turma-desc">Turma de aplicação prática e liderança em intercessão.</p>
+        <div class="turma-stats">
+          <div class="stat">
+            <span class="stat-num">0</span>
+            <span class="stat-label">Alunos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">—</span>
+            <span class="stat-label">Progresso</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">0</span>
+            <span class="stat-label">Atividades</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 REMO — Rede Mundial de Orações · <a href="index.html" style="color:var(--ouro);">Voltar ao início</a></p>
+  </footer>
+
+</body>
+</html>
