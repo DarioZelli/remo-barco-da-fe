@@ -216,27 +216,7 @@
           </div>
           <div class="msg sucesso" id="msgSucesso">✅ Inscrição recebida com sucesso! Nossa equipe analisará sua candidatura e entrará em contato em breve.</div>
           <div class="msg erro" id="msgErro">❌ Erro ao enviar. Verifique os campos obrigatórios e tente novamente.</div>
-
-          <div class="form-divider"></div>
-          <div style="margin-top:1.5rem;">
-            <div class="form-section-title">🔎 Consultar status da inscrição</div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="consultaId">ID da inscrição</label>
-                <input id="consultaId" type="text" placeholder="Digite o ID da inscrição" />
-              </div>
-              <div class="form-group">
-                <label for="consultaEmail">E-mail usado</label>
-                <input id="consultaEmail" type="email" placeholder="Digite o e-mail usado" />
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn-submit" onclick="consultarStatus()">Consultar status</button>
-              <span id="msgConsultaStatus" class="msg"></span>
-            </div>
-            <div id="resultadoConsultaStatus" style="margin-top:1rem;display:none;background:rgba(201,149,42,0.08);border:1px solid rgba(201,149,42,0.18);border-radius:4px;padding:1rem;"></div>
-          </div>
-
+          <p style="margin-top:1rem;font-size:0.92rem;color:rgba(245,236,215,0.7);">Já enviou sua inscrição? <a href="status-inscricao.html" style="color:var(--ouro);text-decoration:underline;">Consulte o status da sua inscrição nesta página dedicada</a>.</p>
         </form>
       </div>
     </div>
@@ -317,54 +297,6 @@
       }
     });
 
-    async function consultarStatus() {
-      const id = document.getElementById('consultaId').value.trim();
-      const email = document.getElementById('consultaEmail').value.trim();
-      const feedback = document.getElementById('msgConsultaStatus');
-      const resultado = document.getElementById('resultadoConsultaStatus');
-      feedback.className = 'msg';
-      feedback.textContent = '';
-      resultado.style.display = 'none';
-      resultado.textContent = '';
-
-      if (!id && !email) {
-        feedback.className = 'msg erro';
-        feedback.textContent = 'Informe o ID da inscrição ou o e-mail para consultar.';
-        return;
-      }
-
-      try {
-        const params = new URLSearchParams();
-        if (id) params.set('id', id);
-        if (email) params.set('email', email);
-        const res = await fetch('/.netlify/functions/candidaturas-buscar?' + params.toString());
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.erro || 'Falha ao consultar status.');
-        if (!data.resultados || !data.resultados.length) {
-          feedback.className = 'msg erro';
-          feedback.textContent = 'Nenhuma inscrição encontrada para os dados informados.';
-          return;
-        }
-
-        resultado.style.display = 'block';
-        resultado.innerHTML = data.resultados.map(r => {
-          return `
-            <div style="margin-bottom:1rem;">
-              <strong>ID:</strong> ${r.id || '—'}<br/>
-              <strong>Nome:</strong> ${r.nomeCompleto || '—'}<br/>
-              <strong>Status:</strong> ${r.status || '—'}<br/>
-              <strong>Módulo desejado:</strong> ${r.moduloDesejado || '—'}<br/>
-              <strong>Módulo matriculado:</strong> ${r.moduloMatriculado || '—'}<br/>
-              <strong>Nota final:</strong> ${r.notaFinal != null ? r.notaFinal : '—'}<br/>
-              <strong>Última atualização:</strong> ${r.atualizadoEm || r.dataEnvio || '—'}
-            </div>
-          `;
-        }).join('<hr style="border:none;border-top:1px solid rgba(245,236,215,0.12);margin:1rem 0;"/>');
-      } catch (err) {
-        feedback.className = 'msg erro';
-        feedback.textContent = err.message || 'Erro ao consultar status.';
-      }
-    }
   </script>
 </body>
 </html>
