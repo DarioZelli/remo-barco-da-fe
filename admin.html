@@ -1,642 +1,296 @@
-diff --git a/admin.html b/admin.html
-index 37065b6a21c7f53154f9ebfff791806e3fafd8b2..92b0bb2ed9a84ff33b1f210fcf04c19b0704038d 100644
---- a/admin.html
-+++ b/admin.html
-@@ -58,52 +58,64 @@
-       padding:1.4rem;
-       text-align:center;
-       cursor:pointer;
-       transition:all 0.2s;
-     }
-     .stat-card:hover{border-color:rgba(201,149,42,0.35);background:rgba(201,149,42,0.06)}
-     .stat-card .num{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--ouro-lt);display:block}
-     .stat-card .lbl{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,236,215,0.45);margin-top:0.3rem}
- 
-     /* TABELA */
-     .tabela-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
-     .tabela-title{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--creme-lt)}
-     .btn-refresh{background:none;border:1px solid rgba(201,149,42,0.3);color:var(--ouro);font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.4rem 0.9rem;border-radius:2px;cursor:pointer;transition:all 0.2s}
-     .btn-refresh:hover{background:rgba(201,149,42,0.1)}
-     .tabela-wrap{overflow-x:auto;border-radius:4px;border:1px solid rgba(201,149,42,0.15)}
-     table{width:100%;border-collapse:collapse;font-size:0.85rem}
-     thead{background:rgba(61,21,21,0.9)}
-     th{padding:0.75rem 1rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--ouro);border-bottom:1px solid rgba(201,149,42,0.2);white-space:nowrap}
-     td{padding:0.75rem 1rem;border-bottom:1px solid rgba(201,149,42,0.08);color:rgba(245,236,215,0.75);vertical-align:top}
-     tr:hover td{background:rgba(201,149,42,0.04)}
-     tr:last-child td{border-bottom:none}
-     .tag{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.15rem 0.5rem;border-radius:2px}
-     .tag-pendente{background:rgba(201,149,42,0.2);color:var(--ouro-lt)}
-     .tag-ativo{background:rgba(60,120,60,0.25);color:#a0e0a0}
-     .tag-aprovado{background:rgba(60,100,180,0.25);color:#a0c0f0}
-+    .tag-inativo{background:rgba(140,140,140,0.2);color:#cfcfcf}
-     .loading{text-align:center;padding:3rem;color:rgba(245,236,215,0.4);font-size:0.9rem}
-     .vazio{text-align:center;padding:3rem;color:rgba(245,236,215,0.35);font-size:0.9rem;font-style:italic}
-+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.9rem}
-+    .form-group{display:flex;flex-direction:column;gap:0.35rem}
-+    .form-group label{font-size:0.66rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro)}
-+    .form-group input,.form-group textarea,.form-group select{
-+      width:100%;background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.25);border-radius:3px;
-+      padding:0.65rem 0.8rem;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--creme)
-+    }
-+    .form-group textarea{min-height:90px;resize:vertical}
-+    .form-actions{display:flex;gap:0.7rem;align-items:center;margin-top:1rem}
-+    .msg-ok{font-size:0.8rem;color:#a0e0a0}
-+    .msg-erro{font-size:0.8rem;color:#e0a0a0}
- 
-     @media(max-width:900px){
-       .stats-grid{grid-template-columns:repeat(2,1fr)}
-       .admin-body{flex-direction:column}
-       .admin-sidebar{
-         display:block;
-         width:100%;
-         border-right:none;
-         border-bottom:1px solid rgba(201,149,42,0.12);
-         padding:0.8rem 0;
-       }
-       .admin-main{padding:1.2rem}
-     }
-   </style>
- </head>
- <body>
- 
-   <!-- LOGIN -->
-   <div class="login-screen" id="loginScreen">
-     <div class="login-card">
-       <img src="logo-remo.png" alt="REMO" class="login-logo"/>
-       <div class="login-title">Painel Administrativo</div>
-       <div class="login-sub">REMO — Acesso restrito</div>
-       <div class="login-group">
-         <label for="loginUser">Usuário</label>
-@@ -120,50 +132,55 @@
- 
-   <!-- ADMIN -->
-   <div class="admin-screen" id="adminScreen">
-     <header class="admin-header">
-       <div class="admin-brand">
-         <img src="logo-remo.png" alt="REMO"/>
-         <div class="admin-brand-text">REMO Admin<span>Painel de Gestão</span></div>
-       </div>
-       <div class="admin-user">
-         <span>Administrador</span>
-         <button class="btn-logout" onclick="sair()">Sair</button>
-       </div>
-     </header>
- 
-     <div class="admin-body">
-       <nav class="admin-sidebar">
-         <div class="sidebar-section">Visão Geral</div>
-         <div class="sidebar-link ativo" onclick="mostrarPagina('dashboard',this)">📊 Dashboard</div>
- 
-         <div class="sidebar-section">Cadastros</div>
-         <div class="sidebar-link" onclick="mostrarPagina('pedidos',this);carregarTabela('pedidos-oracao','tabelaPedidos')">🙏 Pedidos de Oração <span class="badge" id="badgePedidos">…</span></div>
-         <div class="sidebar-link" onclick="mostrarPagina('candidaturas',this);carregarTabela('candidaturas-bf','tabelaCandidaturas')">⚓ Candidaturas BF <span class="badge" id="badgeCandidaturas">…</span></div>
-         <div class="sidebar-link" onclick="mostrarPagina('intercessores',this);carregarTabela('intercessores','tabelaIntercessores')">🌐 Intercessores <span class="badge" id="badgeIntercessores">…</span></div>
-         <div class="sidebar-link" onclick="mostrarPagina('relogio',this);carregarTabela('relogio-oracao','tabelaRelogio')">⏱️ Relógio de Oração <span class="badge" id="badgeRelogio">…</span></div>
- 
-+        <div class="sidebar-section">Conteúdo</div>
-+        <div class="sidebar-link" onclick="mostrarPagina('homeConfig',this);carregarHomeConfig()">🏠 Configuração da Home</div>
-+        <div class="sidebar-link" onclick="mostrarPagina('homeCards',this);carregarHomeCards()">🧩 Cards da Home</div>
-+        <div class="sidebar-link" onclick="mostrarPagina('aulasGravadas',this);carregarAulasGravadas()">🎬 Aulas Gravadas</div>
-+
-         <div class="sidebar-section">Acesso</div>
-         <div class="sidebar-link" onclick="window.open('index.html','_blank')">🏠 Ver Site</div>
-       </nav>
- 
-       <main class="admin-main">
- 
-         <!-- DASHBOARD -->
-         <div class="admin-page ativo" id="pageDashboard">
-           <h2 style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--creme-lt);margin-bottom:1.5rem">Dashboard</h2>
-           <div class="stats-grid">
-             <div class="stat-card" onclick="abrirDashboardSecao('pedidos','tabelaPedidos','pedidos-oracao',1)">
-               <span class="num" id="statPedidos">—</span>
-               <span class="lbl">Pedidos de Oração</span>
-             </div>
-             <div class="stat-card" onclick="abrirDashboardSecao('candidaturas','tabelaCandidaturas','candidaturas-bf',2)">
-               <span class="num" id="statCandidaturas">—</span>
-               <span class="lbl">Candidaturas BF</span>
-             </div>
-             <div class="stat-card" onclick="abrirDashboardSecao('intercessores','tabelaIntercessores','intercessores',3)">
-               <span class="num" id="statIntercessores">—</span>
-               <span class="lbl">Intercessores</span>
-             </div>
-             <div class="stat-card" onclick="abrirDashboardSecao('relogio','tabelaRelogio','relogio-oracao',4)">
-               <span class="num" id="statRelogio">—</span>
-               <span class="lbl">Horários Assumidos</span>
-@@ -206,50 +223,186 @@
-             <div class="tabela-title">🌐 Intercessores Cadastrados</div>
-             <button class="btn-refresh" onclick="carregarTabela('intercessores','tabelaIntercessores')">↻ Atualizar</button>
-           </div>
-           <div class="tabela-wrap">
-             <table>
-               <thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade</th><th>Experiência</th><th>Temas</th></tr></thead>
-               <tbody id="tabelaIntercessores"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
-             </table>
-           </div>
-         </div>
- 
-         <!-- RELÓGIO -->
-         <div class="admin-page" id="pageRelogio">
-           <div class="tabela-header">
-             <div class="tabela-title">⏱️ Relógio de Oração</div>
-             <button class="btn-refresh" onclick="carregarTabela('relogio-oracao','tabelaRelogio')">↻ Atualizar</button>
-           </div>
-           <div class="tabela-wrap">
-             <table>
-               <thead><tr><th>Data</th><th>Nome</th><th>Telefone</th><th>Horário</th><th>Duração Intercessão</th><th>Compromisso</th><th>Anônimo</th></tr></thead>
-               <tbody id="tabelaRelogio"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
-             </table>
-           </div>
-         </div>
- 
-+        <!-- HOME CONFIG -->
-+        <div class="admin-page" id="pageHomeConfig">
-+          <div class="tabela-header">
-+            <div class="tabela-title">🏠 Configuração da Home</div>
-+          </div>
-+          <div class="tabela-wrap" style="padding:1.2rem">
-+            <div class="form-grid">
-+              <div class="form-group">
-+                <label for="homeTituloPrincipal">Título principal</label>
-+                <input id="homeTituloPrincipal" type="text" />
-+              </div>
-+              <div class="form-group">
-+                <label for="homeSubtitulo">Subtítulo</label>
-+                <input id="homeSubtitulo" type="text" />
-+              </div>
-+              <div class="form-group">
-+                <label for="homeVideoPrincipal">URL vídeo principal</label>
-+                <input id="homeVideoPrincipal" type="url" />
-+              </div>
-+              <div class="form-group">
-+                <label for="homeImagemPrincipal">URL imagem principal</label>
-+                <input id="homeImagemPrincipal" type="url" />
-+              </div>
-+              <div class="form-group">
-+                <label for="homeBotaoPrincipal">Texto botão principal</label>
-+                <input id="homeBotaoPrincipal" type="text" />
-+              </div>
-+              <div class="form-group">
-+                <label for="homeLinkBotao">Link do botão</label>
-+                <input id="homeLinkBotao" type="url" />
-+              </div>
-+              <div class="form-group">
-+                <label for="homeMostrarVideo">Mostrar vídeo</label>
-+                <select id="homeMostrarVideo">
-+                  <option value="true">Sim</option>
-+                  <option value="false">Não</option>
-+                </select>
-+              </div>
-+            </div>
-+            <div class="form-actions">
-+              <button class="btn-refresh" onclick="salvarHomeConfig()">Salvar configuração</button>
-+              <span id="msgHomeConfig"></span>
-+            </div>
-+          </div>
-+        </div>
-+
-+        <!-- HOME CARDS -->
-+        <div class="admin-page" id="pageHomeCards">
-+          <div class="tabela-header">
-+            <div class="tabela-title">🧩 Cards da Home</div>
-+            <button class="btn-refresh" onclick="carregarHomeCards()">↻ Atualizar</button>
-+          </div>
-+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
-+            <input type="hidden" id="cardId" />
-+            <div class="form-grid">
-+              <div class="form-group">
-+                <label for="cardTitulo">Título</label>
-+                <input id="cardTitulo" type="text" />
-+              </div>
-+              <div class="form-group">
-+                <label for="cardOrdem">Ordem</label>
-+                <input id="cardOrdem" type="number" value="0" />
-+              </div>
-+              <div class="form-group">
-+                <label for="cardIcone">Ícone</label>
-+                <input id="cardIcone" type="text" placeholder="🙏" />
-+              </div>
-+              <div class="form-group">
-+                <label for="cardLink">Link</label>
-+                <input id="cardLink" type="url" />
-+              </div>
-+              <div class="form-group" style="grid-column:1/-1">
-+                <label for="cardDescricao">Descrição</label>
-+                <textarea id="cardDescricao"></textarea>
-+              </div>
-+              <div class="form-group" style="grid-column:1/-1">
-+                <label for="cardImagem">URL da imagem</label>
-+                <input id="cardImagem" type="url" />
-+              </div>
-+              <div class="form-group">
-+                <label for="cardAtivo">Status</label>
-+                <select id="cardAtivo">
-+                  <option value="true">Ativo</option>
-+                  <option value="false">Inativo</option>
-+                </select>
-+              </div>
-+            </div>
-+            <div class="form-actions">
-+              <button class="btn-refresh" onclick="salvarHomeCard()">Salvar card</button>
-+              <button class="btn-refresh" onclick="limparFormCard()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Novo card</button>
-+              <span id="msgHomeCard"></span>
-+            </div>
-+          </div>
-+
-+          <div class="tabela-wrap">
-+            <table>
-+              <thead><tr><th>Ordem</th><th>Título</th><th>Ícone</th><th>Link</th><th>Status</th><th>Ação</th></tr></thead>
-+              <tbody id="tabelaHomeCards"><tr><td colspan="6" class="loading">Carregando...</td></tr></tbody>
-+            </table>
-+          </div>
-+        </div>
-+
-+        <!-- AULAS GRAVADAS -->
-+        <div class="admin-page" id="pageAulasGravadas">
-+          <div class="tabela-header">
-+            <div class="tabela-title">🎬 Aulas Gravadas</div>
-+            <button class="btn-refresh" onclick="carregarAulasGravadas()">↻ Atualizar</button>
-+          </div>
-+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
-+            <input type="hidden" id="aulaId" />
-+            <div class="form-grid">
-+              <div class="form-group"><label for="aulaTitulo">Título</label><input id="aulaTitulo" type="text" /></div>
-+              <div class="form-group"><label for="aulaModulo">Módulo</label><input id="aulaModulo" type="text" /></div>
-+              <div class="form-group"><label for="aulaProfessor">Professor</label><input id="aulaProfessor" type="text" /></div>
-+              <div class="form-group"><label for="aulaOrdem">Ordem</label><input id="aulaOrdem" type="number" value="0" /></div>
-+              <div class="form-group" style="grid-column:1/-1"><label for="aulaDescricao">Descrição</label><textarea id="aulaDescricao"></textarea></div>
-+              <div class="form-group" style="grid-column:1/-1"><label for="aulaLinkVideo">Link do vídeo</label><input id="aulaLinkVideo" type="url" /></div>
-+              <div class="form-group"><label for="aulaThumbnail">Thumbnail</label><input id="aulaThumbnail" type="url" /></div>
-+              <div class="form-group"><label for="aulaPdf">PDF / Material</label><input id="aulaPdf" type="url" /></div>
-+              <div class="form-group"><label for="aulaPublicado">Publicado</label><select id="aulaPublicado"><option value="true">Sim</option><option value="false">Não</option></select></div>
-+            </div>
-+            <div class="form-actions">
-+              <button class="btn-refresh" onclick="salvarAulaGravada()">Salvar aula</button>
-+              <button class="btn-refresh" onclick="limparFormAula()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Nova aula</button>
-+              <span id="msgAulas"></span>
-+            </div>
-+          </div>
-+          <div class="tabela-wrap">
-+            <table>
-+              <thead><tr><th>Ordem</th><th>Título</th><th>Módulo</th><th>Professor</th><th>Status</th><th>Ação</th></tr></thead>
-+              <tbody id="tabelaAulas"><tr><td colspan="6" class="loading">Carregando...</td></tr></tbody>
-+            </table>
-+          </div>
-+        </div>
-+
-+
-       </main>
-     </div>
-   </div>
- 
-   <script>
-     const ADMIN_TOKEN = 'remo-admin-2025';
-     // Credenciais locais — em produção mover para variável de ambiente
-     const CREDENCIAIS = { usuario: 'admin', senha: 'remo@2025' };
- 
-     function fazerLogin() {
-       const u = document.getElementById('loginUser').value.trim();
-       const s = document.getElementById('loginPass').value;
-       if (u === CREDENCIAIS.usuario && s === CREDENCIAIS.senha) {
-         document.getElementById('loginScreen').style.display = 'none';
-         document.getElementById('adminScreen').style.display = 'block';
-         carregarContadores();
-       } else {
-         document.getElementById('loginErro').style.display = 'block';
-       }
-     }
-     document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') fazerLogin(); });
- 
-     function sair() {
-       document.getElementById('adminScreen').style.display = 'none';
-       document.getElementById('loginScreen').style.display = 'flex';
-@@ -268,75 +421,328 @@
-       const linkAlvo = sidebarLinks[indiceSidebar];
-       if (linkAlvo) {
-         mostrarPagina(paginaId, linkAlvo);
-       } else {
-         document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('ativo'));
-         document.getElementById('page' + paginaId.charAt(0).toUpperCase() + paginaId.slice(1)).classList.add('ativo');
-       }
-       carregarTabela(colecao, tabelaId);
-     }
- 
-     async function buscarColecao(colecao) {
-       const res = await fetch('/.netlify/functions/admin-listar?colecao=' + colecao, {
-         headers: { 'x-admin-token': ADMIN_TOKEN }
-       });
-       if (!res.ok) throw new Error('Erro ' + res.status);
-       return res.json();
-     }
- 
-     function fmt(iso) {
-       if (!iso) return '—';
-       const d = new Date(iso);
-       return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-     }
- 
-     function tag(status) {
--      const cls = status === 'pendente' ? 'tag-pendente' : status === 'aprovado' ? 'tag-aprovado' : 'tag-ativo';
-+      const cls = status === 'pendente' ? 'tag-pendente' : status === 'aprovado' ? 'tag-aprovado' : status === 'inativo' ? 'tag-inativo' : 'tag-ativo';
-       return '<span class="tag ' + cls + '">' + (status||'—') + '</span>';
-     }
-+    function limparMsg(id) {
-+      const el = document.getElementById(id);
-+      if (!el) return;
-+      el.className = '';
-+      el.textContent = '';
-+    }
-+    function msg(id, texto, erro = false) {
-+      const el = document.getElementById(id);
-+      if (!el) return;
-+      el.className = erro ? 'msg-erro' : 'msg-ok';
-+      el.textContent = texto;
-+    }
-+    function escapeHtml(v) {
-+      return String(v || '')
-+        .replace(/&/g, '&amp;')
-+        .replace(/</g, '&lt;')
-+        .replace(/>/g, '&gt;')
-+        .replace(/"/g, '&quot;')
-+        .replace(/'/g, '&#39;');
-+    }
- 
-     async function carregarContadores() {
-       const cols = [
-         ['pedidos-oracao','statPedidos','badgePedidos'],
-         ['candidaturas-bf','statCandidaturas','badgeCandidaturas'],
-         ['intercessores','statIntercessores','badgeIntercessores'],
-         ['relogio-oracao','statRelogio','badgeRelogio']
-       ];
-       for (const [col, statId, badgeId] of cols) {
-         try {
-           const d = await buscarColecao(col);
-           document.getElementById(statId).textContent = d.total;
-           document.getElementById(badgeId).textContent = d.total;
-         } catch {
-           document.getElementById(statId).textContent = '?';
-         }
-       }
-     }
- 
-     async function carregarTabela(colecao, tbodyId) {
-       const tbody = document.getElementById(tbodyId);
-       tbody.innerHTML = '<tr><td colspan="7" class="loading">Carregando...</td></tr>';
-       try {
-         const data = await buscarColecao(colecao);
-         if (!data.registros.length) {
-           tbody.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum registro encontrado.</td></tr>';
-           return;
-         }
-         tbody.innerHTML = data.registros.map(r => {
-           if (colecao === 'pedidos-oracao') {
-             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeSolicitante||'—'}</td><td>${r.telefone||'—'}</td><td>${r.paraQuem||'—'}</td><td>${r.tema||'—'}</td><td>${r.causa||'—'}</td><td>${tag(r.status)}</td></tr>`;
-           } else if (colecao === 'candidaturas-bf') {
-             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${(r.cidade||'')+(r.estado?' / '+r.estado:'')}</td><td>${r.experienciaOracao||'—'}</td><td>${tag(r.status)}</td></tr>`;
-           } else if (colecao === 'intercessores') {
-             const temas = Array.isArray(r.temas) ? r.temas.join(', ') : (r.temas||'—');
-             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${r.cidade||'—'}</td><td>${r.experiencia||'—'}</td><td style="max-width:160px;font-size:0.78rem">${temas}</td></tr>`;
-           } else {
-             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.anonimo?'Anônimo':r.nome||'—'}</td><td>${r.anonimo?'—':r.telefone||'—'}</td><td style="font-family:'Cinzel',serif;color:var(--ouro-lt)">${r.horario||'—'}</td><td>${r.duracaoIntercessao||'—'}</td><td>${r.duracaoCompromisso||'—'}</td><td>${r.anonimo?'✓':'—'}</td></tr>`;
-           }
-         }).join('');
-       } catch(err) {
-         tbody.innerHTML = '<tr><td colspan="7" class="vazio">Erro ao carregar dados. Verifique a conexão.</td></tr>';
-       }
-     }
-+
-+    async function carregarHomeConfig() {
-+      limparMsg('msgHomeConfig');
-+      try {
-+        const res = await fetch('/.netlify/functions/home-config-listar');
-+        if (!res.ok) throw new Error('Erro ' + res.status);
-+        const data = await res.json();
-+        const c = data.config || {};
-+        document.getElementById('homeTituloPrincipal').value = c.tituloPrincipal || '';
-+        document.getElementById('homeSubtitulo').value = c.subtitulo || '';
-+        document.getElementById('homeVideoPrincipal').value = c.videoPrincipal || '';
-+        document.getElementById('homeImagemPrincipal').value = c.imagemPrincipal || '';
-+        document.getElementById('homeBotaoPrincipal').value = c.botaoPrincipal || '';
-+        document.getElementById('homeLinkBotao').value = c.linkBotao || '';
-+        document.getElementById('homeMostrarVideo').value = String(!!c.mostrarVideo);
-+      } catch (err) {
-+        msg('msgHomeConfig', 'Erro ao carregar configuração da home.', true);
-+      }
-+    }
-+
-+    async function salvarHomeConfig() {
-+      limparMsg('msgHomeConfig');
-+      const payload = {
-+        tituloPrincipal: document.getElementById('homeTituloPrincipal').value,
-+        subtitulo: document.getElementById('homeSubtitulo').value,
-+        videoPrincipal: document.getElementById('homeVideoPrincipal').value,
-+        imagemPrincipal: document.getElementById('homeImagemPrincipal').value,
-+        botaoPrincipal: document.getElementById('homeBotaoPrincipal').value,
-+        linkBotao: document.getElementById('homeLinkBotao').value,
-+        mostrarVideo: document.getElementById('homeMostrarVideo').value === 'true'
-+      };
-+      try {
-+        const res = await fetch('/.netlify/functions/home-config-salvar', {
-+          method: 'POST',
-+          headers: {
-+            'Content-Type': 'application/json',
-+            'x-admin-token': ADMIN_TOKEN
-+          },
-+          body: JSON.stringify(payload)
-+        });
-+        const data = await res.json();
-+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar');
-+        msg('msgHomeConfig', 'Configuração salva com sucesso.');
-+      } catch (err) {
-+        msg('msgHomeConfig', err.message || 'Erro ao salvar configuração.', true);
-+      }
-+    }
-+
-+    function limparFormCard() {
-+      limparMsg('msgHomeCard');
-+      document.getElementById('cardId').value = '';
-+      document.getElementById('cardTitulo').value = '';
-+      document.getElementById('cardOrdem').value = '0';
-+      document.getElementById('cardIcone').value = '';
-+      document.getElementById('cardLink').value = '';
-+      document.getElementById('cardDescricao').value = '';
-+      document.getElementById('cardImagem').value = '';
-+      document.getElementById('cardAtivo').value = 'true';
-+    }
-+
-+    function editarCard(id) {
-+      const card = window.__homeCardsCache?.find(c => c.id === id);
-+      if (!card) return;
-+      document.getElementById('cardId').value = card.id || '';
-+      document.getElementById('cardTitulo').value = card.titulo || '';
-+      document.getElementById('cardOrdem').value = Number(card.ordem) || 0;
-+      document.getElementById('cardIcone').value = card.icone || '';
-+      document.getElementById('cardLink').value = card.link || '';
-+      document.getElementById('cardDescricao').value = card.descricao || '';
-+      document.getElementById('cardImagem').value = card.imagem || '';
-+      document.getElementById('cardAtivo').value = String(card.ativo !== false);
-+      msg('msgHomeCard', 'Card carregado para edição.');
-+    }
-+
-+    async function carregarHomeCards() {
-+      const tbody = document.getElementById('tabelaHomeCards');
-+      tbody.innerHTML = '<tr><td colspan="6" class="loading">Carregando...</td></tr>';
-+      limparMsg('msgHomeCard');
-+      try {
-+        const res = await fetch('/.netlify/functions/home-cards-listar');
-+        if (!res.ok) throw new Error('Erro ' + res.status);
-+        const data = await res.json();
-+        const cards = Array.isArray(data.cards) ? data.cards : [];
-+        window.__homeCardsCache = cards;
-+        if (!cards.length) {
-+          tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum card cadastrado.</td></tr>';
-+          return;
-+        }
-+        tbody.innerHTML = cards.map(card => {
-+          const idSeguro = JSON.stringify(card.id || '');
-+          return `<tr>
-+            <td>${Number(card.ordem) || 0}</td>
-+            <td>${escapeHtml(card.titulo)}</td>
-+            <td>${escapeHtml(card.icone)}</td>
-+            <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(card.link)}</td>
-+            <td>${tag(card.ativo === false ? 'inativo' : 'ativo')}</td>
-+            <td><button class="btn-refresh" onclick='editarCard(${idSeguro})'>Editar</button></td>
-+          </tr>`;
-+        }).join('');
-+      } catch (err) {
-+        tbody.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar cards.</td></tr>';
-+      }
-+    }
-+
-+
-+
-+    function limparFormAula() {
-+      limparMsg('msgAulas');
-+      document.getElementById('aulaId').value = '';
-+      document.getElementById('aulaTitulo').value = '';
-+      document.getElementById('aulaModulo').value = '';
-+      document.getElementById('aulaProfessor').value = '';
-+      document.getElementById('aulaDescricao').value = '';
-+      document.getElementById('aulaLinkVideo').value = '';
-+      document.getElementById('aulaThumbnail').value = '';
-+      document.getElementById('aulaPdf').value = '';
-+      document.getElementById('aulaOrdem').value = '0';
-+      document.getElementById('aulaPublicado').value = 'true';
-+    }
-+
-+    function editarAula(id) {
-+      const aula = window.__aulasCache?.find(item => item.id === id);
-+      if (!aula) return;
-+      document.getElementById('aulaId').value = aula.id || '';
-+      document.getElementById('aulaTitulo').value = aula.titulo || '';
-+      document.getElementById('aulaModulo').value = aula.modulo || '';
-+      document.getElementById('aulaProfessor').value = aula.professor || '';
-+      document.getElementById('aulaDescricao').value = aula.descricao || '';
-+      document.getElementById('aulaLinkVideo').value = aula.linkVideo || '';
-+      document.getElementById('aulaThumbnail').value = aula.thumbnail || '';
-+      document.getElementById('aulaPdf').value = aula.pdf || '';
-+      document.getElementById('aulaOrdem').value = Number(aula.ordem) || 0;
-+      document.getElementById('aulaPublicado').value = String(aula.publicado !== false);
-+      msg('msgAulas', 'Aula carregada para edição.');
-+    }
-+
-+    async function carregarAulasGravadas() {
-+      const tbody = document.getElementById('tabelaAulas');
-+      tbody.innerHTML = '<tr><td colspan="6" class="loading">Carregando...</td></tr>';
-+      limparMsg('msgAulas');
-+      try {
-+        const res = await fetch('/.netlify/functions/aulas-gravadas-listar?incluirOcultos=true', {
-+          headers: { 'x-admin-token': ADMIN_TOKEN }
-+        });
-+        if (!res.ok) throw new Error('Erro ' + res.status);
-+        const data = await res.json();
-+        const aulas = Array.isArray(data.aulas) ? data.aulas : [];
-+        window.__aulasCache = aulas;
-+
-+        if (!aulas.length) {
-+          tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhuma aula cadastrada.</td></tr>';
-+          return;
-+        }
-+
-+        tbody.innerHTML = aulas.map(aula => {
-+          const idSeguro = JSON.stringify(aula.id || '');
-+          return `<tr>
-+            <td>${Number(aula.ordem) || 0}</td>
-+            <td>${escapeHtml(aula.titulo)}</td>
-+            <td>${escapeHtml(aula.modulo)}</td>
-+            <td>${escapeHtml(aula.professor)}</td>
-+            <td>${tag(aula.publicado === false ? 'inativo' : 'ativo')}</td>
-+            <td><button class="btn-refresh" onclick='editarAula(${idSeguro})'>Editar</button></td>
-+          </tr>`;
-+        }).join('');
-+      } catch (err) {
-+        tbody.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar aulas.</td></tr>';
-+      }
-+    }
-+
-+    async function salvarAulaGravada() {
-+      limparMsg('msgAulas');
-+      const payload = {
-+        id: document.getElementById('aulaId').value,
-+        titulo: document.getElementById('aulaTitulo').value,
-+        modulo: document.getElementById('aulaModulo').value,
-+        professor: document.getElementById('aulaProfessor').value,
-+        descricao: document.getElementById('aulaDescricao').value,
-+        linkVideo: document.getElementById('aulaLinkVideo').value,
-+        thumbnail: document.getElementById('aulaThumbnail').value,
-+        pdf: document.getElementById('aulaPdf').value,
-+        ordem: Number(document.getElementById('aulaOrdem').value) || 0,
-+        publicado: document.getElementById('aulaPublicado').value === 'true'
-+      };
-+      try {
-+        const res = await fetch('/.netlify/functions/aulas-gravadas-salvar', {
-+          method: 'POST',
-+          headers: {
-+            'Content-Type': 'application/json',
-+            'x-admin-token': ADMIN_TOKEN
-+          },
-+          body: JSON.stringify(payload)
-+        });
-+        const data = await res.json();
-+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar aula');
-+        msg('msgAulas', 'Aula salva com sucesso.');
-+        await carregarAulasGravadas();
-+        limparFormAula();
-+      } catch (err) {
-+        msg('msgAulas', err.message || 'Erro ao salvar aula.', true);
-+      }
-+    }
-+
-+    async function salvarHomeCard() {
-+      limparMsg('msgHomeCard');
-+      const payload = {
-+        id: document.getElementById('cardId').value,
-+        titulo: document.getElementById('cardTitulo').value,
-+        ordem: Number(document.getElementById('cardOrdem').value) || 0,
-+        icone: document.getElementById('cardIcone').value,
-+        link: document.getElementById('cardLink').value,
-+        descricao: document.getElementById('cardDescricao').value,
-+        imagem: document.getElementById('cardImagem').value,
-+        ativo: document.getElementById('cardAtivo').value === 'true'
-+      };
-+      try {
-+        const res = await fetch('/.netlify/functions/home-cards-salvar', {
-+          method: 'POST',
-+          headers: {
-+            'Content-Type': 'application/json',
-+            'x-admin-token': ADMIN_TOKEN
-+          },
-+          body: JSON.stringify(payload)
-+        });
-+        const data = await res.json();
-+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar');
-+        msg('msgHomeCard', 'Card salvo com sucesso.');
-+        await carregarHomeCards();
-+        limparFormCard();
-+      } catch (err) {
-+        msg('msgHomeCard', err.message || 'Erro ao salvar card.', true);
-+      }
-+    }
-   </script>
- </body>
- </html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — REMO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:#1A0808;color:var(--creme);min-height:100vh}
+
+    /* LOGIN */
+    .login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+    .login-card{background:linear-gradient(135deg,rgba(61,21,21,0.95),rgba(44,15,15,0.98));border:1px solid rgba(201,149,42,0.25);border-radius:6px;padding:3rem 2.5rem;width:100%;max-width:420px;text-align:center;position:relative;overflow:hidden}
+    .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+    .login-logo{width:80px;height:80px;border-radius:50%;border:2px solid rgba(201,149,42,0.3);margin:0 auto 1.5rem;display:block}
+    .login-title{font-family:'Cinzel',serif;font-size:1.4rem;font-weight:700;color:var(--creme-lt);margin-bottom:0.3rem}
+    .login-sub{font-size:0.78rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ouro);margin-bottom:2rem}
+    .login-group{margin-bottom:1.2rem;text-align:left}
+    .login-group label{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:0.4rem}
+    .login-group input{width:100%;background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.75rem 1rem;font-family:'Lato',sans-serif;font-size:0.95rem;color:var(--creme);outline:none;transition:border-color 0.2s}
+    .login-group input:focus{border-color:var(--ouro)}
+    .login-group input::placeholder{color:rgba(245,236,215,0.3)}
+    .btn-login{width:100%;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:0.85rem;border-radius:3px;cursor:pointer;transition:background 0.2s;margin-top:0.5rem}
+    .btn-login:hover{background:var(--ouro-lt)}
+    .login-erro{display:none;color:#e0a0a0;font-size:0.85rem;margin-top:0.8rem}
+
+    /* ADMIN LAYOUT */
+    .admin-screen{display:none;min-height:100vh}
+    .admin-header{background:rgba(44,15,15,0.97);border-bottom:1px solid rgba(201,149,42,0.2);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .admin-brand{display:flex;align-items:center;gap:0.75rem}
+    .admin-brand img{height:36px;width:36px;object-fit:contain;border-radius:50%}
+    .admin-brand-text{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--ouro-lt)}
+    .admin-brand-text span{display:block;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ouro-pale);font-weight:400}
+    .admin-user{font-size:0.75rem;color:rgba(245,236,215,0.5);display:flex;align-items:center;gap:1rem}
+    .btn-logout{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ouro);background:none;border:1px solid rgba(201,149,42,0.3);padding:0.3rem 0.8rem;border-radius:2px;cursor:pointer;transition:all 0.2s}
+    .btn-logout:hover{background:rgba(201,149,42,0.1)}
+
+    .admin-body{display:flex;min-height:calc(100vh - 60px)}
+    .admin-sidebar{width:220px;background:rgba(44,15,15,0.5);border-right:1px solid rgba(201,149,42,0.12);padding:1.5rem 0;flex-shrink:0}
+    .sidebar-section{font-size:0.62rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:rgba(201,149,42,0.5);padding:0 1.2rem;margin:1rem 0 0.5rem}
+    .sidebar-link{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 1.2rem;font-size:0.85rem;font-weight:400;color:rgba(245,236,215,0.6);cursor:pointer;transition:all 0.2s;border-left:2px solid transparent}
+    .sidebar-link:hover{color:var(--creme-lt);background:rgba(201,149,42,0.06)}
+    .sidebar-link.ativo{color:var(--ouro-lt);border-left-color:var(--ouro);background:rgba(201,149,42,0.08)}
+    .sidebar-link .badge{margin-left:auto;background:var(--ouro);color:var(--vinho);font-size:0.62rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:10px}
+
+    .admin-main{flex:1;padding:2rem;overflow-x:auto}
+    .admin-page{display:none}
+    .admin-page.ativo{display:block}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+    .stat-card{background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.18);border-radius:4px;padding:1.4rem;text-align:center}
+    .stat-card .num{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--ouro-lt);display:block}
+    .stat-card .lbl{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,236,215,0.45);margin-top:0.3rem}
+
+    /* TABELA */
+    .tabela-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+    .tabela-title{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--creme-lt)}
+    .btn-refresh{background:none;border:1px solid rgba(201,149,42,0.3);color:var(--ouro);font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.4rem 0.9rem;border-radius:2px;cursor:pointer;transition:all 0.2s}
+    .btn-refresh:hover{background:rgba(201,149,42,0.1)}
+    .tabela-wrap{overflow-x:auto;border-radius:4px;border:1px solid rgba(201,149,42,0.15)}
+    table{width:100%;border-collapse:collapse;font-size:0.85rem}
+    thead{background:rgba(61,21,21,0.9)}
+    th{padding:0.75rem 1rem;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--ouro);border-bottom:1px solid rgba(201,149,42,0.2);white-space:nowrap}
+    td{padding:0.75rem 1rem;border-bottom:1px solid rgba(201,149,42,0.08);color:rgba(245,236,215,0.75);vertical-align:top}
+    tr:hover td{background:rgba(201,149,42,0.04)}
+    tr:last-child td{border-bottom:none}
+    .tag{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.15rem 0.5rem;border-radius:2px}
+    .tag-pendente{background:rgba(201,149,42,0.2);color:var(--ouro-lt)}
+    .tag-ativo{background:rgba(60,120,60,0.25);color:#a0e0a0}
+    .tag-aprovado{background:rgba(60,100,180,0.25);color:#a0c0f0}
+    .loading{text-align:center;padding:3rem;color:rgba(245,236,215,0.4);font-size:0.9rem}
+    .vazio{text-align:center;padding:3rem;color:rgba(245,236,215,0.35);font-size:0.9rem;font-style:italic}
+
+    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.admin-sidebar{display:none}.admin-main{padding:1.2rem}}
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <img src="logo-remo.png" alt="REMO" class="login-logo"/>
+      <div class="login-title">Painel Administrativo</div>
+      <div class="login-sub">REMO — Acesso restrito</div>
+      <div class="login-group">
+        <label for="loginUser">Usuário</label>
+        <input type="text" id="loginUser" placeholder="admin" autocomplete="username"/>
+      </div>
+      <div class="login-group">
+        <label for="loginPass">Senha</label>
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <button class="btn-login" onclick="fazerLogin()">Entrar</button>
+      <div class="login-erro" id="loginErro">Usuário ou senha incorretos.</div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="admin-screen" id="adminScreen">
+    <header class="admin-header">
+      <div class="admin-brand">
+        <img src="logo-remo.png" alt="REMO"/>
+        <div class="admin-brand-text">REMO Admin<span>Painel de Gestão</span></div>
+      </div>
+      <div class="admin-user">
+        <span>Administrador</span>
+        <button class="btn-logout" onclick="sair()">Sair</button>
+      </div>
+    </header>
+
+    <div class="admin-body">
+      <nav class="admin-sidebar">
+        <div class="sidebar-section">Visão Geral</div>
+        <div class="sidebar-link ativo" onclick="mostrarPagina('dashboard',this)">📊 Dashboard</div>
+
+        <div class="sidebar-section">Cadastros</div>
+        <div class="sidebar-link" onclick="mostrarPagina('pedidos',this);carregarTabela('pedidos-oracao','tabelaPedidos')">🙏 Pedidos de Oração <span class="badge" id="badgePedidos">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('candidaturas',this);carregarTabela('candidaturas-bf','tabelaCandidaturas')">⚓ Candidaturas BF <span class="badge" id="badgeCandidaturas">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('intercessores',this);carregarTabela('intercessores','tabelaIntercessores')">🌐 Intercessores <span class="badge" id="badgeIntercessores">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('relogio',this);carregarTabela('relogio-oracao','tabelaRelogio')">⏱️ Relógio de Oração <span class="badge" id="badgeRelogio">…</span></div>
+
+        <div class="sidebar-section">Acesso</div>
+        <div class="sidebar-link" onclick="window.open('index.html','_blank')">🏠 Ver Site</div>
+      </nav>
+
+      <main class="admin-main">
+
+        <!-- DASHBOARD -->
+        <div class="admin-page ativo" id="pageDashboard">
+          <h2 style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--creme-lt);margin-bottom:1.5rem">Dashboard</h2>
+          <div class="stats-grid">
+            <div class="stat-card"><span class="num" id="statPedidos">—</span><span class="lbl">Pedidos de Oração</span></div>
+            <div class="stat-card"><span class="num" id="statCandidaturas">—</span><span class="lbl">Candidaturas BF</span></div>
+            <div class="stat-card"><span class="num" id="statIntercessores">—</span><span class="lbl">Intercessores</span></div>
+            <div class="stat-card"><span class="num" id="statRelogio">—</span><span class="lbl">Horários Assumidos</span></div>
+          </div>
+          <p style="font-size:0.88rem;color:rgba(245,236,215,0.4);font-style:italic">Selecione uma seção no menu para visualizar os registros detalhados.</p>
+        </div>
+
+        <!-- PEDIDOS -->
+        <div class="admin-page" id="pagePedidos">
+          <div class="tabela-header">
+            <div class="tabela-title">🙏 Pedidos de Oração</div>
+            <button class="btn-refresh" onclick="carregarTabela('pedidos-oracao','tabelaPedidos')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Solicitante</th><th>Telefone</th><th>Para quem</th><th>Tema</th><th>Causa</th><th>Status</th></tr></thead>
+              <tbody id="tabelaPedidos"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CANDIDATURAS -->
+        <div class="admin-page" id="pageCandidaturas">
+          <div class="tabela-header">
+            <div class="tabela-title">⚓ Candidaturas — Barco da Fé</div>
+            <button class="btn-refresh" onclick="carregarTabela('candidaturas-bf','tabelaCandidaturas')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade/UF</th><th>Experiência</th><th>Status</th></tr></thead>
+              <tbody id="tabelaCandidaturas"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- INTERCESSORES -->
+        <div class="admin-page" id="pageIntercessores">
+          <div class="tabela-header">
+            <div class="tabela-title">🌐 Intercessores Cadastrados</div>
+            <button class="btn-refresh" onclick="carregarTabela('intercessores','tabelaIntercessores')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade</th><th>Experiência</th><th>Temas</th></tr></thead>
+              <tbody id="tabelaIntercessores"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RELÓGIO -->
+        <div class="admin-page" id="pageRelogio">
+          <div class="tabela-header">
+            <div class="tabela-title">⏱️ Relógio de Oração</div>
+            <button class="btn-refresh" onclick="carregarTabela('relogio-oracao','tabelaRelogio')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Nome</th><th>Telefone</th><th>Horário</th><th>Duração Intercessão</th><th>Compromisso</th><th>Anônimo</th></tr></thead>
+              <tbody id="tabelaRelogio"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_TOKEN = 'remo-admin-2025';
+    // Credenciais locais — em produção mover para variável de ambiente
+    const CREDENCIAIS = { usuario: 'admin', senha: 'remo@2025' };
+
+    function fazerLogin() {
+      const u = document.getElementById('loginUser').value.trim();
+      const s = document.getElementById('loginPass').value;
+      if (u === CREDENCIAIS.usuario && s === CREDENCIAIS.senha) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminScreen').style.display = 'block';
+        carregarContadores();
+      } else {
+        document.getElementById('loginErro').style.display = 'block';
+      }
+    }
+    document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') fazerLogin(); });
+
+    function sair() {
+      document.getElementById('adminScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('loginPass').value = '';
+    }
+
+    function mostrarPagina(id, el) {
+      document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('ativo'));
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('ativo'));
+      document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('ativo');
+      el.classList.add('ativo');
+    }
+
+    async function buscarColecao(colecao) {
+      const res = await fetch('/.netlify/functions/admin-listar?colecao=' + colecao, {
+        headers: { 'x-admin-token': ADMIN_TOKEN }
+      });
+      if (!res.ok) throw new Error('Erro ' + res.status);
+      return res.json();
+    }
+
+    function fmt(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    }
+
+    function tag(status) {
+      const cls = status === 'pendente' ? 'tag-pendente' : status === 'aprovado' ? 'tag-aprovado' : 'tag-ativo';
+      return '<span class="tag ' + cls + '">' + (status||'—') + '</span>';
+    }
+
+    async function carregarContadores() {
+      const cols = [
+        ['pedidos-oracao','statPedidos','badgePedidos'],
+        ['candidaturas-bf','statCandidaturas','badgeCandidaturas'],
+        ['intercessores','statIntercessores','badgeIntercessores'],
+        ['relogio-oracao','statRelogio','badgeRelogio']
+      ];
+      for (const [col, statId, badgeId] of cols) {
+        try {
+          const d = await buscarColecao(col);
+          document.getElementById(statId).textContent = d.total;
+          document.getElementById(badgeId).textContent = d.total;
+        } catch { document.getElementById(statId).textContent = '?'; }
+      }
+    }
+
+    async function carregarTabela(colecao, tbodyId) {
+      const tbody = document.getElementById(tbodyId);
+      tbody.innerHTML = '<tr><td colspan="7" class="loading">Carregando...</td></tr>';
+      try {
+        const data = await buscarColecao(colecao);
+        if (!data.registros.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum registro encontrado.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.registros.map(r => {
+          if (colecao === 'pedidos-oracao') {
+            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeSolicitante||'—'}</td><td>${r.telefone||'—'}</td><td>${r.paraQuem||'—'}</td><td>${r.tema||'—'}</td><td>${r.causa||'—'}</td><td>${tag(r.status)}</td></tr>`;
+          } else if (colecao === 'candidaturas-bf') {
+            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${(r.cidade||'')+(r.estado?' / '+r.estado:'')}</td><td>${r.experienciaOracao||'—'}</td><td>${tag(r.status)}</td></tr>`;
+          } else if (colecao === 'intercessores') {
+            const temas = Array.isArray(r.temas) ? r.temas.join(', ') : (r.temas||'—');
+            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${r.cidade||'—'}</td><td>${r.experiencia||'—'}</td><td style="max-width:160px;font-size:0.78rem">${temas}</td></tr>`;
+          } else {
+            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.anonimo?'Anônimo':r.nome||'—'}</td><td>${r.anonimo?'—':r.telefone||'—'}</td><td style="font-family:'Cinzel',serif;color:var(--ouro-lt)">${r.horario||'—'}</td><td>${r.duracaoIntercessao||'—'}</td><td>${r.duracaoCompromisso||'—'}</td><td>${r.anonimo?'✓':'—'}</td></tr>`;
+          }
+        }).join('');
+      } catch(err) {
+        tbody.innerHTML = '<tr><td colspan="7" class="vazio">Erro ao carregar dados. Verifique a conexão.</td></tr>';
+      }
+    }
+  </script>
+</body>
+</html>
