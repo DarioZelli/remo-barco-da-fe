@@ -581,12 +581,14 @@
     }
 
     function aprovarCandidatura() {
-      document.getElementById('detStatus').value = 'aprovado';
-      if (calcularNotaFinal() < 7) {
-        msg('msgCandidaturaDetalhes', 'A nota final está abaixo de 7. Confirme antes de salvar.', true);
-      } else {
-        salvarCandidaturaAdmin();
+      const nota = Number(calcularNotaFinal().toFixed(2));
+      if (nota < 7) {
+        msg('msgCandidaturaDetalhes', 'A nota final precisa ser 7.0 ou mais para aprovar ou matricular.', true);
+        return;
       }
+      const moduloMatriculado = document.getElementById('detModuloMatriculado').value;
+      document.getElementById('detStatus').value = moduloMatriculado ? 'matriculado' : 'aprovado';
+      salvarCandidaturaAdmin();
     }
 
     function reprovarCandidatura() {
