@@ -1,31 +1,24 @@
-const { getStore } = require('@netlify/blobs');
-
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'remo-admin-2025';
-
-function abrirStore(nome) {
-  const siteID = process.env.BLOBS_SITE_ID;
-  const token = process.env.BLOBS_TOKEN;
-  if (siteID && token) {
-    return getStore({ name: nome, siteID, token });
-  }
-  return getStore(nome);
-}
+const { abrirStore, json, requireAdmin } = require('./_lib/admin-auth');
 
 exports.handler = async function(event) {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ erro: 'Method Not Allowed' }) };
+  if (event.httpMethod === 'OPTIONS') {
+    return json(200, { ok: true });
   }
 
-  const token = event.headers['x-admin-token'];
-  if (token !== ADMIN_TOKEN) {
-    return { statusCode: 401, body: JSON.stringify({ erro: 'Não autorizado' }) };
+  if (event.httpMethod !== 'POST') {
+    return json(405, { erro: 'Method Not Allowed' });
+  }
+
+  const auth = await requireAdmin(event);
+  if (!auth.autorizado) {
+    return auth.response;
   }
 
   try {
     const dados = JSON.parse(event.body || '{}');
     const id = dados.id;
     if (!id) {
-      return { statusCode: 400, body: JSON.stringify({ erro: 'ID da candidatura é obrigatório' }) };
+      return json(400, { erro: 'ID da candidatura é obrigatório' });
     }
 
     const store = abrirStore('candidaturas-bf');
@@ -34,7 +27,7 @@ exports.handler = async function(event) {
       registroExistente = await store.get(id, { type: 'json' });
     } catch (err) {
       console.error('Candidatura não encontrada:', err);
-      return { statusCode: 404, body: JSON.stringify({ erro: 'Candidatura não encontrada' }) };
+      return json(404, { erro: 'Candidatura não encontrada' });
     }
 
     const atualizacao = {
@@ -54,13 +47,9 @@ exports.handler = async function(event) {
 
     await store.setJSON(id, atualizacao);
 
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ sucesso: true, registro: atualizacao })
-    };
+    return json(200, { sucesso: true, registro: atualizacao });
   } catch (err) {
     console.error('Erro ao atualizar candidatura:', err);
-    return { statusCode: 500, body: JSON.stringify({ erro: 'Erro interno', detalhe: err.message }) };
+    return json(500, { erro: 'Erro interno', detalhe: err.message });
   }
 };

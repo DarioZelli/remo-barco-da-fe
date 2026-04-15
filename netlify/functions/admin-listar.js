@@ -1,20 +1,17 @@
-const { getStore } = require('@netlify/blobs');
-
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'remo-admin-2025';
-
-function abrirStore(nome) {
-  const siteID = process.env.BLOBS_SITE_ID;
-  const token  = process.env.BLOBS_TOKEN;
-  if (siteID && token) {
-    return getStore({ name: nome, siteID, token });
-  }
-  return getStore(nome);
-}
+const { abrirStore, json, requireAdmin } = require('./_lib/admin-auth');
 
 exports.handler = async function(event) {
-  const token = event.headers['x-admin-token'];
-  if (token !== ADMIN_TOKEN) {
-    return { statusCode: 401, body: JSON.stringify({ erro: 'Não autorizado' }) };
+  if (event.httpMethod === 'OPTIONS') {
+    return json(200, { ok: true });
+  }
+
+  if (event.httpMethod !== 'GET') {
+    return json(405, { erro: 'Method Not Allowed' });
+  }
+
+  const auth = await requireAdmin(event);
+  if (!auth.autorizado) {
+    return auth.response;
   }
 
   const colecao = event.queryStringParameters?.colecao || 'pedidos-oracao';
@@ -39,13 +36,9 @@ exports.handler = async function(event) {
       .filter(Boolean)
       .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
 
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ total: resultado.length, registros: resultado })
-    };
+    return json(200, { total: resultado.length, registros: resultado });
   } catch (err) {
     console.error('Erro ao listar:', err);
-    return { statusCode: 500, body: JSON.stringify({ erro: 'Erro interno', detalhe: err.message }) };
+    return json(500, { erro: 'Erro interno', detalhe: err.message });
   }
 };

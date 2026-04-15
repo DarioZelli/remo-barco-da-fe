@@ -418,24 +418,54 @@
   </div>
 
   <script>
-    const ADMIN_TOKEN = 'remo-admin-2025';
-    // Credenciais locais — em produção mover para variável de ambiente
-    const CREDENCIAIS = { usuario: 'admin', senha: 'remo@2025' };
+    const ADMIN_STORAGE_KEY = 'remo_admin_token';
+    let ADMIN_TOKEN = localStorage.getItem(ADMIN_STORAGE_KEY) || '';
 
-    function fazerLogin() {
+    async function fazerLogin() {
       const u = document.getElementById('loginUser').value.trim();
       const s = document.getElementById('loginPass').value;
-      if (u === CREDENCIAIS.usuario && s === CREDENCIAIS.senha) {
+      const erroEl = document.getElementById('loginErro');
+      erroEl.style.display = 'none';
+
+      try {
+        const res = await fetch('/.netlify/functions/auth-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario: u, senha: s })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.token) {
+          throw new Error(data.erro || 'Falha no login');
+        }
+
+        ADMIN_TOKEN = data.token;
+        localStorage.setItem(ADMIN_STORAGE_KEY, ADMIN_TOKEN);
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminScreen').style.display = 'block';
         carregarContadores();
-      } else {
-        document.getElementById('loginErro').style.display = 'block';
+      } catch {
+        erroEl.textContent = 'Usuário ou senha incorretos.';
+        erroEl.style.display = 'block';
+      }
+    }
+
+    async function validarSessao() {
+      if (!ADMIN_TOKEN) return false;
+      try {
+        const res = await fetch('/.netlify/functions/auth-validate', {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        if (!res.ok) return false;
+        return true;
+      } catch {
+        return false;
       }
     }
     document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') fazerLogin(); });
 
     function sair() {
+      localStorage.removeItem(ADMIN_STORAGE_KEY);
+      ADMIN_TOKEN = '';
       document.getElementById('adminScreen').style.display = 'none';
       document.getElementById('loginScreen').style.display = 'flex';
       document.getElementById('loginPass').value = '';
@@ -907,6 +937,20 @@
       // Por enquanto apenas um alert - pode ser expandido para modal de edição
       alert(`Editar ${colecao}: ${id}\n\nFuncionalidade em desenvolvimento. Em breve será possível editar usuários diretamente.`);
     }
+
+    (async function initAdminAuth() {
+      const ok = await validarSessao();
+      if (ok) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminScreen').style.display = 'block';
+        carregarContadores();
+      } else {
+        localStorage.removeItem(ADMIN_STORAGE_KEY);
+        ADMIN_TOKEN = '';
+        document.getElementById('adminScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+      }
+    })();
   </script>
 </body>
 </html>
