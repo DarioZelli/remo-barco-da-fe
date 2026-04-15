@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Área do Estudante — REMO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --vinho:    #2C0F0F;
+      --vinho-md: #3D1515;
+      --vinho-lt: #5A2020;
+      --ouro:     #C9952A;
+      --ouro-lt:  #E8B84B;
+      --ouro-pale:#F5D98B;
+      --creme:    #F5ECD7;
+      --creme-lt: #FAF4E8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--vinho);
+      color: var(--creme);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.9rem 3rem;
+      background: rgba(44,15,15,0.93);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,149,42,0.2);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+    .nav-logo img { height: 42px; width: 42px; object-fit: contain; border-radius: 50%; }
+    .nav-logo-text { font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:var(--ouro-lt); line-height:1.2; }
+    .nav-logo-text span { display:block; font-size:0.6rem; font-weight:400; letter-spacing:0.2em; color:var(--ouro-pale); text-transform:uppercase; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a { font-size:0.8rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--creme); text-decoration:none; transition:color 0.2s; position:relative; }
+    .nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; width:0; height:1px; background:var(--ouro); transition:width 0.3s; }
+    .nav-links a:hover { color:var(--ouro-lt); }
+    .nav-links a:hover::after { width:100%; }
+    .nav-cta { background:var(--ouro) !important; color:var(--vinho) !important; padding:0.45rem 1.1rem; border-radius:2px; }
+    .nav-cta:hover { background:var(--ouro-lt) !important; }
+    .nav-cta::after { display:none !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 60vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(90,32,32,0.8) 0%, rgba(44,15,15,0.9) 100%);
+    }
+    .hero-content { position:relative; z-index:2; max-width:800px; }
+    .hero-eyebrow { font-size:0.7rem; font-weight:700; letter-spacing:0.35em; text-transform:uppercase; color:var(--ouro); margin-bottom:1rem; }
+    .hero-title { font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; line-height:1.1; color:var(--creme-lt); margin-bottom:0.5rem; }
+    .hero-title em { font-style:normal; color:var(--ouro-lt); }
+    .hero-desc { font-size:1rem; font-weight:300; line-height:1.7; color:rgba(245,236,215,0.75); margin-bottom:2rem; }
+
+    /* DASHBOARD */
+    .dashboard { padding:4rem 3rem; background:var(--vinho-md); }
+    .dashboard-grid { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:2rem; }
+    .dashboard-card {
+      background: linear-gradient(135deg, rgba(61,21,21,0.9), rgba(44,15,15,0.95));
+      border: 1px solid rgba(201,149,42,0.2);
+      border-radius: 6px;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .dashboard-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .dashboard-title { font-family:'Cinzel',serif; font-size:1.2rem; font-weight:700; color:var(--creme-lt); margin-bottom:0.5rem; }
+    .dashboard-desc { font-size:0.9rem; font-weight:300; line-height:1.6; color:rgba(245,236,215,0.7); }
+
+    /* MÓDULOS */
+    .modulos { padding:4rem 3rem; background:linear-gradient(180deg,var(--vinho-md) 0%,var(--vinho) 100%); }
+    .modulos-grid { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(350px,1fr)); gap:2rem; }
+    .modulo-card {
+      background: linear-gradient(135deg, rgba(61,21,21,0.8), rgba(44,15,15,0.9));
+      border: 1px solid rgba(201,149,42,0.15);
+      border-radius: 6px;
+      padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .modulo-card:hover { border-color: rgba(201,149,42,0.4); transform: translateY(-2px); }
+    .modulo-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
+    .modulo-icon { font-size:2rem; }
+    .modulo-info h3 { font-family:'Cinzel',serif; font-size:1.1rem; font-weight:700; color:var(--creme-lt); margin-bottom:0.3rem; }
+    .modulo-info .status { font-size:0.75rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--ouro); }
+    .modulo-desc { font-size:0.9rem; font-weight:300; line-height:1.6; color:rgba(245,236,215,0.7); margin-bottom:1.5rem; }
+    .modulo-aulas { list-style:none; }
+    .modulo-aulas li { padding:0.8rem 0; border-bottom:1px solid rgba(201,149,42,0.1); }
+    .modulo-aulas li:last-child { border-bottom:none; }
+    .modulo-aulas a { display:flex; align-items:center; gap:0.8rem; color:var(--creme); text-decoration:none; transition:color 0.2s; }
+    .modulo-aulas a:hover { color:var(--ouro-lt); }
+    .modulo-aulas .aula-icon { font-size:1.2rem; }
+    .modulo-aulas .aula-info { flex:1; }
+    .modulo-aulas .aula-titulo { font-size:0.9rem; font-weight:600; margin-bottom:0.2rem; }
+    .modulo-aulas .aula-meta { font-size:0.75rem; color:rgba(245,236,215,0.5); }
+
+    /* PROGRESSO */
+    .progresso { padding:4rem 3rem; background:var(--vinho); }
+    .progresso-inner { max-width:800px; margin:0 auto; text-align:center; }
+    .progresso-title { font-family:'Cinzel',serif; font-size:1.8rem; font-weight:700; color:var(--creme-lt); margin-bottom:2rem; }
+    .progress-bar { width:100%; height:20px; background:rgba(201,149,42,0.2); border-radius:10px; overflow:hidden; margin-bottom:1rem; }
+    .progress-fill { height:100%; background:linear-gradient(to right, var(--ouro), var(--ouro-lt)); border-radius:10px; width:35%; transition:width 1s ease; }
+    .progress-text { font-size:0.9rem; color:var(--ouro-pale); }
+
+    /* FOOTER */
+    footer { background:#1A0808; border-top:1px solid rgba(201,149,42,0.14); padding:3rem 3rem 2rem; text-align:center; }
+    footer p { font-size:0.8rem; color:rgba(245,236,215,0.4); }
+
+    /* RESPONSIVO */
+    @media(max-width:768px){
+      nav { padding:0.9rem 1.5rem; }
+      .nav-links { display:none; }
+      .hero, .dashboard, .modulos, .progresso { padding-left:1.5rem; padding-right:1.5rem; }
+      .dashboard-grid, .modulos-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="logo-remo.png" alt="Logo REMO" />
+      <div class="nav-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Início</a></li>
+      <li><a href="aulas-gravadas.html">Aulas</a></li>
+      <li><a href="status-inscricao.html">Status</a></li>
+      <li><a href="index.html" class="nav-cta">Sair</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Área do Estudante</p>
+      <h1 class="hero-title">Bem-vindo à <em>Escola Barco da Fé</em></h1>
+      <p class="hero-desc">Aqui você encontra todas as aulas, materiais e recursos para sua formação em intercessão. Continue sua jornada espiritual conosco.</p>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="dashboard">
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <div class="dashboard-icon">📚</div>
+        <h3 class="dashboard-title">Aulas Disponíveis</h3>
+        <p class="dashboard-desc">Acesse todas as aulas gravadas do seu módulo atual e anteriores.</p>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-icon">📊</div>
+        <h3 class="dashboard-title">Meu Progresso</h3>
+        <p class="dashboard-desc">Acompanhe seu avanço nos estudos e conquistas alcançadas.</p>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-icon">📝</div>
+        <h3 class="dashboard-title">Materiais</h3>
+        <p class="dashboard-desc">Baixe PDFs, guias e recursos complementares das aulas.</p>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-icon">🙏</div>
+        <h3 class="dashboard-title">Comunidade</h3>
+        <p class="dashboard-desc">Conecte-se com outros estudantes e intercessores.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÓDULOS -->
+  <section class="modulos">
+    <div class="modulos-grid">
+      <!-- MÓDULO N1 -->
+      <div class="modulo-card">
+        <div class="modulo-header">
+          <div class="modulo-icon">⚓</div>
+          <div class="modulo-info">
+            <h3>N1 — Fundamentação</h3>
+            <div class="status">Concluído</div>
+          </div>
+        </div>
+        <p class="modulo-desc">Bases espirituais da intercessão, fundamentos bíblicos e princípios essenciais.</p>
+        <ul class="modulo-aulas">
+          <li><a href="aulas-gravadas.html#aula1">
+            <div class="aula-icon">▶️</div>
+            <div class="aula-info">
+              <div class="aula-titulo">Oração: Comunicação com Deus</div>
+              <div class="aula-meta">Prof. João Silva • 45 min</div>
+            </div>
+          </a></li>
+          <li><a href="aulas-gravadas.html#aula2">
+            <div class="aula-icon">▶️</div>
+            <div class="aula-info">
+              <div class="aula-titulo">Intercessão Bíblica</div>
+              <div class="aula-meta">Prof. Maria Santos • 52 min</div>
+            </div>
+          </a></li>
+          <li><a href="aulas-gravadas.html#aula3">
+            <div class="aula-icon">📄</div>
+            <div class="aula-info">
+              <div class="aula-titulo">Guia de Estudos N1</div>
+              <div class="aula-meta">Material PDF • 12 páginas</div>
+            </div>
+          </a></li>
+        </ul>
+      </div>
+
+      <!-- MÓDULO N2 -->
+      <div class="modulo-card">
+        <div class="modulo-header">
+          <div class="modulo-icon">🌊</div>
+          <div class="modulo-info">
+            <h3>N2 — Aprofundamento</h3>
+            <div class="status">Em andamento</div>
+          </div>
+        </div>
+        <p class="modulo-desc">Técnicas avançadas de oração, jejum espiritual e guerra espiritual.</p>
+        <ul class="modulo-aulas">
+          <li><a href="aulas-gravadas.html#aula4">
+            <div class="aula-icon">▶️</div>
+            <div class="aula-info">
+              <div class="aula-titulo">Jejum e Oração</div>
+              <div class="aula-meta">Prof. Pedro Costa • 38 min</div>
+            </div>
+          </a></li>
+          <li><a href="aulas-gravadas.html#aula5">
+            <div class="aula-icon">▶️</div>
+            <div class="aula-info">
+              <div class="aula-titulo">Guerra Espiritual</div>
+              <div class="aula-meta">Prof. Ana Oliveira • 61 min</div>
+            </div>
+          </a></li>
+          <li><a href="aulas-gravadas.html#aula6">
+            <div class="aula-icon">📄</div>
+            <div class="aula-info">
+              <div class="aula-titulo">Manual de Guerra Espiritual</div>
+              <div class="aula-meta">Material PDF • 24 páginas</div>
+            </div>
+          </a></li>
+        </ul>
+      </div>
+
+      <!-- MÓDULO N3 -->
+      <div class="modulo-card">
+        <div class="modulo-header">
+          <div class="modulo-icon">🧭</div>
+          <div class="modulo-info">
+            <h3>N3 — Prática</h3>
+            <div class="status">Bloqueado</div>
+          </div>
+        </div>
+        <p class="modulo-desc">Aplicação prática dos ensinamentos, ministério de intercessão e liderança.</p>
+        <ul class="modulo-aulas">
+          <li>
+            <div class="aula-icon">🔒</div>
+            <div class="aula-info">
+              <div class="aula-titulo">Conteúdo bloqueado</div>
+              <div class="aula-meta">Complete N2 para desbloquear</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRESSO -->
+  <section class="progresso">
+    <div class="progresso-inner">
+      <h2 class="progresso-title">Seu Progresso na Formação</h2>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <p class="progress-text">35% concluído • 7 de 20 aulas assistidas</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 REMO — Rede Mundial de Orações · <a href="index.html" style="color:var(--ouro);">Voltar ao início</a></p>
+  </footer>
+
+</body>
+</html>
