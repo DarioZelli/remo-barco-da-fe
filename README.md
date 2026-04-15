@@ -68,11 +68,6 @@ Use este comando para validar se a estrutura está correta antes de subir:
 ```bash
 bash scripts/verificar-estrutura.sh
 ```
-diff --git a/README.md b/README.md
-index 33b9cd8d68358e531d74c578c32133846a8977bd..58b7155129db2ea69df9a261d8d5db9d96c91b4f 100644
---- a/README.md
-+++ b/README.md
-@@ -1,22 +1,65 @@
  # remo-barco-da-fe
  
  Sistema de gestão e formação de intercessores do projeto Barco da Fé — REMO (Rede Mundial de Orações).
