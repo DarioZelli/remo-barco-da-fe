@@ -31,6 +31,7 @@ exports.handler = async function(event) {
         id: aluno.id,
         nome: aluno.nome,
         email: aluno.email,
+        professorId: aluno.professorId || '',
         moduloAtual,
         progresso: Number(aluno.progresso || 0),
         status: aluno.status || 'ativo',

@@ -112,6 +112,41 @@
     .progress-fill { height:100%; background:linear-gradient(to right, var(--ouro), var(--ouro-lt)); border-radius:10px; width:35%; transition:width 1s ease; }
     .progress-text { font-size:0.9rem; color:var(--ouro-pale); }
 
+    /* AGENDAMENTOS */
+    .agendamentos { padding:4rem 3rem; background:var(--vinho-md); }
+    .agenda-wrap { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1.2fr; gap:1rem; }
+    .agenda-card {
+      background: linear-gradient(135deg, rgba(61,21,21,0.9), rgba(44,15,15,0.95));
+      border: 1px solid rgba(201,149,42,0.18);
+      border-radius: 6px;
+      padding: 1.1rem;
+    }
+    .agenda-title { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--creme-lt); margin-bottom:0.9rem; }
+    .agenda-form { display:grid; gap:0.8rem; }
+    .agenda-form label { font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ouro); }
+    .agenda-form input, .agenda-form textarea {
+      width:100%; background:rgba(44,15,15,0.7); border:1px solid rgba(201,149,42,0.25);
+      border-radius:3px; padding:0.7rem 0.8rem; color:var(--creme);
+    }
+    .agenda-form textarea { min-height:80px; resize:vertical; }
+    .agenda-actions { display:flex; gap:0.6rem; align-items:center; }
+    .agenda-btn {
+      border:1px solid rgba(201,149,42,0.35); color:var(--ouro); background:none;
+      padding:0.45rem 0.75rem; border-radius:3px; cursor:pointer; font-size:0.75rem;
+      letter-spacing:0.1em; text-transform:uppercase;
+    }
+    .agenda-btn:hover { background:rgba(201,149,42,0.1); }
+    .agenda-msg { font-size:0.8rem; }
+    .agenda-list { max-height:380px; overflow:auto; border:1px solid rgba(201,149,42,0.15); border-radius:4px; }
+    .agenda-item { padding:0.9rem; border-bottom:1px solid rgba(201,149,42,0.1); }
+    .agenda-item:last-child { border-bottom:none; }
+    .agenda-item h4 { font-size:0.92rem; color:var(--creme-lt); margin-bottom:0.25rem; }
+    .agenda-item p { font-size:0.82rem; color:rgba(245,236,215,0.72); line-height:1.6; }
+    .agenda-meta { font-size:0.74rem; color:var(--ouro); margin-top:0.45rem; }
+    .agenda-links a { color:var(--ouro-lt); text-decoration:none; }
+    .agenda-status { margin-top:0.5rem; display:flex; gap:0.4rem; }
+    .agenda-small { font-size:0.68rem; padding:0.3rem 0.55rem; }
+
     /* FOOTER */
     footer { background:#1A0808; border-top:1px solid rgba(201,149,42,0.14); padding:3rem 3rem 2rem; text-align:center; }
     footer p { font-size:0.8rem; color:rgba(245,236,215,0.4); }
@@ -122,6 +157,8 @@
       .nav-links { display:none; }
       .hero, .dashboard, .modulos, .progresso { padding-left:1.5rem; padding-right:1.5rem; }
       .dashboard-grid, .modulos-grid { grid-template-columns:1fr; }
+      .agendamentos { padding-left:1.5rem; padding-right:1.5rem; }
+      .agenda-wrap { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -282,12 +319,46 @@
     </div>
   </section>
 
+  <section class="agendamentos">
+    <div class="agenda-wrap">
+      <div class="agenda-card">
+        <div class="agenda-title">Solicitar Conversa Online</div>
+        <div class="agenda-form">
+          <div>
+            <label for="agendaDataHoraAluno">Data e Hora</label>
+            <input id="agendaDataHoraAluno" type="datetime-local" />
+          </div>
+          <div>
+            <label for="agendaAssuntoAluno">Assunto</label>
+            <input id="agendaAssuntoAluno" type="text" placeholder="Dúvidas da atividade" />
+          </div>
+          <div>
+            <label for="agendaObsAluno">Observações</label>
+            <textarea id="agendaObsAluno"></textarea>
+          </div>
+          <div class="agenda-actions">
+            <button class="agenda-btn" onclick="solicitarAgendamentoAluno()">Solicitar</button>
+            <span class="agenda-msg" id="agendaMsgAluno"></span>
+          </div>
+        </div>
+      </div>
+      <div class="agenda-card">
+        <div class="agenda-title">Agenda de Conversas</div>
+        <div class="agenda-list" id="agendaListaAluno">
+          <div class="agenda-item"><p>Carregando agendamentos...</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer>
     <p>© 2025 REMO — Rede Mundial de Orações · <a href="index.html" style="color:var(--ouro);">Voltar ao início</a></p>
   </footer>
 
   <script>
+    let __alunoCtx = { email: '', id: '', professorId: '' };
+
     function getAlunoEmail() {
       const fromQuery = new URLSearchParams(window.location.search).get('email');
       if (fromQuery) return fromQuery.toLowerCase();
@@ -300,14 +371,114 @@
       if (el) el.textContent = text;
     }
 
+    function fmt(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function tagStatus(s) {
+      const map = {
+        solicitado: 'Solicitado',
+        agendado: 'Agendado',
+        confirmado: 'Confirmado',
+        cancelado: 'Cancelado',
+        concluido: 'Concluído'
+      };
+      return map[s] || s || '—';
+    }
+
+    async function carregarAgendamentosAluno() {
+      if (!__alunoCtx.email) return;
+      const lista = document.getElementById('agendaListaAluno');
+      lista.innerHTML = '<div class="agenda-item"><p>Carregando agendamentos...</p></div>';
+      try {
+        const res = await fetch('/.netlify/functions/agendamentos-listar?alunoEmail=' + encodeURIComponent(__alunoCtx.email));
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const itens = Array.isArray(data.agendamentos) ? data.agendamentos : [];
+        if (!itens.length) {
+          lista.innerHTML = '<div class="agenda-item"><p>Nenhuma conversa agendada.</p></div>';
+          return;
+        }
+        lista.innerHTML = itens.map((a) => `
+          <div class="agenda-item">
+            <h4>${(a.assunto || 'Conversa online').replace(/</g,'&lt;')}</h4>
+            <p>Professor: ${(a.professorNome || '—').replace(/</g,'&lt;')}</p>
+            <p class="agenda-meta">${fmt(a.dataHora)} • ${tagStatus(a.status)}</p>
+            <p class="agenda-links">${a.linkSala ? `<a href="${a.linkSala}" target="_blank" rel="noopener">Entrar na sala</a>` : 'Link da sala ainda não informado'}</p>
+            <div class="agenda-status">
+              <button class="agenda-btn agenda-small" onclick='atualizarStatusAgendamentoAluno(${JSON.stringify(a.id)},"confirmado")'>Confirmar</button>
+              <button class="agenda-btn agenda-small" onclick='atualizarStatusAgendamentoAluno(${JSON.stringify(a.id)},"cancelado")'>Cancelar</button>
+            </div>
+          </div>
+        `).join('');
+      } catch {
+        lista.innerHTML = '<div class="agenda-item"><p>Erro ao carregar agenda.</p></div>';
+      }
+    }
+
+    async function solicitarAgendamentoAluno() {
+      setText('agendaMsgAluno', '');
+      const dataHora = document.getElementById('agendaDataHoraAluno').value;
+      if (!dataHora) {
+        setText('agendaMsgAluno', 'Informe data e hora.');
+        return;
+      }
+      if (!__alunoCtx.professorId) {
+        setText('agendaMsgAluno', 'Este aluno ainda não tem professor vinculado.');
+        return;
+      }
+      const payload = {
+        alunoEmail: __alunoCtx.email,
+        professorId: __alunoCtx.professorId,
+        dataHora,
+        assunto: document.getElementById('agendaAssuntoAluno').value,
+        observacoes: document.getElementById('agendaObsAluno').value,
+        status: 'solicitado'
+      };
+      try {
+        const res = await fetch('/.netlify/functions/agendamentos-salvar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao solicitar');
+        setText('agendaMsgAluno', 'Solicitação enviada com sucesso.');
+        document.getElementById('agendaDataHoraAluno').value = '';
+        document.getElementById('agendaAssuntoAluno').value = '';
+        document.getElementById('agendaObsAluno').value = '';
+        carregarAgendamentosAluno();
+      } catch (err) {
+        setText('agendaMsgAluno', err.message || 'Erro ao solicitar agendamento.');
+      }
+    }
+
+    async function atualizarStatusAgendamentoAluno(id, status) {
+      try {
+        await fetch('/.netlify/functions/agendamentos-atualizar-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, status })
+        });
+        carregarAgendamentosAluno();
+      } catch {
+        // ignora
+      }
+    }
+
     async function carregarDashboardAluno() {
       const email = getAlunoEmail();
       if (!email) return;
+      __alunoCtx.email = email;
       try {
         const res = await fetch('/.netlify/functions/aluno-dashboard?email=' + encodeURIComponent(email));
         if (!res.ok) return;
         const data = await res.json();
         const aluno = data.aluno || {};
+        __alunoCtx.id = aluno.id || '';
+        __alunoCtx.professorId = aluno.professorId || '';
         const resumo = data.resumo || {};
 
         setText('heroAlunoDesc', `Aluno: ${aluno.nome || '—'} • Módulo atual: ${aluno.moduloAtual || '—'}`);
@@ -337,6 +508,8 @@
       } catch {
         // Mantém fallback estático.
       }
+
+      await carregarAgendamentosAluno();
     }
 
     async function carregarAulasModulo() {
