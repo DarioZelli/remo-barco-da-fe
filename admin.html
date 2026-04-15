@@ -71,6 +71,8 @@
     .tag-pendente{background:rgba(201,149,42,0.2);color:var(--ouro-lt)}
     .tag-ativo{background:rgba(60,120,60,0.25);color:#a0e0a0}
     .tag-aprovado{background:rgba(60,100,180,0.25);color:#a0c0f0}
+    .tag-matriculado{background:rgba(80,180,120,0.2);color:#c8f7c4}
+    .tag-reprovado{background:rgba(180,60,60,0.2);color:#f1a0a0}
     .tag-inativo{background:rgba(140,140,140,0.2);color:#cfcfcf}
     .loading{text-align:center;padding:3rem;color:rgba(245,236,215,0.4);font-size:0.9rem}
     .vazio{text-align:center;padding:3rem;color:rgba(245,236,215,0.35);font-size:0.9rem;font-style:italic}
@@ -179,9 +181,36 @@
           </div>
           <div class="tabela-wrap">
             <table>
-              <thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade/UF</th><th>Experiência</th><th>Status</th></tr></thead>
-              <tbody id="tabelaCandidaturas"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+              <thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade/UF</th><th>Experiência</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaCandidaturas"><tr><td colspan="8" class="loading">Carregando...</td></tr></tbody>
             </table>
+          </div>
+          <div class="tabela-wrap" id="detalhesCandidaturaPanel" style="margin-top:1.5rem;display:none;padding:1.2rem;background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.15);border-radius:6px;">
+            <div class="form-grid">
+              <input type="hidden" id="detCandidaturaId" />
+              <div class="form-group"><label>Nome</label><input id="detNomeCompleto" type="text" readonly /></div>
+              <div class="form-group"><label>E-mail</label><input id="detEmail" type="email" readonly /></div>
+              <div class="form-group"><label>Telefone</label><input id="detTelefone" type="text" readonly /></div>
+              <div class="form-group"><label>Cidade / UF</label><input id="detLocalizacao" type="text" readonly /></div>
+              <div class="form-group"><label>Módulo desejado</label><input id="detModuloDesejado" type="text" readonly /></div>
+              <div class="form-group"><label>Experiência em oração</label><input id="detExperienciaOracao" type="text" readonly /></div>
+              <div class="form-group"><label>Disponibilidade</label><input id="detDisponibilidade" type="text" readonly /></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Motivação</label><textarea id="detMotivacao" readonly></textarea></div>
+              <div class="form-group"><label for="detStatus">Status</label><select id="detStatus"><option value="pendente">Pendente</option><option value="aprovado">Aprovado</option><option value="reprovado">Reprovado</option><option value="matriculado">Matriculado</option></select></div>
+              <div class="form-group"><label for="detModuloMatriculado">Módulo matriculado</label><select id="detModuloMatriculado"><option value="">Nenhum</option><option>N1 — Fundamentação</option><option>N2 — Aprofundamento</option><option>N3 — Prática</option><option>N4 — Liderança</option><option>N5 — Missão</option></select></div>
+              <div class="form-group"><label for="detProfessorResponsavel">Professor responsável</label><input id="detProfessorResponsavel" type="text" /></div>
+              <div class="form-group"><label for="detNotaTeorica">Nota teórica</label><input id="detNotaTeorica" type="number" min="0" max="10" step="0.1" onchange="calcularNotaFinal()" /></div>
+              <div class="form-group"><label for="detNotaPratica">Nota prática</label><input id="detNotaPratica" type="number" min="0" max="10" step="0.1" onchange="calcularNotaFinal()" /></div>
+              <div class="form-group"><label for="detNotaCompromisso">Nota compromisso</label><input id="detNotaCompromisso" type="number" min="0" max="10" step="0.1" onchange="calcularNotaFinal()" /></div>
+              <div class="form-group"><label>Nota final</label><input id="detNotaFinal" type="text" readonly /></div>
+              <div class="form-group" style="grid-column:1/-1"><label for="detObservacoesAdmin">Observações</label><textarea id="detObservacoesAdmin"></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarCandidaturaAdmin()">Salvar atualização</button>
+              <button class="btn-refresh" onclick="aprovarCandidatura()" style="background:var(--ouro-lt);color:var(--vinho)">Aprovar</button>
+              <button class="btn-refresh" onclick="reprovarCandidatura()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Reprovar</button>
+              <span id="msgCandidaturaDetalhes"></span>
+            </div>
           </div>
         </div>
 
@@ -399,8 +428,18 @@
     }
 
     function tag(status) {
-      const cls = status === 'pendente' ? 'tag-pendente' : status === 'aprovado' ? 'tag-aprovado' : status === 'inativo' ? 'tag-inativo' : 'tag-ativo';
-      return '<span class="tag ' + cls + '">' + (status||'—') + '</span>';
+      const cls = status === 'pendente'
+        ? 'tag-pendente'
+        : status === 'aprovado'
+          ? 'tag-aprovado'
+          : status === 'matriculado'
+            ? 'tag-matriculado'
+            : status === 'reprovado'
+              ? 'tag-reprovado'
+              : status === 'inativo'
+                ? 'tag-inativo'
+                : 'tag-ativo';
+      return '<span class="tag ' + cls + '">' + (status || '—') + '</span>';
     }
     function limparMsg(id) {
       const el = document.getElementById(id);
@@ -441,18 +480,22 @@
 
     async function carregarTabela(colecao, tbodyId) {
       const tbody = document.getElementById(tbodyId);
-      tbody.innerHTML = '<tr><td colspan="7" class="loading">Carregando...</td></tr>';
+      const colspan = colecao === 'candidaturas-bf' ? 8 : 7;
+      tbody.innerHTML = `<tr><td colspan="${colspan}" class="loading">Carregando...</td></tr>`;
       try {
         const data = await buscarColecao(colecao);
         if (!data.registros.length) {
-          tbody.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum registro encontrado.</td></tr>';
+          tbody.innerHTML = `<tr><td colspan="${colspan}" class="vazio">Nenhum registro encontrado.</td></tr>`;
           return;
+        }
+        if (colecao === 'candidaturas-bf') {
+          window.__candidaturasCache = data.registros;
         }
         tbody.innerHTML = data.registros.map(r => {
           if (colecao === 'pedidos-oracao') {
             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeSolicitante||'—'}</td><td>${r.telefone||'—'}</td><td>${r.paraQuem||'—'}</td><td>${r.tema||'—'}</td><td>${r.causa||'—'}</td><td>${tag(r.status)}</td></tr>`;
           } else if (colecao === 'candidaturas-bf') {
-            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${(r.cidade||'')+(r.estado?' / '+r.estado:'')}</td><td>${r.experienciaOracao||'—'}</td><td>${tag(r.status)}</td></tr>`;
+            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${(r.cidade||'')+(r.estado?' / '+r.estado:'')}</td><td>${r.experienciaOracao||'—'}</td><td>${tag(r.status)}</td><td><button class="btn-refresh" onclick='abrirCandidatura(${JSON.stringify(r.id)})'>Detalhes</button></td></tr>`;
           } else if (colecao === 'intercessores') {
             const temas = Array.isArray(r.temas) ? r.temas.join(', ') : (r.temas||'—');
             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${r.cidade||'—'}</td><td>${r.experiencia||'—'}</td><td style="max-width:160px;font-size:0.78rem">${temas}</td></tr>`;
@@ -461,8 +504,94 @@
           }
         }).join('');
       } catch(err) {
-        tbody.innerHTML = '<tr><td colspan="7" class="vazio">Erro ao carregar dados. Verifique a conexão.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="${colspan}" class="vazio">Erro ao carregar dados. Verifique a conexão.</td></tr>`;
       }
+    }
+
+    function calcularNotaFinal() {
+      const teorica = Number(document.getElementById('detNotaTeorica').value) || 0;
+      const pratica = Number(document.getElementById('detNotaPratica').value) || 0;
+      const compromisso = Number(document.getElementById('detNotaCompromisso').value) || 0;
+      const notas = [teorica, pratica, compromisso];
+      const media = notas.reduce((sum, value) => sum + value, 0) / notas.length;
+      document.getElementById('detNotaFinal').value = media ? media.toFixed(2) : '—';
+      return media;
+    }
+
+    function abrirCandidatura(id) {
+      const registro = window.__candidaturasCache?.find(item => item.id === id);
+      if (!registro) return;
+      document.getElementById('detCandidaturaId').value = registro.id || '';
+      document.getElementById('detNomeCompleto').value = registro.nomeCompleto || '';
+      document.getElementById('detEmail').value = registro.email || '';
+      document.getElementById('detTelefone').value = registro.telefone || '';
+      document.getElementById('detLocalizacao').value = `${registro.cidade||''}${registro.estado ? ' / ' + registro.estado : ''}`;
+      document.getElementById('detModuloDesejado').value = registro.moduloDesejado || '';
+      document.getElementById('detExperienciaOracao').value = registro.experienciaOracao || '';
+      document.getElementById('detDisponibilidade').value = registro.disponibilidade || '';
+      document.getElementById('detMotivacao').value = registro.motivacao || '';
+      document.getElementById('detStatus').value = registro.status || 'pendente';
+      document.getElementById('detModuloMatriculado').value = registro.moduloMatriculado || '';
+      document.getElementById('detProfessorResponsavel').value = registro.professorResponsavel || '';
+      document.getElementById('detNotaTeorica').value = registro.notaTeorica || '';
+      document.getElementById('detNotaPratica').value = registro.notaPratica || '';
+      document.getElementById('detNotaCompromisso').value = registro.notaCompromisso || '';
+      document.getElementById('detObservacoesAdmin').value = registro.observacoesAdmin || '';
+      calcularNotaFinal();
+      document.getElementById('detalhesCandidaturaPanel').style.display = 'block';
+      document.getElementById('msgCandidaturaDetalhes').textContent = '';
+      window.scrollTo({ top: document.getElementById('detalhesCandidaturaPanel').offsetTop - 80, behavior: 'smooth' });
+    }
+
+    async function salvarCandidaturaAdmin() {
+      limparMsg('msgCandidaturaDetalhes');
+      const id = document.getElementById('detCandidaturaId').value;
+      if (!id) {
+        msg('msgCandidaturaDetalhes', 'Selecione uma candidatura para atualizar.', true);
+        return;
+      }
+      const payload = {
+        id,
+        status: document.getElementById('detStatus').value,
+        moduloMatriculado: document.getElementById('detModuloMatriculado').value,
+        professorResponsavel: document.getElementById('detProfessorResponsavel').value,
+        notaTeorica: Number(document.getElementById('detNotaTeorica').value) || 0,
+        notaPratica: Number(document.getElementById('detNotaPratica').value) || 0,
+        notaCompromisso: Number(document.getElementById('detNotaCompromisso').value) || 0,
+        notaFinal: Number(document.getElementById('detNotaFinal').value) || 0,
+        observacoesAdmin: document.getElementById('detObservacoesAdmin').value,
+        atualizadoEm: new Date().toISOString()
+      };
+      try {
+        const res = await fetch('/.netlify/functions/candidaturas-atualizar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao atualizar');
+        msg('msgCandidaturaDetalhes', 'Candidatura atualizada com sucesso.');
+        await carregarTabela('candidaturas-bf', 'tabelaCandidaturas');
+      } catch (err) {
+        msg('msgCandidaturaDetalhes', err.message || 'Erro ao atualizar candidatura.', true);
+      }
+    }
+
+    function aprovarCandidatura() {
+      document.getElementById('detStatus').value = 'aprovado';
+      if (calcularNotaFinal() < 7) {
+        msg('msgCandidaturaDetalhes', 'A nota final está abaixo de 7. Confirme antes de salvar.', true);
+      } else {
+        salvarCandidaturaAdmin();
+      }
+    }
+
+    function reprovarCandidatura() {
+      document.getElementById('detStatus').value = 'reprovado';
+      salvarCandidaturaAdmin();
     }
 
     async function carregarHomeConfig() {
