@@ -145,7 +145,7 @@
     <div class="hero-content">
       <p class="hero-eyebrow">Área do Estudante</p>
       <h1 class="hero-title">Bem-vindo à <em>Escola Barco da Fé</em></h1>
-      <p class="hero-desc">Aqui você encontra todas as aulas, materiais e recursos para sua formação em intercessão. Continue sua jornada espiritual conosco.</p>
+      <p class="hero-desc" id="heroAlunoDesc">Aqui você encontra todas as aulas, materiais e recursos para sua formação em intercessão. Continue sua jornada espiritual conosco.</p>
     </div>
   </section>
 
@@ -155,22 +155,22 @@
       <div class="dashboard-card">
         <div class="dashboard-icon">📚</div>
         <h3 class="dashboard-title">Aulas Disponíveis</h3>
-        <p class="dashboard-desc">Acesse todas as aulas gravadas do seu módulo atual e anteriores.</p>
+        <p class="dashboard-desc" id="dashAulasDesc">Acesse todas as aulas gravadas do seu módulo atual e anteriores.</p>
       </div>
       <div class="dashboard-card">
         <div class="dashboard-icon">📊</div>
         <h3 class="dashboard-title">Meu Progresso</h3>
-        <p class="dashboard-desc">Acompanhe seu avanço nos estudos e conquistas alcançadas.</p>
+        <p class="dashboard-desc" id="dashProgressoDesc">Acompanhe seu avanço nos estudos e conquistas alcançadas.</p>
       </div>
       <div class="dashboard-card">
         <div class="dashboard-icon">📝</div>
         <h3 class="dashboard-title">Materiais</h3>
-        <p class="dashboard-desc">Baixe PDFs, guias e recursos complementares das aulas.</p>
+        <p class="dashboard-desc" id="dashPendenciasDesc">Baixe PDFs, guias e recursos complementares das aulas.</p>
       </div>
       <div class="dashboard-card">
         <div class="dashboard-icon">🙏</div>
         <h3 class="dashboard-title">Comunidade</h3>
-        <p class="dashboard-desc">Conecte-se com outros estudantes e intercessores.</p>
+        <p class="dashboard-desc" id="dashMensagensDesc">Conecte-se com outros estudantes e intercessores.</p>
       </div>
     </div>
   </section>
@@ -184,7 +184,7 @@
           <div class="modulo-icon">⚓</div>
           <div class="modulo-info">
             <h3>N1 — Fundamentação</h3>
-            <div class="status">Concluído</div>
+            <div class="status" id="statusN1">Concluído</div>
           </div>
         </div>
         <p class="modulo-desc">Bases espirituais da intercessão, fundamentos bíblicos e princípios essenciais.</p>
@@ -219,7 +219,7 @@
           <div class="modulo-icon">🌊</div>
           <div class="modulo-info">
             <h3>N2 — Aprofundamento</h3>
-            <div class="status">Em andamento</div>
+            <div class="status" id="statusN2">Em andamento</div>
           </div>
         </div>
         <p class="modulo-desc">Técnicas avançadas de oração, jejum espiritual e guerra espiritual.</p>
@@ -254,7 +254,7 @@
           <div class="modulo-icon">🧭</div>
           <div class="modulo-info">
             <h3>N3 — Prática</h3>
-            <div class="status">Bloqueado</div>
+            <div class="status" id="statusN3">Bloqueado</div>
           </div>
         </div>
         <p class="modulo-desc">Aplicação prática dos ensinamentos, ministério de intercessão e liderança.</p>
@@ -276,9 +276,9 @@
     <div class="progresso-inner">
       <h2 class="progresso-title">Seu Progresso na Formação</h2>
       <div class="progress-bar">
-        <div class="progress-fill"></div>
+        <div class="progress-fill" id="progressFill"></div>
       </div>
-      <p class="progress-text">35% concluído • 7 de 20 aulas assistidas</p>
+      <p class="progress-text" id="progressText">35% concluído • 7 de 20 aulas assistidas</p>
     </div>
   </section>
 
@@ -286,6 +286,88 @@
   <footer>
     <p>© 2025 REMO — Rede Mundial de Orações · <a href="index.html" style="color:var(--ouro);">Voltar ao início</a></p>
   </footer>
+
+  <script>
+    function getAlunoEmail() {
+      const fromQuery = new URLSearchParams(window.location.search).get('email');
+      if (fromQuery) return fromQuery.toLowerCase();
+      const fromStorage = localStorage.getItem('remo_aluno_email');
+      return (fromStorage || '').toLowerCase();
+    }
+
+    function setText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    async function carregarDashboardAluno() {
+      const email = getAlunoEmail();
+      if (!email) return;
+      try {
+        const res = await fetch('/.netlify/functions/aluno-dashboard?email=' + encodeURIComponent(email));
+        if (!res.ok) return;
+        const data = await res.json();
+        const aluno = data.aluno || {};
+        const resumo = data.resumo || {};
+
+        setText('heroAlunoDesc', `Aluno: ${aluno.nome || '—'} • Módulo atual: ${aluno.moduloAtual || '—'}`);
+        setText('dashAulasDesc', `${resumo.aulasDisponiveis || 0} aulas disponíveis no módulo atual.`);
+        setText('dashProgressoDesc', `Progresso atual: ${aluno.progresso || 0}%. Status: ${aluno.status || '—'}.`);
+        setText('dashPendenciasDesc', `${resumo.atividadesPendentes || 0} atividades pendentes.`);
+        setText('dashMensagensDesc', `${resumo.mensagensNaoLidas || 0} mensagens não lidas.`);
+
+        const p = Number(aluno.progresso || 0);
+        const fill = document.getElementById('progressFill');
+        if (fill) fill.style.width = `${Math.max(0, Math.min(100, p))}%`;
+        setText('progressText', `${p}% concluído • Certificado: ${resumo.certificadoStatus || 'pendente'}`);
+
+        if ((aluno.moduloAtual || '').includes('N1')) {
+          setText('statusN1', 'Em andamento');
+          setText('statusN2', 'Bloqueado');
+          setText('statusN3', 'Bloqueado');
+        } else if ((aluno.moduloAtual || '').includes('N2')) {
+          setText('statusN1', 'Concluído');
+          setText('statusN2', 'Em andamento');
+          setText('statusN3', 'Bloqueado');
+        } else {
+          setText('statusN1', 'Concluído');
+          setText('statusN2', 'Concluído');
+          setText('statusN3', 'Em andamento');
+        }
+      } catch {
+        // Mantém fallback estático.
+      }
+    }
+
+    async function carregarAulasModulo() {
+      const email = getAlunoEmail();
+      if (!email) return;
+      try {
+        const res = await fetch('/.netlify/functions/aluno-aulas-listar?email=' + encodeURIComponent(email));
+        if (!res.ok) return;
+        const data = await res.json();
+        const aulas = Array.isArray(data.aulas) ? data.aulas.slice(0, 3) : [];
+        if (!aulas.length) return;
+
+        const lista = document.querySelector('.modulo-card .modulo-aulas');
+        if (!lista) return;
+        lista.innerHTML = aulas.map((a) => `
+          <li><a href="${a.linkVideo || 'aulas-gravadas.html'}" target="_blank" rel="noopener">
+            <div class="aula-icon">▶️</div>
+            <div class="aula-info">
+              <div class="aula-titulo">${(a.titulo || 'Aula').replace(/</g, '&lt;')}</div>
+              <div class="aula-meta">${(a.professor || 'Professor').replace(/</g, '&lt;')}</div>
+            </div>
+          </a></li>
+        `).join('');
+      } catch {
+        // Mantém fallback estático.
+      }
+    }
+
+    carregarDashboardAluno();
+    carregarAulasModulo();
+  </script>
 
 </body>
 </html>

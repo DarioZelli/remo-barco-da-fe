@@ -140,6 +140,9 @@
         <div class="sidebar-link" onclick="mostrarPagina('homeConfig',this);carregarHomeConfig()">🏠 Configuração da Home</div>
         <div class="sidebar-link" onclick="mostrarPagina('homeCards',this);carregarHomeCards()">🧩 Cards da Home</div>
         <div class="sidebar-link" onclick="mostrarPagina('aulasGravadas',this);carregarAulasGravadas()">🎬 Aulas Gravadas</div>
+        <div class="sidebar-link" onclick="mostrarPagina('atividades',this);carregarAtividades()">📝 Atividades</div>
+        <div class="sidebar-link" onclick="mostrarPagina('alertas',this);carregarAlertas()">🚨 Alertas</div>
+        <div class="sidebar-link" onclick="mostrarPagina('relatorios',this);carregarRelatorioAdmin()">📈 Relatórios</div>
 
         <div class="sidebar-section">Usuários</div>
         <div class="sidebar-link" onclick="mostrarPagina('professores',this);carregarTabela('professores','tabelaProfessores')">👨‍🏫 Professores <span class="badge" id="badgeProfessores">…</span></div>
@@ -384,11 +387,93 @@
           </div>
         </div>
 
+        <!-- ATIVIDADES -->
+        <div class="admin-page" id="pageAtividades">
+          <div class="tabela-header">
+            <div class="tabela-title">📝 Atividades</div>
+            <button class="btn-refresh" onclick="carregarAtividades()">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <input type="hidden" id="atividadeId" />
+            <div class="form-grid">
+              <div class="form-group"><label for="atividadeTitulo">Título</label><input id="atividadeTitulo" type="text" /></div>
+              <div class="form-group"><label for="atividadeModuloId">Módulo</label><input id="atividadeModuloId" type="text" placeholder="N1 — Fundamentação" /></div>
+              <div class="form-group"><label for="atividadeAulaId">ID da Aula</label><input id="atividadeAulaId" type="text" /></div>
+              <div class="form-group"><label for="atividadePrazo">Prazo</label><input id="atividadePrazo" type="datetime-local" /></div>
+              <div class="form-group" style="grid-column:1/-1"><label for="atividadeEnunciado">Enunciado</label><textarea id="atividadeEnunciado"></textarea></div>
+              <div class="form-group"><label for="atividadeTipo">Tipo</label><select id="atividadeTipo"><option value="texto">Texto</option><option value="arquivo">Arquivo</option></select></div>
+              <div class="form-group"><label for="atividadeNotaMaxima">Nota máxima</label><input id="atividadeNotaMaxima" type="number" min="1" max="100" value="10" /></div>
+              <div class="form-group"><label for="atividadeObrigatoria">Obrigatória</label><select id="atividadeObrigatoria"><option value="true">Sim</option><option value="false">Não</option></select></div>
+              <div class="form-group"><label for="atividadePublicada">Publicada</label><select id="atividadePublicada"><option value="true">Sim</option><option value="false">Não</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarAtividade()">Salvar atividade</button>
+              <button class="btn-refresh" onclick="limparFormAtividade()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Nova atividade</button>
+              <span id="msgAtividades"></span>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Título</th><th>Módulo</th><th>Prazo</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaAtividades"><tr><td colspan="5" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ALERTAS -->
+        <div class="admin-page" id="pageAlertas">
+          <div class="tabela-header">
+            <div class="tabela-title">🚨 Alertas</div>
+            <div style="display:flex;gap:0.6rem;">
+              <button class="btn-refresh" onclick="processarAlertas()">Gerar alertas</button>
+              <button class="btn-refresh" onclick="carregarAlertas()">↻ Atualizar</button>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Data</th><th>Tipo</th><th>Nível</th><th>Descrição</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaAlertas"><tr><td colspan="6" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RELATÓRIOS -->
+        <div class="admin-page" id="pageRelatorios">
+          <div class="tabela-header">
+            <div class="tabela-title">📈 Relatório Administrativo</div>
+            <button class="btn-refresh" onclick="carregarRelatorioAdmin()">↻ Atualizar</button>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card"><span class="num" id="repAlunos">—</span><span class="lbl">Alunos</span></div>
+            <div class="stat-card"><span class="num" id="repProfessores">—</span><span class="lbl">Professores</span></div>
+            <div class="stat-card"><span class="num" id="repMatriculas">—</span><span class="lbl">Matrículas Ativas</span></div>
+            <div class="stat-card"><span class="num" id="repPendencias">—</span><span class="lbl">Correções Pendentes</span></div>
+            <div class="stat-card"><span class="num" id="repCertificados">—</span><span class="lbl">Certificados Emitidos</span></div>
+            <div class="stat-card"><span class="num" id="repAlertas">—</span><span class="lbl">Alertas Abertos</span></div>
+          </div>
+        </div>
+
         <!-- PROFESSORES -->
         <div class="admin-page" id="pageProfessores">
           <div class="tabela-header">
             <div class="tabela-title">👨‍🏫 Professores</div>
             <button class="btn-refresh" onclick="carregarTabela('professores','tabelaProfessores')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <input type="hidden" id="professorId" />
+            <div class="form-grid">
+              <div class="form-group"><label for="profNome">Nome</label><input id="profNome" type="text" /></div>
+              <div class="form-group"><label for="profEmail">E-mail</label><input id="profEmail" type="email" /></div>
+              <div class="form-group"><label for="profTelefone">Telefone</label><input id="profTelefone" type="text" /></div>
+              <div class="form-group"><label for="profEspecialidade">Especialidade</label><input id="profEspecialidade" type="text" /></div>
+              <div class="form-group"><label for="profLimite">Limite de alunos</label><input id="profLimite" type="number" min="0" value="0" /></div>
+              <div class="form-group"><label for="profStatus">Status</label><select id="profStatus"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarProfessor()">Salvar professor</button>
+              <button class="btn-refresh" onclick="limparFormProfessor()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Novo professor</button>
+              <span id="msgProfessores"></span>
+            </div>
           </div>
           <div class="tabela-wrap">
             <table>
@@ -403,6 +488,24 @@
           <div class="tabela-header">
             <div class="tabela-title">🎓 Alunos Matriculados</div>
             <button class="btn-refresh" onclick="carregarTabela('alunos','tabelaAlunos')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <input type="hidden" id="alunoId" />
+            <div class="form-grid">
+              <div class="form-group"><label for="alunoNome">Nome</label><input id="alunoNome" type="text" /></div>
+              <div class="form-group"><label for="alunoEmail">E-mail</label><input id="alunoEmail" type="email" /></div>
+              <div class="form-group"><label for="alunoTelefone">Telefone</label><input id="alunoTelefone" type="text" /></div>
+              <div class="form-group"><label for="alunoTurma">Turma</label><input id="alunoTurma" type="text" /></div>
+              <div class="form-group"><label for="alunoModuloAtual">Módulo atual</label><input id="alunoModuloAtual" type="text" value="N1 — Fundamentação" /></div>
+              <div class="form-group"><label for="alunoProgresso">Progresso (%)</label><input id="alunoProgresso" type="number" min="0" max="100" value="0" /></div>
+              <div class="form-group"><label for="alunoProfessorId">Professor (ID)</label><input id="alunoProfessorId" type="text" /></div>
+              <div class="form-group"><label for="alunoStatus">Status</label><select id="alunoStatus"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarAluno()">Salvar aluno</button>
+              <button class="btn-refresh" onclick="limparFormAluno()" style="border-color:rgba(245,236,215,0.3);color:var(--creme)">Novo aluno</button>
+              <span id="msgAlunos"></span>
+            </div>
           </div>
           <div class="tabela-wrap">
             <table>
@@ -588,6 +691,10 @@
           tbody.innerHTML = `<tr><td colspan="${colspan}" class="vazio">Nenhum registro encontrado.</td></tr>`;
           return;
         }
+        if (colecao === 'professores' || colecao === 'alunos') {
+          window.__usuariosCache = window.__usuariosCache || {};
+          window.__usuariosCache[colecao] = data.registros;
+        }
         if (colecao === 'candidaturas-bf') {
           window.__candidaturasCache = data.registros;
         }
@@ -600,9 +707,9 @@
             const temas = Array.isArray(r.temas) ? r.temas.join(', ') : (r.temas||'—');
             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${r.cidade||'—'}</td><td>${r.experiencia||'—'}</td><td style="max-width:160px;font-size:0.78rem">${temas}</td></tr>`;
           } else if (colecao === 'professores') {
-            return `<tr><td>${r.nome||'—'}</td><td>${r.email||'—'}</td><td>${r.turmas ? r.turmas.join(', ') : '—'}</td><td>${tag(r.status || 'ativo')}</td><td>${fmt(r.createdAt)}</td><td><button class="btn-refresh" onclick='editarUsuario("${colecao}", "${r.id}")'>Editar</button></td></tr>`;
+            return `<tr><td>${r.nome||'—'}</td><td>${r.email||'—'}</td><td>${r.turmas ? r.turmas.join(', ') : (r.especialidade || '—')}</td><td>${tag(r.status || 'ativo')}</td><td>${fmt(r.createdAt)}</td><td><button class="btn-refresh" onclick='editarUsuario("${colecao}", "${r.id}")'>Carregar</button></td></tr>`;
           } else if (colecao === 'alunos') {
-            return `<tr><td>${r.nome||'—'}</td><td>${r.email||'—'}</td><td>${r.turma||'—'}</td><td>${r.progresso ? r.progresso + '%' : '—'}</td><td>${tag(r.status || 'ativo')}</td><td>${fmt(r.createdAt)}</td><td><button class="btn-refresh" onclick='editarUsuario("${colecao}", "${r.id}")'>Editar</button></td></tr>`;
+            return `<tr><td>${r.nome||'—'}</td><td>${r.email||'—'}</td><td>${r.turma||'—'}</td><td>${(r.progresso ?? 0) + '%'}</td><td>${tag(r.status || 'ativo')}</td><td>${fmt(r.createdAt)}</td><td><button class="btn-refresh" onclick='editarUsuario("${colecao}", "${r.id}")'>Carregar</button></td></tr>`;
           } else {
             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.anonimo?'Anônimo':r.nome||'—'}</td><td>${r.anonimo?'—':r.telefone||'—'}</td><td style="font-family:'Cinzel',serif;color:var(--ouro-lt)">${r.horario||'—'}</td><td>${r.duracaoIntercessao||'—'}</td><td>${r.duracaoCompromisso||'—'}</td><td>${r.anonimo?'✓':'—'}</td></tr>`;
           }
@@ -677,8 +784,56 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.erro || 'Falha ao atualizar');
+
+        if (payload.status === 'matriculado') {
+          const alunoPayload = {
+            colecao: 'alunos',
+            nome: document.getElementById('detNomeCompleto').value,
+            email: document.getElementById('detEmail').value,
+            telefone: document.getElementById('detTelefone').value,
+            moduloAtual: payload.moduloMatriculado || document.getElementById('detModuloDesejado').value || 'N1 — Fundamentação',
+            professorId: payload.professorResponsavel || '',
+            progresso: 0,
+            status: 'ativo'
+          };
+
+          const alunoRes = await fetch('/.netlify/functions/usuarios-salvar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-token': ADMIN_TOKEN
+            },
+            body: JSON.stringify(alunoPayload)
+          });
+
+          if (alunoRes.ok) {
+            const alunoData = await alunoRes.json();
+            const alunoId = alunoData?.registro?.id;
+            if (alunoId && payload.moduloMatriculado && payload.professorResponsavel) {
+              await fetch('/.netlify/functions/bf-matricula-criar', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'x-admin-token': ADMIN_TOKEN
+                },
+                body: JSON.stringify({
+                  alunoId,
+                  moduloId: payload.moduloMatriculado,
+                  professorId: payload.professorResponsavel,
+                  status: 'ativa',
+                  notaTeorica: payload.notaTeorica,
+                  notaPratica: payload.notaPratica,
+                  notaCompromisso: payload.notaCompromisso,
+                  notaFinal: payload.notaFinal
+                })
+              });
+            }
+          }
+        }
+
         msg('msgCandidaturaDetalhes', 'Candidatura atualizada com sucesso.');
         await carregarTabela('candidaturas-bf', 'tabelaCandidaturas');
+        await carregarContadores();
       } catch (err) {
         msg('msgCandidaturaDetalhes', err.message || 'Erro ao atualizar candidatura.', true);
       }
@@ -933,9 +1088,264 @@
       }
     }
 
+    async function salvarProfessor() {
+      limparMsg('msgProfessores');
+      const payload = {
+        colecao: 'professores',
+        id: document.getElementById('professorId').value,
+        nome: document.getElementById('profNome').value,
+        email: document.getElementById('profEmail').value,
+        telefone: document.getElementById('profTelefone').value,
+        especialidade: document.getElementById('profEspecialidade').value,
+        limiteAlunos: Number(document.getElementById('profLimite').value) || 0,
+        status: document.getElementById('profStatus').value
+      };
+      try {
+        const res = await fetch('/.netlify/functions/usuarios-salvar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar professor');
+        msg('msgProfessores', 'Professor salvo com sucesso.');
+        await carregarTabela('professores', 'tabelaProfessores');
+        limparFormProfessor();
+        carregarContadores();
+      } catch (err) {
+        msg('msgProfessores', err.message || 'Erro ao salvar professor.', true);
+      }
+    }
+
+    function limparFormProfessor() {
+      document.getElementById('professorId').value = '';
+      document.getElementById('profNome').value = '';
+      document.getElementById('profEmail').value = '';
+      document.getElementById('profTelefone').value = '';
+      document.getElementById('profEspecialidade').value = '';
+      document.getElementById('profLimite').value = '0';
+      document.getElementById('profStatus').value = 'ativo';
+    }
+
+    async function salvarAluno() {
+      limparMsg('msgAlunos');
+      const payload = {
+        colecao: 'alunos',
+        id: document.getElementById('alunoId').value,
+        nome: document.getElementById('alunoNome').value,
+        email: document.getElementById('alunoEmail').value,
+        telefone: document.getElementById('alunoTelefone').value,
+        turma: document.getElementById('alunoTurma').value,
+        moduloAtual: document.getElementById('alunoModuloAtual').value,
+        progresso: Number(document.getElementById('alunoProgresso').value) || 0,
+        professorId: document.getElementById('alunoProfessorId').value,
+        status: document.getElementById('alunoStatus').value
+      };
+      try {
+        const res = await fetch('/.netlify/functions/usuarios-salvar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar aluno');
+        msg('msgAlunos', 'Aluno salvo com sucesso.');
+        await carregarTabela('alunos', 'tabelaAlunos');
+        limparFormAluno();
+        carregarContadores();
+      } catch (err) {
+        msg('msgAlunos', err.message || 'Erro ao salvar aluno.', true);
+      }
+    }
+
+    function limparFormAluno() {
+      document.getElementById('alunoId').value = '';
+      document.getElementById('alunoNome').value = '';
+      document.getElementById('alunoEmail').value = '';
+      document.getElementById('alunoTelefone').value = '';
+      document.getElementById('alunoTurma').value = '';
+      document.getElementById('alunoModuloAtual').value = 'N1 — Fundamentação';
+      document.getElementById('alunoProgresso').value = '0';
+      document.getElementById('alunoProfessorId').value = '';
+      document.getElementById('alunoStatus').value = 'ativo';
+    }
+
     function editarUsuario(colecao, id) {
-      // Por enquanto apenas um alert - pode ser expandido para modal de edição
-      alert(`Editar ${colecao}: ${id}\n\nFuncionalidade em desenvolvimento. Em breve será possível editar usuários diretamente.`);
+      const item = window.__usuariosCache?.[colecao]?.find((u) => u.id === id);
+      if (!item) return;
+
+      if (colecao === 'professores') {
+        document.getElementById('professorId').value = item.id || '';
+        document.getElementById('profNome').value = item.nome || '';
+        document.getElementById('profEmail').value = item.email || '';
+        document.getElementById('profTelefone').value = item.telefone || '';
+        document.getElementById('profEspecialidade').value = item.especialidade || '';
+        document.getElementById('profLimite').value = Number(item.limiteAlunos || 0);
+        document.getElementById('profStatus').value = item.status || 'ativo';
+        msg('msgProfessores', 'Professor carregado para edição.');
+      }
+
+      if (colecao === 'alunos') {
+        document.getElementById('alunoId').value = item.id || '';
+        document.getElementById('alunoNome').value = item.nome || '';
+        document.getElementById('alunoEmail').value = item.email || '';
+        document.getElementById('alunoTelefone').value = item.telefone || '';
+        document.getElementById('alunoTurma').value = item.turma || '';
+        document.getElementById('alunoModuloAtual').value = item.moduloAtual || 'N1 — Fundamentação';
+        document.getElementById('alunoProgresso').value = Number(item.progresso || 0);
+        document.getElementById('alunoProfessorId').value = item.professorId || '';
+        document.getElementById('alunoStatus').value = item.status || 'ativo';
+        msg('msgAlunos', 'Aluno carregado para edição.');
+      }
+    }
+
+    function limparFormAtividade() {
+      document.getElementById('atividadeId').value = '';
+      document.getElementById('atividadeTitulo').value = '';
+      document.getElementById('atividadeModuloId').value = '';
+      document.getElementById('atividadeAulaId').value = '';
+      document.getElementById('atividadePrazo').value = '';
+      document.getElementById('atividadeEnunciado').value = '';
+      document.getElementById('atividadeTipo').value = 'texto';
+      document.getElementById('atividadeNotaMaxima').value = '10';
+      document.getElementById('atividadeObrigatoria').value = 'true';
+      document.getElementById('atividadePublicada').value = 'true';
+    }
+
+    async function salvarAtividade() {
+      limparMsg('msgAtividades');
+      const payload = {
+        id: document.getElementById('atividadeId').value,
+        titulo: document.getElementById('atividadeTitulo').value,
+        moduloId: document.getElementById('atividadeModuloId').value,
+        aulaId: document.getElementById('atividadeAulaId').value,
+        prazo: document.getElementById('atividadePrazo').value || null,
+        enunciado: document.getElementById('atividadeEnunciado').value,
+        tipo: document.getElementById('atividadeTipo').value,
+        notaMaxima: Number(document.getElementById('atividadeNotaMaxima').value) || 10,
+        obrigatoria: document.getElementById('atividadeObrigatoria').value === 'true',
+        publicada: document.getElementById('atividadePublicada').value === 'true'
+      };
+      try {
+        const res = await fetch('/.netlify/functions/bf-atividades-salvar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar atividade');
+        msg('msgAtividades', 'Atividade salva com sucesso.');
+        await carregarAtividades();
+        limparFormAtividade();
+      } catch (err) {
+        msg('msgAtividades', err.message || 'Erro ao salvar atividade.', true);
+      }
+    }
+
+    function editarAtividade(id) {
+      const item = window.__atividadesCache?.find((a) => a.id === id);
+      if (!item) return;
+      document.getElementById('atividadeId').value = item.id || '';
+      document.getElementById('atividadeTitulo').value = item.titulo || '';
+      document.getElementById('atividadeModuloId').value = item.moduloId || '';
+      document.getElementById('atividadeAulaId').value = item.aulaId || '';
+      document.getElementById('atividadePrazo').value = item.prazo ? String(item.prazo).slice(0, 16) : '';
+      document.getElementById('atividadeEnunciado').value = item.enunciado || '';
+      document.getElementById('atividadeTipo').value = item.tipo || 'texto';
+      document.getElementById('atividadeNotaMaxima').value = Number(item.notaMaxima || 10);
+      document.getElementById('atividadeObrigatoria').value = String(item.obrigatoria !== false);
+      document.getElementById('atividadePublicada').value = String(item.publicada !== false);
+      msg('msgAtividades', 'Atividade carregada para edição.');
+    }
+
+    async function carregarAtividades() {
+      const tbody = document.getElementById('tabelaAtividades');
+      tbody.innerHTML = '<tr><td colspan="5" class="loading">Carregando...</td></tr>';
+      try {
+        const res = await fetch('/.netlify/functions/bf-atividades-listar?incluirOcultas=true', {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao carregar atividades');
+        const atividades = Array.isArray(data.atividades) ? data.atividades : [];
+        window.__atividadesCache = atividades;
+        if (!atividades.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="vazio">Nenhuma atividade cadastrada.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = atividades.map((a) => `<tr>
+          <td>${escapeHtml(a.titulo)}</td>
+          <td>${escapeHtml(a.moduloId || '—')}</td>
+          <td>${a.prazo ? fmt(a.prazo) : '—'}</td>
+          <td>${tag(a.publicada === false ? 'inativo' : 'ativo')}</td>
+          <td><button class="btn-refresh" onclick='editarAtividade(${JSON.stringify(a.id)})'>Editar</button></td>
+        </tr>`).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="5" class="vazio">Erro ao carregar atividades.</td></tr>';
+      }
+    }
+
+    async function processarAlertas() {
+      const res = await fetch('/.netlify/functions/alertas-verificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN }
+      });
+      if (res.ok) carregarAlertas();
+    }
+
+    async function resolverAlerta(id) {
+      await fetch('/.netlify/functions/alertas-resolver', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN },
+        body: JSON.stringify({ id })
+      });
+      carregarAlertas();
+    }
+
+    async function carregarAlertas() {
+      const tbody = document.getElementById('tabelaAlertas');
+      tbody.innerHTML = '<tr><td colspan="6" class="loading">Carregando...</td></tr>';
+      try {
+        const res = await fetch('/.netlify/functions/alertas-listar', {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao carregar alertas');
+        const alertas = Array.isArray(data.alertas) ? data.alertas : [];
+        if (!alertas.length) {
+          tbody.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum alerta no momento.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = alertas.map((a) => `<tr>
+          <td>${fmt(a.dataGeracao)}</td>
+          <td>${escapeHtml(a.tipo || '—')}</td>
+          <td>${escapeHtml(a.nivel || '—')}</td>
+          <td>${escapeHtml(a.descricao || '—')}</td>
+          <td>${a.resolvido ? tag('inativo') : tag('pendente')}</td>
+          <td>${a.resolvido ? '—' : `<button class="btn-refresh" onclick='resolverAlerta(${JSON.stringify(a.id)})'>Resolver</button>`}</td>
+        </tr>`).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar alertas.</td></tr>';
+      }
+    }
+
+    async function carregarRelatorioAdmin() {
+      try {
+        const res = await fetch('/.netlify/functions/bf-relatorio-admin', {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao carregar relatório');
+        const r = data.resumo || {};
+        document.getElementById('repAlunos').textContent = r.alunos ?? 0;
+        document.getElementById('repProfessores').textContent = r.professores ?? 0;
+        document.getElementById('repMatriculas').textContent = r.matriculasAtivas ?? 0;
+        document.getElementById('repPendencias').textContent = r.correcoesPendentes ?? 0;
+        document.getElementById('repCertificados').textContent = r.certificadosEmitidos ?? 0;
+        document.getElementById('repAlertas').textContent = r.alertasAbertos ?? 0;
+      } catch {
+        document.getElementById('repAlunos').textContent = '?';
+      }
     }
 
     (async function initAdminAuth() {

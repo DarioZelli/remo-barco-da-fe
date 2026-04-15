@@ -132,7 +132,7 @@
     <div class="hero-content">
       <p class="hero-eyebrow">Área do Professor</p>
       <h1 class="hero-title">Bem-vindo, <em>Professor</em></h1>
-      <p class="hero-desc">Gerencie suas turmas, publique aulas e acompanhe o progresso dos seus alunos na Escola Barco da Fé.</p>
+      <p class="hero-desc" id="heroProfessorDesc">Gerencie suas turmas, publique aulas e acompanhe o progresso dos seus alunos na Escola Barco da Fé.</p>
     </div>
   </section>
 
@@ -142,22 +142,22 @@
       <div class="dashboard-card">
         <div class="dashboard-icon">📚</div>
         <h3 class="dashboard-title">Minhas Turmas</h3>
-        <p class="dashboard-desc">Gerencie alunos matriculados e progresso das turmas.</p>
+        <p class="dashboard-desc" id="dashProfTurmas">Gerencie alunos matriculados e progresso das turmas.</p>
       </div>
       <div class="dashboard-card">
         <div class="dashboard-icon">🎬</div>
         <h3 class="dashboard-title">Publicar Aulas</h3>
-        <p class="dashboard-desc">Suba novas aulas e materiais para os alunos.</p>
+        <p class="dashboard-desc" id="dashProfPendencias">Suba novas aulas e materiais para os alunos.</p>
       </div>
       <div class="dashboard-card">
         <div class="dashboard-icon">📝</div>
         <h3 class="dashboard-title">Atividades</h3>
-        <p class="dashboard-desc">Crie tarefas e avalie entregas dos alunos.</p>
+        <p class="dashboard-desc" id="dashProfMensagens">Crie tarefas e avalie entregas dos alunos.</p>
       </div>
       <div class="dashboard-card">
         <div class="dashboard-icon">📊</div>
         <h3 class="dashboard-title">Relatórios</h3>
-        <p class="dashboard-desc">Acompanhe desempenho e progresso dos alunos.</p>
+        <p class="dashboard-desc" id="dashProfMedia">Acompanhe desempenho e progresso dos alunos.</p>
       </div>
     </div>
   </section>
@@ -171,21 +171,21 @@
           <div class="turma-icon">⚓</div>
           <div class="turma-info">
             <h3>Turma N1 — Fundamentação</h3>
-            <div class="status">Ativa</div>
+            <div class="status" id="statusTurma1">Ativa</div>
           </div>
         </div>
         <p class="turma-desc">Turma de fundamentos espirituais da intercessão.</p>
         <div class="turma-stats">
           <div class="stat">
-            <span class="stat-num">24</span>
+            <span class="stat-num" id="turma1Alunos">24</span>
             <span class="stat-label">Alunos</span>
           </div>
           <div class="stat">
-            <span class="stat-num">85%</span>
+            <span class="stat-num" id="turma1Progresso">85%</span>
             <span class="stat-label">Progresso</span>
           </div>
           <div class="stat">
-            <span class="stat-num">3</span>
+            <span class="stat-num" id="turma1Pendencias">3</span>
             <span class="stat-label">Atividades</span>
           </div>
         </div>
@@ -249,6 +249,65 @@
   <footer>
     <p>© 2025 REMO — Rede Mundial de Orações · <a href="index.html" style="color:var(--ouro);">Voltar ao início</a></p>
   </footer>
+
+  <script>
+    function getProfessorEmail() {
+      const fromQuery = new URLSearchParams(window.location.search).get('email');
+      if (fromQuery) return fromQuery.toLowerCase();
+      const fromStorage = localStorage.getItem('remo_professor_email');
+      return (fromStorage || '').toLowerCase();
+    }
+
+    function setText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+
+    async function carregarProfessor() {
+      const email = getProfessorEmail();
+      if (!email) return;
+
+      try {
+        const [dashRes, alunosRes, relRes] = await Promise.all([
+          fetch('/.netlify/functions/professor-dashboard?email=' + encodeURIComponent(email)),
+          fetch('/.netlify/functions/professor-alunos-listar?email=' + encodeURIComponent(email)),
+          fetch('/.netlify/functions/bf-relatorio-professor?email=' + encodeURIComponent(email))
+        ]);
+
+        if (dashRes.ok) {
+          const dash = await dashRes.json();
+          const p = dash.professor || {};
+          const r = dash.resumo || {};
+          setText('heroProfessorDesc', `Professor: ${p.nome || '—'} • Especialidade: ${p.especialidade || '—'}`);
+          setText('dashProfTurmas', `${r.alunosAtivos || 0} alunos ativos vinculados.`);
+          setText('dashProfPendencias', `${r.atividadesParaCorrigir || 0} atividades para corrigir.`);
+          setText('dashProfMensagens', `${r.mensagensPendentes || 0} mensagens pendentes.`);
+          setText('turma1Alunos', String(r.alunosAtivos || 0));
+          setText('turma1Pendencias', String(r.atividadesParaCorrigir || 0));
+          setText('statusTurma1', r.alunosAtivos > 0 ? 'Ativa' : 'Sem alunos');
+        }
+
+        if (alunosRes.ok) {
+          const data = await alunosRes.json();
+          const alunos = Array.isArray(data.alunos) ? data.alunos : [];
+          const mediaProgresso = alunos.length
+            ? Math.round(alunos.reduce((s, a) => s + Number(a.progresso || 0), 0) / alunos.length)
+            : 0;
+          setText('turma1Progresso', `${mediaProgresso}%`);
+        }
+
+        if (relRes.ok) {
+          const rel = await relRes.json();
+          const media = rel?.resumo?.mediaNotas ?? 0;
+          setText('dashProfMedia', `Média das correções: ${media}.`);
+        }
+      } catch {
+        // Mantém fallback estático.
+      }
+    }
+
+    carregarProfessor();
+  </script>
 
 </body>
 </html>
