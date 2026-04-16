@@ -27,7 +27,7 @@ exports.handler = async function(event) {
       return json(400, { erro: 'Tipo inválido. Use: ' + TIPOS_VALIDOS.join(', ') });
     }
 
-    const id = 'reuniao_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    const id = 'reuniao_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 
     const registro = {
       id,

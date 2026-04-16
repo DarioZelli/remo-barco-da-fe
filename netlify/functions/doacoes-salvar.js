@@ -41,7 +41,7 @@ exports.handler = async function(event) {
       };
     }
 
-    const id = 'doacao_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    const id = 'doacao_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 
     const registro = {
       id,
