@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Agenda — REMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--vinho);color:var(--creme);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 3rem;background:rgba(44,15,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,0.2)}
+.nav-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+.nav-logo img{height:40px;width:40px;object-fit:contain;border-radius:50%}
+.nav-logo-text{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--ouro-lt);line-height:1.2}
+.nav-logo-text span{display:block;font-size:0.58rem;font-weight:400;letter-spacing:0.2em;color:var(--ouro-pale);text-transform:uppercase}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--creme);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ouro-lt)}
+.nav-cta{background:var(--ouro)!important;color:var(--vinho)!important;padding:0.4rem 1rem;border-radius:2px}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:0}
+.hamburger span{display:block;width:24px;height:2px;background:var(--ouro-lt);border-radius:2px;transition:all 0.3s}
+@media(max-width:768px){.nav-links{display:none;position:fixed;top:61px;left:0;right:0;background:rgba(44,15,15,0.98);flex-direction:column;padding:1.5rem;gap:1rem}.nav-links.open{display:flex}.hamburger{display:flex}nav{padding:0.9rem 1.2rem}}
+
+.page-hero{padding:7rem 2rem 3rem;text-align:center;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 0%,rgba(90,32,32,0.5) 0%,transparent 70%)}
+.page-hero-content{position:relative;z-index:1}
+.page-badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:var(--ouro);color:var(--vinho);padding:0.2rem 0.7rem;border-radius:2px;margin-bottom:0.8rem}
+.page-title{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3.2rem);font-weight:900;color:var(--creme-lt);margin-bottom:1rem;line-height:1.1}
+.page-title em{font-style:normal;color:var(--ouro-lt)}
+.page-desc{font-size:1rem;font-weight:300;line-height:1.8;color:rgba(245,236,215,0.72);max-width:600px;margin:0 auto}
+.page-divider{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:1.5rem auto 0}
+
+.content-section{padding:3rem 2rem}
+.section-inner{max-width:900px;margin:0 auto}
+.section-title{font-family:'Cinzel',serif;font-size:clamp(1.3rem,2.5vw,1.8rem);font-weight:700;color:var(--ouro-lt);margin-bottom:1.8rem}
+.section-divider{height:1px;background:rgba(201,149,42,0.12);margin:3rem 0}
+
+.reuniao-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:6px;padding:1.8rem;margin-bottom:1.2rem;position:relative;overflow:hidden;transition:border-color 0.3s}
+.reuniao-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+.reuniao-card:hover{border-color:rgba(201,149,42,0.4)}
+.reuniao-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:0.8rem;flex-wrap:wrap}
+.reuniao-tipo{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:rgba(201,149,42,0.15);color:var(--ouro);padding:0.2rem 0.55rem;border-radius:2px}
+.reuniao-titulo{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--creme-lt);margin-bottom:0.4rem}
+.reuniao-data{font-size:0.82rem;color:var(--ouro-pale);margin-bottom:0.5rem}
+.reuniao-pauta{font-size:0.88rem;font-weight:300;color:rgba(245,236,215,0.72);line-height:1.65;margin-bottom:0.8rem}
+.reuniao-link{font-size:0.78rem;font-weight:700;color:var(--ouro-lt);text-decoration:none;margin-right:1rem}
+.reuniao-link:hover{color:var(--ouro-pale)}
+.btn-presenca{background:transparent;color:var(--ouro-lt);font-family:'Lato',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;border:1px solid rgba(201,149,42,0.35);padding:0.35rem 0.9rem;border-radius:2px;cursor:pointer;transition:border-color 0.2s,color 0.2s}
+.btn-presenca:hover{border-color:var(--ouro);color:var(--ouro-pale)}
+
+.convo-card{background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.15);border-radius:5px;padding:1.5rem;margin-bottom:1rem;transition:border-color 0.2s}
+.convo-card:hover{border-color:rgba(201,149,42,0.35)}
+.convo-titulo{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--creme-lt);margin-bottom:0.4rem}
+.convo-msg{font-size:0.88rem;font-weight:300;color:rgba(245,236,215,0.75);line-height:1.65;margin-bottom:0.5rem}
+.convo-meta{font-size:0.72rem;color:rgba(245,236,215,0.4)}
+
+.empty-state{text-align:center;padding:3rem;color:rgba(245,236,215,0.4)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,5,5,0.85);z-index:200;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--vinho-md);border:1px solid rgba(201,149,42,0.3);border-radius:6px;padding:2rem;width:100%;max-width:420px;position:relative}
+.modal-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1.2rem}
+.modal-close{position:absolute;top:0.8rem;right:1rem;background:none;border:none;color:rgba(245,236,215,0.5);font-size:1.3rem;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--creme)}
+.modal label{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:0.4rem;margin-top:0.9rem}
+.modal input{width:100%;background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.65rem 0.9rem;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--creme);outline:none}
+.modal input:focus{border-color:var(--ouro)}
+.modal input::placeholder{color:rgba(245,236,215,0.35)}
+.modal-btn{margin-top:1.2rem;width:100%;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:0.75rem;border-radius:3px;cursor:pointer}
+.modal-btn:hover{background:var(--ouro-lt)}
+.modal-msg{margin-top:0.8rem;font-size:0.85rem;text-align:center;color:#a0e0a0}
+
+footer{text-align:center;padding:2.5rem 2rem;border-top:1px solid rgba(201,149,42,0.1);font-size:0.78rem;color:rgba(245,236,215,0.35)}
+footer a{color:rgba(245,236,215,0.35);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/logo-remo.png" alt="REMO"/>
+    <div class="nav-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="/pedir-oracao">Orar</a></li>
+    <li><a href="/pedidos">Pedidos</a></li>
+    <li><a href="/barco-da-fe">Barco da Fé</a></li>
+    <li><a href="/rede">Rede</a></li>
+    <li><a href="/agenda">Agenda</a></li>
+    <li><a href="/painel/login" class="nav-cta">Entrar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-content">
+    <span class="page-badge">📅 Calendário</span>
+    <h1 class="page-title">Agenda de <em>Oração</em></h1>
+    <p class="page-desc">Próximos encontros, reuniões e convocações da Rede de Clamor.</p>
+    <div class="page-divider"></div>
+  </div>
+</div>
+
+<div class="content-section">
+  <div class="section-inner">
+    <h2 class="section-title">📅 Próximos Encontros</h2>
+    <div id="reunioesLista"><div class="empty-state"><p>Carregando reuniões…</p></div></div>
+
+    <div class="section-divider"></div>
+
+    <h2 class="section-title">📣 Convocações Ativas</h2>
+    <div id="convocacoesLista"><div class="empty-state"><p>Carregando convocações…</p></div></div>
+  </div>
+</div>
+
+<!-- Modal confirmação de presença -->
+<div class="modal-overlay" id="modalPresenca">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal()" aria-label="Fechar">×</button>
+    <div class="modal-title">✅ Confirmar Presença</div>
+    <label for="mNome">Seu nome</label>
+    <input type="text" id="mNome" placeholder="Nome completo"/>
+    <label for="mEmail">E-mail</label>
+    <input type="email" id="mEmail" placeholder="seu@email.com"/>
+    <button class="modal-btn" onclick="confirmarPresenca()">Confirmar presença</button>
+    <p class="modal-msg" id="modalMsg" style="display:none"></p>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 REMO — Rede Mundial de Orações &nbsp;·&nbsp; <a href="/">Início</a> &nbsp;·&nbsp; contato@globalremo.com</p>
+</footer>
+
+<script>
+document.getElementById('hamburger').addEventListener('click',()=>{document.getElementById('navLinks').classList.toggle('open')});
+
+function formatarDataHora(ds){
+  if(!ds)return '';
+  try{return new Date(ds).toLocaleString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return ds;}
+}
+
+async function carregarReunioes(){
+  const lista=document.getElementById('reunioesLista');
+  try{
+    const r=await fetch('/.netlify/functions/reunioes-listar');
+    const d=await r.json();
+    const items=d.reunioes||d||[];
+    if(!items.length){lista.innerHTML='<div class="empty-state"><p>Nenhuma reunião agendada no momento.</p></div>';return;}
+    lista.innerHTML=items.map(re=>`
+      <div class="reuniao-card">
+        <div class="reuniao-header">
+          <div>
+            <div class="reuniao-titulo">${re.titulo||re.title||''}</div>
+            <div class="reuniao-data">📅 ${formatarDataHora(re.dataHora||re.data||re.date)}</div>
+          </div>
+          <span class="reuniao-tipo">${re.tipo||re.type||'Reunião'}</span>
+        </div>
+        ${re.pauta?`<p class="reuniao-pauta">${(re.pauta||'').substring(0,200)}</p>`:''}
+        <div>
+          ${re.linkVideo||re.link?`<a class="reuniao-link" href="${re.linkVideo||re.link}" target="_blank" rel="noopener">🎥 Acessar videoconferência</a>`:''}
+          <button class="btn-presenca" onclick="abrirModal()">✅ Confirmar presença</button>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){lista.innerHTML='<div class="empty-state"><p>Não foi possível carregar as reuniões.</p></div>';}
+}
+
+async function carregarConvocacoes(){
+  const lista=document.getElementById('convocacoesLista');
+  try{
+    const r=await fetch('/.netlify/functions/convocacoes-listar');
+    const d=await r.json();
+    const items=d.convocacoes||d||[];
+    if(!items.length){lista.innerHTML='<div class="empty-state"><p>Nenhuma convocação ativa no momento.</p></div>';return;}
+    lista.innerHTML=items.map(c=>`
+      <div class="convo-card">
+        <div class="convo-titulo">${c.titulo||c.title||''}</div>
+        <p class="convo-msg">${c.mensagem||c.message||''}</p>
+        <p class="convo-meta">${c.publicoAlvo?'Para: '+c.publicoAlvo:''} ${c.prazo||c.dataDisparo?'· Até: '+(c.prazo||c.dataDisparo):''}</p>
+      </div>
+    `).join('');
+  }catch(e){lista.innerHTML='<div class="empty-state"><p>Não foi possível carregar as convocações.</p></div>';}
+}
+
+function abrirModal(){document.getElementById('modalPresenca').classList.add('open');}
+function fecharModal(){document.getElementById('modalPresenca').classList.remove('open');document.getElementById('modalMsg').style.display='none';}
+
+function confirmarPresenca(){
+  const msg=document.getElementById('modalMsg');
+  msg.style.display='block';
+  msg.textContent='✅ Presença registrada! Nos vemos na reunião.';
+}
+
+document.getElementById('modalPresenca').addEventListener('click',function(e){if(e.target===this)fecharModal();});
+
+carregarReunioes();
+carregarConvocacoes();
+</script>
+</body>
+</html>

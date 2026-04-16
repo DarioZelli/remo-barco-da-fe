@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Entrar — Painel REMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--vinho);color:var(--creme);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative}
+body::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(90,32,32,0.5) 0%,transparent 70%)}
+
+.login-card{position:relative;z-index:1;width:100%;max-width:400px;background:linear-gradient(135deg,rgba(61,21,21,0.95),rgba(44,15,15,0.98));border:1px solid rgba(201,149,42,0.25);border-radius:8px;padding:2.5rem;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+
+.login-logo{display:flex;flex-direction:column;align-items:center;gap:0.6rem;margin-bottom:2rem}
+.login-logo img{height:56px;width:56px;object-fit:contain;border-radius:50%}
+.login-logo-text{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);text-align:center;line-height:1.2}
+.login-logo-text span{display:block;font-size:0.6rem;font-weight:400;letter-spacing:0.2em;color:var(--ouro-pale);text-transform:uppercase}
+
+.login-title{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:900;color:var(--creme-lt);text-align:center;margin-bottom:0.4rem;line-height:1.15}
+.login-title em{font-style:normal;color:var(--ouro-lt)}
+.login-divider{width:40px;height:1px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:1rem auto 1.8rem}
+
+label{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:0.45rem}
+.form-group{margin-bottom:1.2rem}
+input{width:100%;background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.8rem 1rem;font-family:'Lato',sans-serif;font-size:0.95rem;font-weight:300;color:var(--creme);transition:border-color 0.2s;outline:none}
+input::placeholder{color:rgba(245,236,215,0.35)}
+input:focus{border-color:var(--ouro);box-shadow:0 0 0 3px rgba(201,149,42,0.1)}
+
+.btn-login{width:100%;margin-top:0.8rem;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:0.9rem 2rem;border-radius:3px;cursor:pointer;box-shadow:0 4px 20px rgba(201,149,42,0.3);transition:background 0.2s,transform 0.2s}
+.btn-login:hover{background:var(--ouro-lt);transform:translateY(-1px)}
+.btn-login:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+.msg{padding:0.85rem 1rem;border-radius:3px;font-size:0.88rem;margin-top:1rem;text-align:center;display:none}
+.msg.erro{background:rgba(120,40,40,0.3);border:1px solid rgba(200,80,80,0.35);color:#e0a0a0;display:block}
+
+.login-back{display:block;text-align:center;margin-top:1.5rem;font-size:0.75rem;color:rgba(245,236,215,0.4);text-decoration:none;transition:color 0.2s}
+.login-back:hover{color:rgba(245,236,215,0.7)}
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="login-logo">
+    <img src="/logo-remo.png" alt="REMO"/>
+    <div class="login-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+  </div>
+
+  <h1 class="login-title">Acesse o <em>Painel</em></h1>
+  <div class="login-divider"></div>
+
+  <form id="formLogin" novalidate>
+    <div class="form-group">
+      <label for="lUsuario">Usuário</label>
+      <input type="text" id="lUsuario" name="usuario" placeholder="Seu usuário ou e-mail" autocomplete="username" required/>
+    </div>
+    <div class="form-group">
+      <label for="lSenha">Senha</label>
+      <input type="password" id="lSenha" name="senha" placeholder="Sua senha" autocomplete="current-password" required/>
+    </div>
+    <button type="submit" class="btn-login" id="btnLogin">Entrar</button>
+    <div class="msg erro" id="msgLogin" style="display:none"></div>
+  </form>
+
+  <a href="/" class="login-back">← Voltar ao início</a>
+</div>
+
+<script>
+document.getElementById('formLogin').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=document.getElementById('btnLogin');
+  const msg=document.getElementById('msgLogin');
+  const usuario=document.getElementById('lUsuario').value.trim();
+  const senha=document.getElementById('lSenha').value;
+  if(!usuario||!senha){msg.style.display='block';msg.textContent='Preencha usuário e senha.';return;}
+  btn.disabled=true;btn.textContent='Entrando…';msg.style.display='none';
+  try{
+    const r=await fetch('/.netlify/functions/auth-login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({usuario,senha})
+    });
+    if(r.ok){
+      const d=await r.json();
+      const token=d.token||d.accessToken||d.jwt||'';
+      if(token)localStorage.setItem('remo_admin_token',token);
+      window.location.href='/painel/admin';
+    }else{
+      const err=await r.json().catch(()=>({}));
+      msg.style.display='block';msg.textContent=err.message||'Usuário ou senha inválidos.';
+      btn.disabled=false;btn.textContent='Entrar';
+    }
+  }catch(ex){
+    msg.style.display='block';msg.textContent='Erro de conexão. Verifique sua internet.';
+    btn.disabled=false;btn.textContent='Entrar';
+  }
+});
+</script>
+</body>
+</html>

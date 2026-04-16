@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Coordenação — Painel REMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--vinho);color:var(--creme);min-height:100vh}
+
+.painel-header{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 2rem;background:rgba(44,15,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,0.2)}
+.header-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+.header-logo img{height:36px;width:36px;object-fit:contain;border-radius:50%}
+.header-logo-text{font-family:'Cinzel',serif;font-size:0.88rem;font-weight:700;color:var(--ouro-lt)}
+.header-title{font-family:'Cinzel',serif;font-size:0.82rem;font-weight:600;color:var(--ouro-pale);letter-spacing:0.1em}
+.btn-sair{background:transparent;color:rgba(245,236,215,0.5);font-family:'Lato',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;border:1px solid rgba(245,236,215,0.2);padding:0.35rem 0.9rem;border-radius:2px;cursor:pointer;transition:color 0.2s,border-color 0.2s}
+.btn-sair:hover{color:var(--creme);border-color:rgba(245,236,215,0.5)}
+
+.painel-body{padding:5rem 2rem 3rem;max-width:1100px;margin:0 auto}
+.dash-greeting{margin-bottom:2rem}
+.dash-greeting h1{font-family:'Cinzel',serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:900;color:var(--creme-lt);margin-bottom:0.3rem}
+.dash-greeting h1 em{font-style:normal;color:var(--ouro-lt)}
+.dash-greeting p{font-size:0.9rem;font-weight:300;color:rgba(245,236,215,0.55)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2.5rem}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.stats-grid{grid-template-columns:1fr 1fr}}
+.stat-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:5px;padding:1.4rem;text-align:center}
+.stat-num{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--ouro-lt);display:block}
+.stat-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,236,215,0.5);margin-top:0.3rem}
+
+.acoes-rapidas{margin-bottom:2.5rem}
+.section-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(201,149,42,0.15)}
+.acoes-btns{display:flex;gap:0.8rem;flex-wrap:wrap}
+.btn-acao{background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;border:none;padding:0.6rem 1.3rem;border-radius:3px;cursor:pointer;transition:background 0.2s}
+.btn-acao:hover{background:var(--ouro-lt)}
+.btn-acao.ghost{background:transparent;color:var(--ouro-lt);border:1px solid rgba(201,149,42,0.4)}
+.btn-acao.ghost:hover{border-color:var(--ouro);color:var(--ouro-pale)}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media(max-width:700px){.dash-grid{grid-template-columns:1fr}}
+.dash-card{background:linear-gradient(135deg,rgba(61,21,21,0.85),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.18);border-radius:6px;padding:1.5rem;position:relative;overflow:hidden}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+.item-lista{border-bottom:1px solid rgba(201,149,42,0.08);padding:0.7rem 0;font-size:0.88rem}
+.item-lista:last-child{border-bottom:none}
+.item-titulo{font-weight:400;color:var(--creme-lt);margin-bottom:0.15rem}
+.item-meta{font-size:0.72rem;color:rgba(245,236,215,0.4)}
+.empty-msg{font-size:0.85rem;color:rgba(245,236,215,0.35);text-align:center;padding:1.5rem 0}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,5,5,0.88);z-index:200;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--vinho-md);border:1px solid rgba(201,149,42,0.3);border-radius:6px;padding:2rem;width:100%;max-width:500px;position:relative;margin:auto}
+.modal-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1.2rem}
+.modal-close{position:absolute;top:0.8rem;right:1rem;background:none;border:none;color:rgba(245,236,215,0.5);font-size:1.3rem;cursor:pointer}
+.modal-close:hover{color:var(--creme)}
+.modal label{display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin:0.9rem 0 0.4rem}
+.modal input,.modal textarea,.modal select{width:100%;background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.65rem 0.9rem;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--creme);outline:none}
+.modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--ouro)}
+.modal input::placeholder,.modal textarea::placeholder{color:rgba(245,236,215,0.35)}
+.modal select option{background:#3D1515;color:var(--creme)}
+.modal textarea{resize:vertical;min-height:80px}
+.modal-btn{margin-top:1.2rem;width:100%;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:0.75rem;border-radius:3px;cursor:pointer}
+.modal-btn:hover{background:var(--ouro-lt)}
+.modal-btn:disabled{opacity:0.6;cursor:not-allowed}
+.modal-msg{margin-top:0.8rem;font-size:0.85rem;text-align:center}
+.modal-msg.ok{color:#a0e0a0}
+.modal-msg.err{color:#e0a0a0}
+</style>
+</head>
+<body>
+
+<header class="painel-header">
+  <a href="/" class="header-logo">
+    <img src="/logo-remo.png" alt="REMO"/>
+    <span class="header-logo-text">REMO</span>
+  </a>
+  <span class="header-title">Coordenação Geral</span>
+  <button class="btn-sair" onclick="sair()">Sair</button>
+</header>
+
+<main class="painel-body">
+  <div class="dash-greeting">
+    <h1>Painel de <em>Coordenação</em></h1>
+    <p>Visão geral da rede e ferramentas de gestão.</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><span class="stat-num" id="statConvocacoes">—</span><span class="stat-label">Convocações Ativas</span></div>
+    <div class="stat-card"><span class="stat-num" id="statReunioes">—</span><span class="stat-label">Reuniões Agendadas</span></div>
+    <div class="stat-card"><span class="stat-num" id="statNucleos">—</span><span class="stat-label">Núcleos</span></div>
+    <div class="stat-card"><span class="stat-num" id="statCandidatos">—</span><span class="stat-label">Candidatos BF Pendentes</span></div>
+  </div>
+
+  <div class="acoes-rapidas">
+    <div class="section-title">⚡ Ações Rápidas</div>
+    <div class="acoes-btns">
+      <button class="btn-acao" onclick="abrirModal('reuniao')">📅 Criar Reunião</button>
+      <button class="btn-acao" onclick="abrirModal('convocacao')">📣 Criar Convocação</button>
+      <a href="/barco-da-fe/inscricao" class="btn-acao ghost">👥 Ver Candidatos</a>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="dash-card">
+      <div class="section-title">📣 Metas da Semana</div>
+      <div id="convLista"><div class="empty-msg">Carregando…</div></div>
+    </div>
+    <div class="dash-card">
+      <div class="section-title">📅 Reuniões Agendadas</div>
+      <div id="reunLista"><div class="empty-msg">Carregando…</div></div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal Reunião -->
+<div class="modal-overlay" id="modalReuniao">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal('reuniao')" aria-label="Fechar">×</button>
+    <div class="modal-title">📅 Nova Reunião</div>
+    <form id="formReuniao" novalidate>
+      <label>Título *</label><input type="text" name="titulo" placeholder="Título da reunião" required/>
+      <label>Tipo</label>
+      <select name="tipo">
+        <option value="">Selecione</option>
+        <option>Oração</option><option>Formação</option><option>Líderes</option><option>Geral</option>
+      </select>
+      <label>Data e Hora *</label><input type="datetime-local" name="dataHora" required/>
+      <label>Link de Videoconferência</label><input type="url" name="linkVideo" placeholder="https://meet.google.com/…"/>
+      <label>Pauta</label><textarea name="pauta" placeholder="Resumo da pauta"></textarea>
+      <label>Público-alvo</label><input type="text" name="publicoAlvo" placeholder="Ex.: Líderes, Todos"/>
+      <button type="submit" class="modal-btn" id="btnReuniao">Criar reunião</button>
+      <p class="modal-msg" id="msgReuniao"></p>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Convocação -->
+<div class="modal-overlay" id="modalConvocacao">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal('convocacao')" aria-label="Fechar">×</button>
+    <div class="modal-title">📣 Nova Convocação</div>
+    <form id="formConvocacao" novalidate>
+      <label>Título *</label><input type="text" name="titulo" placeholder="Título da convocação" required/>
+      <label>Tipo</label>
+      <select name="tipo">
+        <option value="">Selecione</option>
+        <option>Meta de Oração</option><option>Alerta</option><option>Campanha</option><option>Informativo</option>
+      </select>
+      <label>Mensagem *</label><textarea name="mensagem" placeholder="Texto da convocação" required></textarea>
+      <label>Público-alvo</label><input type="text" name="publicoAlvo" placeholder="Ex.: Todos, Líderes"/>
+      <label>Canal</label>
+      <select name="canal">
+        <option value="">Selecione</option>
+        <option>WhatsApp</option><option>E-mail</option><option>Plataforma</option><option>Todos</option>
+      </select>
+      <label>Data de Disparo</label><input type="datetime-local" name="dataDisparo"/>
+      <button type="submit" class="modal-btn" id="btnConvocacao">Criar convocação</button>
+      <p class="modal-msg" id="msgConvocacao"></p>
+    </form>
+  </div>
+</div>
+
+<script>
+// Auth guard
+(function(){
+  const token=localStorage.getItem('remo_admin_token');
+  if(!token)window.location.href='/painel/login';
+})();
+
+function sair(){localStorage.removeItem('remo_admin_token');window.location.href='/painel/login';}
+
+function getToken(){return localStorage.getItem('remo_admin_token')||'';}
+
+function formatarData(ds){
+  if(!ds)return '';
+  try{return new Date(ds).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return ds;}
+}
+
+async function carregarDados(){
+  const token=getToken();
+  const headers={'Authorization':'Bearer '+token};
+
+  try{
+    const r=await fetch('/.netlify/functions/convocacoes-listar',{headers});
+    const d=await r.json();
+    const lista=d.convocacoes||d||[];
+    document.getElementById('statConvocacoes').textContent=lista.length;
+    const el=document.getElementById('convLista');
+    if(!lista.length){el.innerHTML='<div class="empty-msg">Nenhuma convocação ativa.</div>';return;}
+    el.innerHTML=lista.slice(0,5).map(c=>`<div class="item-lista"><div class="item-titulo">${c.titulo||''}</div><div class="item-meta">${c.publicoAlvo||''}</div></div>`).join('');
+  }catch(e){document.getElementById('statConvocacoes').textContent='?';}
+
+  try{
+    const r=await fetch('/.netlify/functions/reunioes-listar',{headers});
+    const d=await r.json();
+    const lista=d.reunioes||d||[];
+    document.getElementById('statReunioes').textContent=lista.length;
+    const el=document.getElementById('reunLista');
+    if(!lista.length){el.innerHTML='<div class="empty-msg">Nenhuma reunião agendada.</div>';return;}
+    el.innerHTML=lista.slice(0,5).map(re=>`<div class="item-lista"><div class="item-titulo">${re.titulo||''}</div><div class="item-meta">📅 ${formatarData(re.dataHora||re.data)}</div></div>`).join('');
+  }catch(e){document.getElementById('statReunioes').textContent='?';}
+
+  try{
+    const r=await fetch('/.netlify/functions/grupos-listar',{headers});
+    const d=await r.json();
+    document.getElementById('statNucleos').textContent=(d.grupos||d||[]).length;
+  }catch(e){document.getElementById('statNucleos').textContent='?';}
+
+  document.getElementById('statCandidatos').textContent='—';
+}
+
+function abrirModal(tipo){document.getElementById('modal'+tipo.charAt(0).toUpperCase()+tipo.slice(1)).classList.add('open');}
+function fecharModal(tipo){
+  const el=document.getElementById('modal'+tipo.charAt(0).toUpperCase()+tipo.slice(1));
+  el.classList.remove('open');
+  el.querySelector('form').reset();
+  el.querySelector('.modal-msg').textContent='';
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',function(e){if(e.target===this){const tipo=this.id.replace('modal','').toLowerCase();fecharModal(tipo);}});});
+
+async function enviarFormModal(formId,endpoint,btnId,msgId){
+  const form=document.getElementById(formId);
+  const btn=document.getElementById(btnId);
+  const msg=document.getElementById(msgId);
+  const data={};
+  new FormData(form).forEach((v,k)=>{if(v)data[k]=v;});
+  btn.disabled=true;msg.className='modal-msg';msg.textContent='Enviando…';
+  try{
+    const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify(data)});
+    if(r.ok){msg.className='modal-msg ok';msg.textContent='Criado com sucesso!';form.reset();carregarDados();}
+    else{const err=await r.json().catch(()=>({}));msg.className='modal-msg err';msg.textContent=err.message||'Erro ao criar.';}
+  }catch(ex){msg.className='modal-msg err';msg.textContent='Erro de conexão.';}
+  btn.disabled=false;
+}
+
+document.getElementById('formReuniao').addEventListener('submit',async function(e){
+  e.preventDefault();
+  await enviarFormModal('formReuniao','/.netlify/functions/reunioes-salvar','btnReuniao','msgReuniao');
+});
+
+document.getElementById('formConvocacao').addEventListener('submit',async function(e){
+  e.preventDefault();
+  await enviarFormModal('formConvocacao','/.netlify/functions/convocacoes-salvar','btnConvocacao','msgConvocacao');
+});
+
+carregarDados();
+</script>
+</body>
+</html>

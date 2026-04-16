@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Rede de Clamor — REMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--vinho);color:var(--creme);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 3rem;background:rgba(44,15,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,0.2)}
+.nav-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+.nav-logo img{height:40px;width:40px;object-fit:contain;border-radius:50%}
+.nav-logo-text{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--ouro-lt);line-height:1.2}
+.nav-logo-text span{display:block;font-size:0.58rem;font-weight:400;letter-spacing:0.2em;color:var(--ouro-pale);text-transform:uppercase}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--creme);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ouro-lt)}
+.nav-cta{background:var(--ouro)!important;color:var(--vinho)!important;padding:0.4rem 1rem;border-radius:2px}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:0}
+.hamburger span{display:block;width:24px;height:2px;background:var(--ouro-lt);border-radius:2px;transition:all 0.3s}
+@media(max-width:768px){.nav-links{display:none;position:fixed;top:61px;left:0;right:0;background:rgba(44,15,15,0.98);flex-direction:column;padding:1.5rem;gap:1rem}.nav-links.open{display:flex}.hamburger{display:flex}nav{padding:0.9rem 1.2rem}}
+
+.hero{min-height:75vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 30%,rgba(90,32,32,0.55) 0%,transparent 70%)}
+.hero-content{position:relative;z-index:1;max-width:760px}
+.badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:var(--ouro);color:var(--vinho);padding:0.2rem 0.7rem;border-radius:2px;margin-bottom:1rem}
+.hero-title{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:900;color:var(--creme-lt);line-height:1.05;margin-bottom:1rem}
+.hero-title em{font-style:normal;color:var(--ouro-lt)}
+.hero-desc{font-size:1rem;font-weight:300;line-height:1.85;color:rgba(245,236,215,0.75);max-width:580px;margin:0 auto}
+.page-divider{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:1.5rem auto 0}
+
+section{padding:4rem 2rem}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:var(--ouro);display:block;margin-bottom:0.6rem;text-align:center}
+.section-title{font-family:'Cinzel',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--ouro-lt);margin-bottom:1.8rem;text-align:center}
+.section-title em{font-style:normal;color:var(--ouro-pale)}
+
+.acoes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+@media(max-width:700px){.acoes-grid{grid-template-columns:1fr}}
+.acao-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:6px;padding:2rem;position:relative;overflow:hidden;transition:border-color 0.3s,transform 0.2s;display:flex;flex-direction:column;gap:0.8rem}
+.acao-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+.acao-card:hover{border-color:rgba(201,149,42,0.45);transform:translateY(-3px)}
+.acao-icon{font-size:2.5rem}
+.acao-titulo{font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;color:var(--ouro-lt)}
+.acao-desc{font-size:0.88rem;font-weight:300;color:rgba(245,236,215,0.72);line-height:1.7;flex:1}
+.btn-acao{display:inline-block;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.6rem 1.4rem;border-radius:3px;text-decoration:none;transition:background 0.2s;align-self:flex-start}
+.btn-acao:hover{background:var(--ouro-lt)}
+
+.relogio-section{background:rgba(61,21,21,0.4);text-align:center;padding:4rem 2rem}
+.relogio-inner{max-width:600px;margin:0 auto}
+.relogio-icon{font-size:4rem;margin-bottom:1rem}
+.relogio-desc{font-size:0.97rem;font-weight:300;color:rgba(245,236,215,0.72);line-height:1.8;margin-bottom:1.8rem}
+.btn-ghost{display:inline-block;background:transparent;color:var(--ouro-lt);font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.8rem 1.8rem;border-radius:3px;text-decoration:none;border:1px solid rgba(201,149,42,0.4);transition:border-color 0.2s,color 0.2s}
+.btn-ghost:hover{border-color:var(--ouro-lt);color:var(--ouro-pale)}
+
+.cards-list{display:flex;flex-direction:column;gap:1rem}
+.mini-card{background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.15);border-radius:5px;padding:1.4rem}
+.mini-titulo{font-family:'Cinzel',serif;font-size:0.92rem;font-weight:700;color:var(--creme-lt);margin-bottom:0.4rem}
+.mini-desc{font-size:0.85rem;font-weight:300;color:rgba(245,236,215,0.7);line-height:1.6}
+.mini-meta{font-size:0.72rem;color:rgba(245,236,215,0.4);margin-top:0.4rem}
+.empty-state{text-align:center;padding:2rem;color:rgba(245,236,215,0.4)}
+
+footer{text-align:center;padding:2.5rem 2rem;border-top:1px solid rgba(201,149,42,0.1);font-size:0.78rem;color:rgba(245,236,215,0.35)}
+footer a{color:rgba(245,236,215,0.35);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/logo-remo.png" alt="REMO"/>
+    <div class="nav-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="/pedir-oracao">Orar</a></li>
+    <li><a href="/pedidos">Pedidos</a></li>
+    <li><a href="/barco-da-fe">Barco da Fé</a></li>
+    <li><a href="/rede">Rede</a></li>
+    <li><a href="/agenda">Agenda</a></li>
+    <li><a href="/painel/login" class="nav-cta">Entrar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="hero">
+  <div class="hero-content">
+    <span class="badge">🌐 Hub de Integração</span>
+    <h1 class="hero-title">Rede de <em>Clamor</em></h1>
+    <p class="hero-desc">A rede organizada de oração da REMO. Intercessores, grupos, igrejas e ministérios unidos em propósito.</p>
+    <div class="page-divider"></div>
+  </div>
+</div>
+
+<section>
+  <div class="section-inner">
+    <span class="section-eyebrow">Participar</span>
+    <h2 class="section-title">Como você quer fazer parte?</h2>
+    <div class="acoes-grid">
+      <div class="acao-card">
+        <div class="acao-icon">🙏</div>
+        <div class="acao-titulo">Participar como Intercessor Individual</div>
+        <div class="acao-desc">Cadastre-se como intercessor, receba convocações e faça parte da rede de oração individual da REMO.</div>
+        <a href="/rede/intercessor" class="btn-acao">Quero participar</a>
+      </div>
+      <div class="acao-card">
+        <div class="acao-icon">👥</div>
+        <div class="acao-titulo">Cadastrar meu Grupo</div>
+        <div class="acao-desc">Registre seu grupo de oração doméstico, célula ou grupo missionário e integre-o à rede de clamor.</div>
+        <a href="/rede/grupo" class="btn-acao">Cadastrar grupo</a>
+      </div>
+      <div class="acao-card">
+        <div class="acao-icon">⛪</div>
+        <div class="acao-titulo">Representar minha Igreja</div>
+        <div class="acao-desc">Conecte sua igreja local à rede. Receba pautas, participe de campanhas e envie seus intercessores.</div>
+        <a href="/rede/grupo" class="btn-acao">Cadastrar igreja</a>
+      </div>
+      <div class="acao-card">
+        <div class="acao-icon">🤝</div>
+        <div class="acao-titulo">Parceria de Ministério</div>
+        <div class="acao-desc">Ministérios e organizações cristãs podem se tornar parceiros estratégicos da rede REMO.</div>
+        <a href="/parceiros" class="btn-acao">Ser parceiro</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="relogio-section">
+  <div class="relogio-inner">
+    <span class="section-eyebrow">Oração Contínua</span>
+    <div class="relogio-icon">🕐</div>
+    <h2 class="section-title" style="margin-bottom:0.8rem">Relógio de <em>Oração</em></h2>
+    <p class="relogio-desc">Participe do Relógio de Oração 24 horas por dia, 7 dias por semana. Assuma um horário e interceda pela rede, pelo Brasil e pelas nações.</p>
+    <a href="/barco-da-fe/relogio-de-oracao" class="btn-ghost">🕐 Ver o Relógio</a>
+  </div>
+</div>
+
+<section>
+  <div class="section-inner" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem">
+    <div>
+      <span class="section-eyebrow">Convocações</span>
+      <h2 class="section-title" style="text-align:left">Metas Ativas</h2>
+      <div class="cards-list" id="convocacoesLista"><div class="empty-state"><p>Carregando…</p></div></div>
+    </div>
+    <div>
+      <span class="section-eyebrow">Agenda</span>
+      <h2 class="section-title" style="text-align:left">Próximas Reuniões</h2>
+      <div class="cards-list" id="reunioesLista"><div class="empty-state"><p>Carregando…</p></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 REMO — Rede Mundial de Orações &nbsp;·&nbsp; <a href="/">Início</a> &nbsp;·&nbsp; contato@globalremo.com</p>
+</footer>
+
+<script>
+document.getElementById('hamburger').addEventListener('click',()=>{document.getElementById('navLinks').classList.toggle('open')});
+
+function formatarData(ds){
+  if(!ds)return '';
+  try{return new Date(ds).toLocaleDateString('pt-BR',{day:'2-digit',month:'long'});}catch(e){return ds;}
+}
+
+async function carregarConvocacoes(){
+  const el=document.getElementById('convocacoesLista');
+  try{
+    const r=await fetch('/.netlify/functions/convocacoes-listar');
+    const d=await r.json();
+    const lista=(d.convocacoes||d||[]).slice(0,3);
+    if(!lista.length){el.innerHTML='<div class="empty-state"><p>Nenhuma convocação ativa.</p></div>';return;}
+    el.innerHTML=lista.map(c=>`
+      <div class="mini-card">
+        <div class="mini-titulo">${c.titulo||c.title||''}</div>
+        <p class="mini-desc">${(c.mensagem||c.message||'').substring(0,120)}</p>
+        <p class="mini-meta">${c.publicoAlvo?'Para: '+c.publicoAlvo:''}</p>
+      </div>
+    `).join('');
+  }catch(e){el.innerHTML='<div class="empty-state"><p>Não disponível.</p></div>';}
+}
+
+async function carregarReunioes(){
+  const el=document.getElementById('reunioesLista');
+  try{
+    const r=await fetch('/.netlify/functions/reunioes-listar');
+    const d=await r.json();
+    const lista=(d.reunioes||d||[]).slice(0,3);
+    if(!lista.length){el.innerHTML='<div class="empty-state"><p>Nenhuma reunião agendada.</p></div>';return;}
+    el.innerHTML=lista.map(re=>`
+      <div class="mini-card">
+        <div class="mini-titulo">${re.titulo||re.title||''}</div>
+        <p class="mini-meta">📅 ${formatarData(re.dataHora||re.data)}</p>
+      </div>
+    `).join('');
+  }catch(e){el.innerHTML='<div class="empty-state"><p>Não disponível.</p></div>';}
+}
+
+carregarConvocacoes();
+carregarReunioes();
+</script>
+</body>
+</html>
