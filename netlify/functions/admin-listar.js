@@ -18,7 +18,10 @@ exports.handler = async function(event) {
   }
 
   const colecao = event.queryStringParameters?.colecao || 'pedidos-oracao';
-  const colecoesPermitidas = ['pedidos-oracao', 'candidaturas-bf', 'relogio-oracao', 'intercessores'];
+  const colecoesPermitidas = [
+    'pedidos-oracao', 'candidaturas-bf', 'relogio-oracao', 'intercessores',
+    'grupos-oracao', 'igrejas', 'ministerios', 'reunioes', 'metas-oracao', 'convocacoes'
+  ];
 
   if (!colecoesPermitidas.includes(colecao)) {
     return { statusCode: 400, body: JSON.stringify({ erro: 'Coleção inválida' }) };

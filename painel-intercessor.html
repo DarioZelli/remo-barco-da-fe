@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel do Intercessor — REMO Barco da Fé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:#1A0808;color:var(--creme);min-height:100vh}
+    header{background:rgba(44,15,15,0.97);border-bottom:1px solid rgba(201,149,42,0.2);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+    .brand{display:flex;align-items:center;gap:.75rem}
+    .brand img{height:40px;width:40px;border-radius:50%;object-fit:contain}
+    .brand-text{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:var(--ouro-lt)}
+    .brand-text span{display:block;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ouro-pale);font-weight:400}
+    .nav-links{display:flex;gap:1rem;flex-wrap:wrap}
+    .nav-links a{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--creme);text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--ouro-lt)}
+    main{max-width:900px;margin:0 auto;padding:2rem}
+    h1{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:700;color:var(--creme-lt);margin-bottom:.4rem}
+    .sub{font-size:.85rem;color:rgba(245,236,215,.45);margin-bottom:2rem}
+    .card{background:linear-gradient(135deg,rgba(61,21,21,0.7),rgba(44,15,15,.85));border:1px solid rgba(201,149,42,.15);border-radius:6px;padding:1.4rem;margin-bottom:1.5rem}
+    .card h2{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .meta-card{border-left:3px solid var(--ouro);padding:1rem;background:rgba(201,149,42,.06);border-radius:0 4px 4px 0}
+    .meta-titulo{font-weight:700;color:var(--creme-lt);font-size:1.05rem;margin-bottom:.4rem}
+    .meta-periodo{font-size:.78rem;color:var(--ouro);margin-bottom:.6rem}
+    .meta-foco{font-size:.85rem;color:rgba(245,236,215,.7);padding:.25rem 0 .25rem 1rem;position:relative;line-height:1.4}
+    .meta-foco::before{content:'🙏';position:absolute;left:0;font-size:.75rem}
+    .meta-descricao{font-size:.82rem;color:rgba(245,236,215,.5);margin-top:.6rem;font-style:italic;line-height:1.5}
+    .reuniao-item{padding:.9rem;border:1px solid rgba(201,149,42,.12);border-radius:4px;margin-bottom:.7rem;background:rgba(201,149,42,.03)}
+    .reuniao-titulo{font-weight:700;color:var(--creme-lt);font-size:.9rem;margin-bottom:.4rem}
+    .reuniao-meta{font-size:.78rem;color:rgba(245,236,215,.5);display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.5rem}
+    .reuniao-link a{display:inline-block;background:rgba(201,149,42,.15);border:1px solid rgba(201,149,42,.3);color:var(--ouro-lt);font-size:.75rem;font-weight:700;padding:.3rem .8rem;border-radius:3px;text-decoration:none;letter-spacing:.08em;text-transform:uppercase;transition:all .2s}
+    .reuniao-link a:hover{background:rgba(201,149,42,.25)}
+    .tag-online{background:rgba(37,211,102,.15);color:#7ef5b0;font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:2px;letter-spacing:.1em;text-transform:uppercase}
+    .tag-presencial{background:rgba(201,149,42,.15);color:var(--ouro-lt);font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:2px;letter-spacing:.1em;text-transform:uppercase}
+    .form-group{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.8rem}
+    .form-group label{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro)}
+    .form-group input,.form-group textarea,.form-group select{background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,.25);border-radius:3px;padding:.65rem .8rem;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--creme);width:100%}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    @media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+    .btn{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.55rem 1.2rem;border-radius:3px;border:none;cursor:pointer;transition:all .2s}
+    .btn-ouro{background:var(--ouro);color:var(--vinho)}
+    .btn-ouro:hover{background:var(--ouro-lt)}
+    .btn-outline{background:none;border:1px solid rgba(201,149,42,.3);color:var(--ouro);font-family:'Lato',sans-serif}
+    .btn-outline:hover{background:rgba(201,149,42,.1)}
+    .btn-verde{background:rgba(37,211,102,.2);border:1px solid rgba(37,211,102,.4);color:#7ef5b0;font-family:'Lato',sans-serif}
+    .btn-verde:hover{background:rgba(37,211,102,.3)}
+    .msg-ok{font-size:.8rem;color:#a0e0a0;margin-top:.5rem}
+    .msg-erro{font-size:.8rem;color:#e0a0a0;margin-top:.5rem}
+    .loading{text-align:center;padding:2rem;color:rgba(245,236,215,.35);font-style:italic;font-size:.9rem}
+    .vazio{text-align:center;padding:2rem;color:rgba(245,236,215,.3);font-style:italic;font-size:.85rem}
+    .urgente-banner{background:rgba(220,50,50,.15);border:1px solid rgba(220,50,50,.3);border-radius:4px;padding:.8rem 1.2rem;margin-bottom:1.2rem;color:#f5b0b0;font-weight:700;font-size:.9rem;line-height:1.5}
+    .horario-card{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;background:rgba(201,149,42,.06);border:1px solid rgba(201,149,42,.12);border-radius:3px;margin-bottom:.5rem}
+    .horario-hora{font-family:'Cinzel',serif;color:var(--ouro-lt);font-weight:700;font-size:1rem}
+    .horario-info{font-size:.8rem;color:rgba(245,236,215,.5)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="logo-remo.png" alt="REMO"/>
+      <div class="brand-text">Painel do Intercessor<span>Barco da Fé — REMO</span></div>
+    </div>
+    <nav class="nav-links">
+      <a href="relogio.html">⏱️ Relógio de Oração</a>
+      <a href="pedido-oracao.html">🙏 Pedidos</a>
+      <a href="index.html">🏠 Site</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>🙏 Painel do Intercessor</h1>
+    <p class="sub">Sua central de oração e missão — Barco da Fé</p>
+
+    <div id="urgenteBanner" style="display:none"></div>
+
+    <div class="card">
+      <h2>🎯 Meta de Oração desta Semana</h2>
+      <div id="metaAtiva"><div class="loading">Carregando...</div></div>
+    </div>
+
+    <div class="card">
+      <h2>📅 Próximas Reuniões e Encontros</h2>
+      <div id="proximasReunioes"><div class="loading">Carregando...</div></div>
+    </div>
+
+    <div class="card">
+      <h2>📣 Convocações Ativas</h2>
+      <div id="convocacoes"><div class="loading">Carregando...</div></div>
+    </div>
+
+    <div class="card">
+      <h2>📝 Registrar Pedido de Oração</h2>
+      <p style="font-size:.8rem;color:rgba(245,236,215,.4);margin-bottom:1rem">Submeta um pedido de oração para que a rede possa interceder junto com você.</p>
+      <a href="pedido-oracao.html" class="btn btn-ouro" style="display:inline-block;text-decoration:none">🙏 Enviar Pedido de Oração</a>
+    </div>
+
+    <div class="card">
+      <h2>⏱️ Relógio de Oração 24h</h2>
+      <p style="font-size:.8rem;color:rgba(245,236,215,.4);margin-bottom:1rem">Assuma um horário de oração no nosso relógio de intercessão contínua — 24 horas por dia, 7 dias por semana.</p>
+      <a href="relogio.html" class="btn btn-ouro" style="display:inline-block;text-decoration:none">⏱️ Assumir Horário</a>
+    </div>
+
+    <div class="card">
+      <h2>🗒️ Diário de Oração</h2>
+      <p style="font-size:.8rem;color:rgba(245,236,215,.4);margin-bottom:1rem">Registre seus momentos de oração e mantenha um histórico pessoal.</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Data</label>
+          <input id="diarioData" type="date"/>
+        </div>
+        <div class="form-group">
+          <label>Tempo de Oração (min)</label>
+          <input id="diarioTempo" type="number" min="1" max="480" value="15"/>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Intenções de Oração</label>
+          <textarea id="diarioIntencoes" rows="3" placeholder="Pelas famílias, pelos enfermos, pela paz do mundo..."></textarea>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Testemunho / Graças</label>
+          <textarea id="diarioTestemunho" rows="3" placeholder="Compartilhe o que Deus fez em sua oração..."></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:.7rem;align-items:center">
+        <button class="btn btn-ouro" onclick="salvarDiario()">💾 Salvar Registro</button>
+        <span id="msgDiario"></span>
+      </div>
+      <div id="historicoDiario" style="margin-top:1.5rem"></div>
+    </div>
+
+    <div class="card">
+      <h2>📱 Compartilhar Convocação</h2>
+      <p style="font-size:.8rem;color:rgba(245,236,215,.4);margin-bottom:1rem">Escolha uma convocação ativa para compartilhar via WhatsApp.</p>
+      <div id="convocacoesWA"><div class="loading">Carregando...</div></div>
+    </div>
+
+  </main>
+
+  <script>
+    let _metaAtiva = null;
+    let _reunioesFuturas = [];
+    let _convocacoesAtivas = [];
+
+    function esc(v) {
+      return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function fmt(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    }
+
+    async function carregarDados() {
+      try {
+        const res = await fetch('/.netlify/functions/rede-listar');
+        if (!res.ok) throw new Error();
+        const d = await res.json();
+
+        _metaAtiva = d.metaAtiva;
+        _reunioesFuturas = d.reunioesFuturas || [];
+        _convocacoesAtivas = d.convocacoesAtivas || [];
+
+        // Banner urgente
+        const urgentes = _convocacoesAtivas.filter(c => c.urgente);
+        if (urgentes.length) {
+          const b = document.getElementById('urgenteBanner');
+          b.style.display = 'block';
+          b.innerHTML = urgentes.map(u =>
+            `<div class="urgente-banner">🚨 <strong>URGENTE:</strong> ${esc(u.titulo)}<br><span style="font-size:.82rem;font-weight:400">${esc((u.mensagem||'').slice(0,200))}</span></div>`
+          ).join('');
+        }
+
+        // Meta ativa
+        const metaEl = document.getElementById('metaAtiva');
+        if (_metaAtiva) {
+          const m = _metaAtiva;
+          metaEl.innerHTML = `<div class="meta-card">
+            <div class="meta-titulo">${esc(m.titulo)}</div>
+            ${m.periodo ? `<div class="meta-periodo">📅 ${esc(m.periodo)}</div>` : `<div class="meta-periodo">📅 ${m.dataInicio||''} → ${m.dataFim||''}</div>`}
+            ${(m.focos||[]).map(f => `<div class="meta-foco">${esc(f)}</div>`).join('')}
+            ${m.descricao ? `<div class="meta-descricao">${esc(m.descricao)}</div>` : ''}
+          </div>`;
+        } else {
+          metaEl.innerHTML = '<div class="vazio">Nenhuma meta de oração publicada para esta semana.</div>';
+        }
+
+        // Reuniões
+        const reunEl = document.getElementById('proximasReunioes');
+        if (_reunioesFuturas.length) {
+          reunEl.innerHTML = _reunioesFuturas.map(r => {
+            const dt = new Date(r.dataHora);
+            const dtStr = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+            return `<div class="reuniao-item">
+              <div class="reuniao-titulo">${esc(r.titulo)}</div>
+              <div class="reuniao-meta">
+                <span>📅 ${dtStr}</span>
+                <span class="tag-${r.tipo==='presencial'?'presencial':'online'}">${esc(r.tipo)}</span>
+                <span>👥 ${esc(r.publicoAlvo||'todos')}</span>
+              </div>
+              ${r.pauta ? `<div style="font-size:.78rem;color:rgba(245,236,215,.4);margin:.4rem 0;white-space:pre-line">${esc(r.pauta.slice(0,300))}${r.pauta.length>300?'…':''}</div>` : ''}
+              ${r.linkVideoconferencia ? `<div class="reuniao-link"><a href="${esc(r.linkVideoconferencia)}" target="_blank">🎥 Entrar na ${esc(r.plataforma||'Reunião Online')}</a></div>` : ''}
+              ${r.local ? `<div style="font-size:.78rem;color:rgba(245,236,215,.5);margin-top:.3rem">📍 ${esc(r.local)}</div>` : ''}
+            </div>`;
+          }).join('');
+        } else {
+          reunEl.innerHTML = '<div class="vazio">Nenhuma reunião agendada no momento.</div>';
+        }
+
+        // Convocações
+        const convEl = document.getElementById('convocacoes');
+        const convWA = document.getElementById('convocacoesWA');
+        if (_convocacoesAtivas.length) {
+          const html = _convocacoesAtivas.map(c => `
+            <div class="reuniao-item">
+              <div class="reuniao-titulo">${c.urgente?'🚨 ':''} ${esc(c.titulo)}</div>
+              <div class="reuniao-meta"><span>${esc(c.tipo)}</span><span>📱 ${esc(c.canal)}</span></div>
+              <div style="font-size:.82rem;color:rgba(245,236,215,.55);margin-top:.4rem;line-height:1.5">${esc((c.mensagem||'').slice(0,200))}${(c.mensagem||'').length>200?'…':''}</div>
+            </div>`).join('');
+          convEl.innerHTML = html;
+
+          convWA.innerHTML = _convocacoesAtivas.map(c => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem;background:rgba(201,149,42,.05);border:1px solid rgba(201,149,42,.12);border-radius:3px;margin-bottom:.5rem;gap:1rem">
+              <span style="font-size:.85rem;font-weight:700">${c.urgente?'🚨 ':''} ${esc(c.titulo)}</span>
+              <button class="btn btn-verde" onclick='compartilharWA(${JSON.stringify(c.mensagem||"")})' style="white-space:nowrap;font-size:.72rem;padding:.4rem .9rem">📱 Compartilhar</button>
+            </div>`).join('');
+        } else {
+          convEl.innerHTML = '<div class="vazio">Nenhuma convocação ativa.</div>';
+          convWA.innerHTML = '<div class="vazio">Nenhuma convocação para compartilhar.</div>';
+        }
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('metaAtiva').innerHTML = '<div class="vazio">Erro ao carregar dados. Verifique sua conexão.</div>';
+        document.getElementById('proximasReunioes').innerHTML = '<div class="vazio">Erro ao carregar.</div>';
+        document.getElementById('convocacoes').innerHTML = '<div class="vazio">Erro ao carregar.</div>';
+        document.getElementById('convocacoesWA').innerHTML = '<div class="vazio">Erro ao carregar.</div>';
+      }
+    }
+
+    function compartilharWA(mensagem) {
+      if (!mensagem) return;
+      window.open('https://wa.me/?text=' + encodeURIComponent(mensagem), '_blank');
+    }
+
+    // Diário local (localStorage)
+    function salvarDiario() {
+      const el = document.getElementById('msgDiario');
+      el.className = ''; el.textContent = '';
+      const data = document.getElementById('diarioData').value;
+      const tempo = document.getElementById('diarioTempo').value;
+      const intencoes = document.getElementById('diarioIntencoes').value.trim();
+      const testemunho = document.getElementById('diarioTestemunho').value.trim();
+      if (!data || !intencoes) {
+        el.className = 'msg-erro'; el.textContent = 'Preencha a data e as intenções de oração.'; return;
+      }
+      const entrada = { data, tempo, intencoes, testemunho, criadoEm: new Date().toISOString() };
+      const hist = JSON.parse(localStorage.getItem('diario_remo') || '[]');
+      hist.unshift(entrada);
+      localStorage.setItem('diario_remo', JSON.stringify(hist.slice(0, 50)));
+      el.className = 'msg-ok'; el.textContent = '✅ Registro salvo!';
+      document.getElementById('diarioIntencoes').value = '';
+      document.getElementById('diarioTestemunho').value = '';
+      renderizarHistorico();
+    }
+
+    function renderizarHistorico() {
+      const hist = JSON.parse(localStorage.getItem('diario_remo') || '[]');
+      const el = document.getElementById('historicoDiario');
+      if (!hist.length) { el.innerHTML = ''; return; }
+      el.innerHTML = `<div style="font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ouro);margin-bottom:.6rem">Meus últimos registros</div>` +
+        hist.slice(0, 7).map(h => `
+          <div style="padding:.6rem;border-bottom:1px solid rgba(201,149,42,.08);font-size:.82rem">
+            <span style="font-weight:700;color:var(--ouro-pale)">${h.data}</span>
+            ${h.tempo ? `<span style="color:rgba(245,236,215,.4);margin-left:.5rem">${h.tempo} min</span>` : ''}
+            <div style="color:rgba(245,236,215,.6);margin-top:.2rem">${esc(h.intencoes.slice(0,120))}${h.intencoes.length>120?'…':''}</div>
+          </div>`).join('');
+    }
+
+    // Preencher data de hoje
+    document.getElementById('diarioData').valueAsDate = new Date();
+
+    carregarDados();
+    renderizarHistorico();
+  </script>
+</body>
+</html>

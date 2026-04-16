@@ -145,6 +145,22 @@
         <div class="sidebar-link" onclick="mostrarPagina('professores',this);carregarTabela('professores','tabelaProfessores')">👨‍🏫 Professores <span class="badge" id="badgeProfessores">…</span></div>
         <div class="sidebar-link" onclick="mostrarPagina('alunos',this);carregarTabela('alunos','tabelaAlunos')">🎓 Alunos <span class="badge" id="badgeAlunos">…</span></div>
 
+        <div class="sidebar-section">Rede de Clamor</div>
+        <div class="sidebar-link" onclick="mostrarPagina('grupos',this);carregarRede('grupos-oracao','tabelaGrupos')">🔥 Grupos de Oração <span class="badge" id="badgeGrupos">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('igrejas',this);carregarRede('igrejas','tabelaIgrejas')">⛪ Igrejas <span class="badge" id="badgeIgrejas">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('ministerios',this);carregarRede('ministerios','tabelaMinisterios')">🤝 Ministérios Parceiros <span class="badge" id="badgeMinisterios">…</span></div>
+
+        <div class="sidebar-section">Mobilização</div>
+        <div class="sidebar-link" onclick="mostrarPagina('metas',this);carregarRede('metas-oracao','tabelaMetas')">🎯 Metas de Oração <span class="badge" id="badgeMetas">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('reunioes',this);carregarRede('reunioes','tabelaReunioes')">📅 Reuniões <span class="badge" id="badgeReunioes">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('convocacoes',this);carregarRede('convocacoes','tabelaConvocacoes')">📣 Convocações <span class="badge" id="badgeConvocacoes">…</span></div>
+        <div class="sidebar-link" onclick="mostrarPagina('whatsapp',this)">📱 WhatsApp</div>
+
+        <div class="sidebar-section">Painéis</div>
+        <div class="sidebar-link" onclick="window.open('coordenador.html','_blank')">🎖️ Coordenador</div>
+        <div class="sidebar-link" onclick="window.open('lider-nucleo.html','_blank')">👑 Líder de Núcleo</div>
+        <div class="sidebar-link" onclick="window.open('painel-intercessor.html','_blank')">🙏 Painel Intercessor</div>
+
         <div class="sidebar-section">Estudantes</div>
         <div class="sidebar-link" onclick="window.open('aluno.html','_blank')">📚 Área do Aluno</div>
         <div class="sidebar-link" onclick="window.open('index.html','_blank')">🏠 Ver Site</div>
@@ -162,6 +178,11 @@
             <div class="stat-card"><span class="num" id="statRelogio">—</span><span class="lbl">Horários Assumidos</span></div>
             <div class="stat-card"><span class="num" id="statProfessores">—</span><span class="lbl">Professores</span></div>
             <div class="stat-card"><span class="num" id="statAlunos">—</span><span class="lbl">Alunos</span></div>
+            <div class="stat-card"><span class="num" id="statGrupos">—</span><span class="lbl">Grupos de Oração</span></div>
+            <div class="stat-card"><span class="num" id="statIgrejas">—</span><span class="lbl">Igrejas</span></div>
+            <div class="stat-card"><span class="num" id="statMinisterios">—</span><span class="lbl">Ministérios</span></div>
+            <div class="stat-card"><span class="num" id="statReunioes">—</span><span class="lbl">Reuniões Agendadas</span></div>
+            <div class="stat-card"><span class="num" id="statMetas">—</span><span class="lbl">Metas Publicadas</span></div>
           </div>
           <p style="font-size:0.88rem;color:rgba(245,236,215,0.4);font-style:italic">Selecione uma seção no menu para visualizar os registros detalhados.</p>
         </div>
@@ -412,6 +433,262 @@
           </div>
         </div>
 
+        <!-- GRUPOS DE ORAÇÃO -->
+        <div class="admin-page" id="pageGrupos">
+          <div class="tabela-header">
+            <div class="tabela-title">🔥 Grupos de Oração</div>
+            <button class="btn-refresh" onclick="carregarRede('grupos-oracao','tabelaGrupos')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <div class="form-grid">
+              <input type="hidden" id="grupoId"/>
+              <div class="form-group"><label>Nome do Grupo *</label><input id="grupoNome" type="text" placeholder="Ex: Grupo de Oração São José"/></div>
+              <div class="form-group"><label>Tipo</label>
+                <select id="grupoTipo"><option value="doméstico">Doméstico</option><option value="paroquial">Paroquial</option><option value="online">Online</option><option value="intercessão">Intercessão</option></select></div>
+              <div class="form-group"><label>Líder / Responsável *</label><input id="grupoLider" type="text" placeholder="Nome completo"/></div>
+              <div class="form-group"><label>Telefone *</label><input id="grupoTelefone" type="tel" placeholder="(xx) 9xxxx-xxxx"/></div>
+              <div class="form-group"><label>E-mail</label><input id="grupoEmail" type="email" placeholder="contato@exemplo.com"/></div>
+              <div class="form-group"><label>Cidade</label><input id="grupoCidade" type="text"/></div>
+              <div class="form-group"><label>Estado (UF)</label><input id="grupoEstado" type="text" maxlength="2" style="text-transform:uppercase"/></div>
+              <div class="form-group"><label>Nº de Membros</label><input id="grupoMembros" type="number" min="1" value="1"/></div>
+              <div class="form-group"><label>Horário do Encontro</label><input id="grupoHorario" type="text" placeholder="Ex: Sábado 18h"/></div>
+              <div class="form-group"><label>Status</label>
+                <select id="grupoStatus"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Descrição</label><textarea id="grupoDescricao" rows="3" placeholder="Missão e foco de oração do grupo..."></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarGrupo()">💾 Salvar Grupo</button>
+              <button class="btn-refresh" onclick="limparFormGrupo()">✖ Limpar</button>
+              <span id="msgGrupo"></span>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Tipo</th><th>Líder</th><th>Telefone</th><th>Cidade/UF</th><th>Membros</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaGrupos"><tr><td colspan="8" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- IGREJAS -->
+        <div class="admin-page" id="pageIgrejas">
+          <div class="tabela-header">
+            <div class="tabela-title">⛪ Igrejas Participantes</div>
+            <button class="btn-refresh" onclick="carregarRede('igrejas','tabelaIgrejas')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <div class="form-grid">
+              <input type="hidden" id="igrejaId"/>
+              <div class="form-group"><label>Nome da Igreja *</label><input id="igrejaNome" type="text" placeholder="Ex: Paróquia Nossa Senhora"/></div>
+              <div class="form-group"><label>Responsável / Contato *</label><input id="igrejaContato" type="text" placeholder="Nome do responsável"/></div>
+              <div class="form-group"><label>Diocese</label><input id="igrejaDiocese" type="text"/></div>
+              <div class="form-group"><label>Paróquia</label><input id="igrejaParoquia" type="text"/></div>
+              <div class="form-group"><label>Pastor / Padre</label><input id="igrejaPastor" type="text"/></div>
+              <div class="form-group"><label>Telefone</label><input id="igrejaTelefone" type="tel" placeholder="(xx) 9xxxx-xxxx"/></div>
+              <div class="form-group"><label>E-mail</label><input id="igrejaEmail" type="email"/></div>
+              <div class="form-group"><label>Cidade</label><input id="igrejaCidade" type="text"/></div>
+              <div class="form-group"><label>Estado (UF)</label><input id="igrejaEstado" type="text" maxlength="2" style="text-transform:uppercase"/></div>
+              <div class="form-group"><label>Status</label>
+                <select id="igrejaStatus"><option value="ativo">Ativa</option><option value="inativo">Inativa</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarParceiro('igrejas')">💾 Salvar Igreja</button>
+              <button class="btn-refresh" onclick="limparFormIgreja()">✖ Limpar</button>
+              <span id="msgIgreja"></span>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Contato</th><th>Diocese</th><th>Telefone</th><th>Cidade/UF</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaIgrejas"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- MINISTÉRIOS -->
+        <div class="admin-page" id="pageMinisterios">
+          <div class="tabela-header">
+            <div class="tabela-title">🤝 Ministérios Parceiros</div>
+            <button class="btn-refresh" onclick="carregarRede('ministerios','tabelaMinisterios')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <div class="form-grid">
+              <input type="hidden" id="ministerioId"/>
+              <div class="form-group"><label>Nome do Ministério *</label><input id="ministerioNome" type="text" placeholder="Ex: Ministério de Louvor"/></div>
+              <div class="form-group"><label>Responsável / Contato *</label><input id="ministerioContato" type="text" placeholder="Nome do responsável"/></div>
+              <div class="form-group"><label>Responsável</label><input id="ministerioResponsavel" type="text"/></div>
+              <div class="form-group"><label>Tipo de Parceria</label>
+                <select id="ministerioTipoParceria"><option value="associado">Associado</option><option value="colaborador">Colaborador</option><option value="patrocinador">Patrocinador</option><option value="membro">Membro</option></select></div>
+              <div class="form-group"><label>Telefone</label><input id="ministerioTelefone" type="tel" placeholder="(xx) 9xxxx-xxxx"/></div>
+              <div class="form-group"><label>E-mail</label><input id="ministerioEmail" type="email"/></div>
+              <div class="form-group"><label>Cidade</label><input id="ministerioCidade" type="text"/></div>
+              <div class="form-group"><label>Estado (UF)</label><input id="ministerioEstado" type="text" maxlength="2" style="text-transform:uppercase"/></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Descrição</label><textarea id="ministerioDescricao" rows="3" placeholder="Descreva a parceria e missão do ministério..."></textarea></div>
+              <div class="form-group"><label>Status</label>
+                <select id="ministerioStatus"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarParceiro('ministerios')">💾 Salvar Ministério</button>
+              <button class="btn-refresh" onclick="limparFormMinisterio()">✖ Limpar</button>
+              <span id="msgMinisterio"></span>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Responsável</th><th>Telefone</th><th>Parceria</th><th>Cidade/UF</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaMinisterios"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- METAS DE ORAÇÃO -->
+        <div class="admin-page" id="pageMetas">
+          <div class="tabela-header">
+            <div class="tabela-title">🎯 Metas de Oração</div>
+            <button class="btn-refresh" onclick="carregarRede('metas-oracao','tabelaMetas')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <div class="form-grid">
+              <input type="hidden" id="metaId"/>
+              <div class="form-group"><label>Título da Meta *</label><input id="metaTitulo" type="text" placeholder="Ex: Semana de Clamor pela Família"/></div>
+              <div class="form-group"><label>Período (descrição)</label><input id="metaPeriodo" type="text" placeholder="Ex: Semana 16 a 22 de abril de 2026"/></div>
+              <div class="form-group"><label>Data de Início *</label><input id="metaDataInicio" type="date"/></div>
+              <div class="form-group"><label>Data de Fim *</label><input id="metaDataFim" type="date"/></div>
+              <div class="form-group"><label>Prioridade</label>
+                <select id="metaPrioridade"><option value="normal">Normal</option><option value="alta">Alta</option><option value="urgente">Urgente</option></select></div>
+              <div class="form-group"><label>Publicar agora</label>
+                <select id="metaPublicado"><option value="false">Não (rascunho)</option><option value="true">Sim (publicar)</option></select></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Descrição da Meta</label><textarea id="metaDescricao" rows="3" placeholder="Descreva o contexto e objetivo desta meta de oração..."></textarea></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Focos de Oração (um por linha)</label><textarea id="metaFocos" rows="5" placeholder="Pelas famílias em crise&#10;Pela evangelização nas periferias&#10;Pela paz..."></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarMeta()">💾 Salvar Meta</button>
+              <button class="btn-refresh" onclick="limparFormMeta()">✖ Limpar</button>
+              <span id="msgMeta"></span>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Título</th><th>Período</th><th>Início</th><th>Fim</th><th>Prioridade</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaMetas"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REUNIÕES -->
+        <div class="admin-page" id="pageReunioes">
+          <div class="tabela-header">
+            <div class="tabela-title">📅 Reuniões e Encontros</div>
+            <button class="btn-refresh" onclick="carregarRede('reunioes','tabelaReunioes')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <div class="form-grid">
+              <input type="hidden" id="reuniaoId"/>
+              <div class="form-group"><label>Título da Reunião *</label><input id="reuniaoTitulo" type="text" placeholder="Ex: Encontro de Intercessores — Abril"/></div>
+              <div class="form-group"><label>Tipo</label>
+                <select id="reuniaoTipo"><option value="online">Online</option><option value="presencial">Presencial</option><option value="híbrido">Híbrido</option></select></div>
+              <div class="form-group"><label>Data e Hora *</label><input id="reuniaoDataHora" type="datetime-local"/></div>
+              <div class="form-group"><label>Público-Alvo</label>
+                <select id="reuniaoPublicoAlvo"><option value="todos">Todos</option><option value="intercessores">Intercessores</option><option value="lideres">Líderes de Núcleo</option><option value="coordenadores">Coordenadores</option><option value="grupos">Grupos de Oração</option></select></div>
+              <div class="form-group"><label>Local (presencial)</label><input id="reuniaoLocal" type="text" placeholder="Endereço completo"/></div>
+              <div class="form-group"><label>Plataforma (online)</label>
+                <select id="reuniaoPlataforma"><option value="">—</option><option value="Zoom">Zoom</option><option value="Google Meet">Google Meet</option><option value="YouTube">YouTube Live</option><option value="WhatsApp">WhatsApp</option></select></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Link de Videoconferência</label><input id="reuniaoLink" type="url" placeholder="https://meet.google.com/xxx ou https://zoom.us/j/xxx"/></div>
+              <div class="form-group"><label>Status</label>
+                <select id="reuniaoStatus"><option value="agendada">Agendada</option><option value="realizada">Realizada</option><option value="cancelada">Cancelada</option></select></div>
+              <div class="form-group"><label>Confirmações</label><input id="reuniaoConfirmacoes" type="number" min="0" value="0"/></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Pauta</label><textarea id="reuniaoPauta" rows="5" placeholder="1. Abertura em oração&#10;2. Apresentação das metas da semana&#10;3. Testemunhos&#10;4. Intercessão coletiva&#10;5. Envio"></textarea></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Observações</label><textarea id="reuniaoObservacoes" rows="2" placeholder="Informações adicionais..."></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarReuniao()">💾 Salvar Reunião</button>
+              <button class="btn-refresh" onclick="limparFormReuniao()">✖ Limpar</button>
+              <span id="msgReuniao"></span>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Título</th><th>Tipo</th><th>Data/Hora</th><th>Público</th><th>Plataforma</th><th>Status</th><th>Confirmações</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaReunioes"><tr><td colspan="8" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CONVOCAÇÕES -->
+        <div class="admin-page" id="pageConvocacoes">
+          <div class="tabela-header">
+            <div class="tabela-title">📣 Convocações</div>
+            <button class="btn-refresh" onclick="carregarRede('convocacoes','tabelaConvocacoes')">↻ Atualizar</button>
+          </div>
+          <div class="tabela-wrap" style="padding:1.2rem;margin-bottom:1rem">
+            <div class="form-grid">
+              <input type="hidden" id="convocacaoId"/>
+              <div class="form-group"><label>Título *</label><input id="convocacaoTitulo" type="text" placeholder="Ex: Convocação de Clamor — Urgente"/></div>
+              <div class="form-group"><label>Tipo</label>
+                <select id="convocacaoTipo"><option value="oração">Oração</option><option value="reunião">Reunião</option><option value="meta">Meta</option><option value="lembrete">Lembrete</option><option value="urgente">Urgente</option></select></div>
+              <div class="form-group"><label>Canal</label>
+                <select id="convocacaoCanal"><option value="whatsapp">WhatsApp</option><option value="email">E-mail</option><option value="ambos">Ambos</option></select></div>
+              <div class="form-group"><label>Público-Alvo</label>
+                <select id="convocacaoPublicoAlvo"><option value="todos">Todos</option><option value="intercessores">Intercessores</option><option value="lideres">Líderes</option><option value="grupos">Grupos de Oração</option><option value="igrejas">Igrejas</option></select></div>
+              <div class="form-group"><label>Urgente?</label>
+                <select id="convocacaoUrgente"><option value="false">Não</option><option value="true">Sim 🚨</option></select></div>
+              <div class="form-group"><label>Status</label>
+                <select id="convocacaoStatus"><option value="rascunho">Rascunho</option><option value="enviada">Enviada</option></select></div>
+              <div class="form-group" style="grid-column:1/-1"><label>Mensagem de Convocação *</label><textarea id="convocacaoMensagem" rows="7" placeholder="Digite aqui a mensagem completa que será enviada para os intercessores e grupos. Use linguagem de mobilização e inclua todas as informações necessárias..."></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-refresh" onclick="salvarConvocacao()">💾 Salvar Convocação</button>
+              <button class="btn-refresh" onclick="gerarLinkWhatsApp()">📱 Gerar Link WhatsApp</button>
+              <button class="btn-refresh" onclick="limparFormConvocacao()">✖ Limpar</button>
+              <span id="msgConvocacao"></span>
+            </div>
+            <div id="linkWhatsAppBox" style="display:none;margin-top:1rem;padding:1rem;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:4px">
+              <div style="font-size:0.78rem;color:#7ef5b0;margin-bottom:0.5rem;font-weight:700">📱 LINK WHATSAPP GERADO</div>
+              <a id="linkWhatsApp" href="#" target="_blank" style="color:#7ef5b0;word-break:break-all;font-size:0.82rem"></a>
+              <div style="font-size:0.72rem;color:rgba(245,236,215,0.4);margin-top:0.5rem">Abra o link para enviar a mensagem via WhatsApp Web.</div>
+            </div>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Título</th><th>Tipo</th><th>Canal</th><th>Público</th><th>Urgente</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaConvocacoes"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- WHATSAPP -->
+        <div class="admin-page" id="pageWhatsapp">
+          <div class="tabela-header">
+            <div class="tabela-title">📱 Gerador de Mensagens WhatsApp</div>
+          </div>
+          <div class="tabela-wrap" style="padding:1.5rem">
+            <p style="font-size:0.88rem;color:rgba(245,236,215,0.6);margin-bottom:1.5rem">
+              Gere links de WhatsApp para convocações, lembretes e comunicados. Os links abrem o WhatsApp com a mensagem pré-preenchida.
+            </p>
+            <div style="display:grid;gap:1rem">
+              <div class="form-group"><label>📞 Número de Destino (opcional)</label><input id="waNúmero" type="tel" placeholder="Ex: 5511999999999 (com DDI e DDD, sem espaços)"/></div>
+              <div class="form-group"><label>Modelo de Mensagem</label>
+                <select id="waModelo" onchange="aplicarModelo()">
+                  <option value="">Selecione um modelo ou escreva livremente...</option>
+                  <option value="convocacao">🔔 Convocação de Oração</option>
+                  <option value="reuniao">📅 Lembrete de Reunião</option>
+                  <option value="meta">🎯 Meta da Semana</option>
+                  <option value="urgente">🚨 Urgente — Clamor</option>
+                  <option value="boas-vindas">👋 Boas-vindas ao Intercessor</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Mensagem *</label><textarea id="waMensagem" rows="10" placeholder="Digite ou selecione um modelo acima..."></textarea></div>
+            </div>
+            <div class="form-actions" style="margin-top:1rem">
+              <button class="btn-refresh" onclick="gerarLinkWA()">📱 Gerar Link</button>
+              <button class="btn-refresh" onclick="document.getElementById('waMensagem').value='';document.getElementById('waModelo').value=''">✖ Limpar</button>
+            </div>
+            <div id="waResultado" style="display:none;margin-top:1rem;padding:1rem;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:4px">
+              <div style="font-size:0.78rem;color:#7ef5b0;margin-bottom:0.5rem;font-weight:700">✅ LINK GERADO</div>
+              <a id="waLink" href="#" target="_blank" style="color:#7ef5b0;word-break:break-all;font-size:0.82rem"></a>
+            </div>
+          </div>
+        </div>
 
       </main>
     </div>
@@ -504,7 +781,13 @@
         ['intercessores','statIntercessores','badgeIntercessores'],
         ['relogio-oracao','statRelogio','badgeRelogio'],
         ['professores','statProfessores','badgeProfessores'],
-        ['alunos','statAlunos','badgeAlunos']
+        ['alunos','statAlunos','badgeAlunos'],
+        ['grupos-oracao','statGrupos','badgeGrupos'],
+        ['igrejas','statIgrejas','badgeIgrejas'],
+        ['ministerios','statMinisterios','badgeMinisterios'],
+        ['reunioes','statReunioes','badgeReunioes'],
+        ['metas-oracao','statMetas','badgeMetas'],
+        ['convocacoes',null,'badgeConvocacoes']
       ];
       for (const [col, statId, badgeId] of cols) {
         try {
@@ -522,13 +805,26 @@
           } else {
             d = await buscarColecao(col);
           }
-          const el = document.getElementById(statId);
-          if (el) el.textContent = d.total;
+          if (statId) {
+            const el = document.getElementById(statId);
+            if (el) {
+              if (col === 'reunioes') {
+                const agora = new Date();
+                const agendadas = (d.registros || []).filter(r => r.status === 'agendada' && new Date(r.dataHora) >= agora).length;
+                el.textContent = agendadas;
+              } else if (col === 'metas-oracao') {
+                const agora = new Date();
+                const pub = (d.registros || []).filter(r => r.publicado && new Date(r.dataFim) >= agora).length;
+                el.textContent = pub;
+              } else {
+                el.textContent = d.total;
+              }
+            }
+          }
           const badge = document.getElementById(badgeId);
           if (badge) badge.textContent = d.total;
-        } catch { 
-          const el = document.getElementById(statId);
-          if (el) el.textContent = '?';
+        } catch {
+          if (statId) { const el = document.getElementById(statId); if (el) el.textContent = '?'; }
         }
       }
     }
@@ -906,6 +1202,373 @@
     function editarUsuario(colecao, id) {
       // Por enquanto apenas um alert - pode ser expandido para modal de edição
       alert(`Editar ${colecao}: ${id}\n\nFuncionalidade em desenvolvimento. Em breve será possível editar usuários diretamente.`);
+    }
+
+    // ── REDE DE CLAMOR ──────────────────────────────────────────────────
+
+    async function carregarRede(colecao, tbodyId) {
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      const colspanMap = {
+        'grupos-oracao': 8, 'igrejas': 7, 'ministerios': 7,
+        'metas-oracao': 7, 'reunioes': 8, 'convocacoes': 7
+      };
+      const colspan = colspanMap[colecao] || 6;
+      tbody.innerHTML = `<tr><td colspan="${colspan}" class="loading">Carregando...</td></tr>`;
+      try {
+        const data = await buscarColecao(colecao);
+        const lista = data.registros || [];
+        if (!lista.length) {
+          tbody.innerHTML = `<tr><td colspan="${colspan}" class="vazio">Nenhum registro encontrado.</td></tr>`;
+          return;
+        }
+        if (colecao === 'grupos-oracao') window.__gruposCache = lista;
+        if (colecao === 'igrejas') window.__igrejasCache = lista;
+        if (colecao === 'ministerios') window.__ministeriosCache = lista;
+        if (colecao === 'metas-oracao') window.__metasCache = lista;
+        if (colecao === 'reunioes') window.__reunioesCache = lista;
+        if (colecao === 'convocacoes') window.__convocacoesCache = lista;
+        tbody.innerHTML = lista.map(r => {
+          const id = JSON.stringify(r.id || '');
+          if (colecao === 'grupos-oracao') {
+            return `<tr><td>${escapeHtml(r.nome)}</td><td>${escapeHtml(r.tipo)}</td><td>${escapeHtml(r.lider)}</td><td>${escapeHtml(r.telefone)}</td><td>${escapeHtml(r.cidade||'')}${r.estado?' / '+r.estado:''}</td><td>${r.membros||'—'}</td><td>${tag(r.status)}</td><td><button class="btn-refresh" onclick='editarGrupo(${id})'>Editar</button></td></tr>`;
+          } else if (colecao === 'igrejas') {
+            return `<tr><td>${escapeHtml(r.nome)}</td><td>${escapeHtml(r.contato)}</td><td>${escapeHtml(r.diocese||'—')}</td><td>${escapeHtml(r.telefone||'—')}</td><td>${escapeHtml(r.cidade||'')}${r.estado?' / '+r.estado:''}</td><td>${tag(r.status)}</td><td><button class="btn-refresh" onclick='editarIgreja(${id})'>Editar</button></td></tr>`;
+          } else if (colecao === 'ministerios') {
+            return `<tr><td>${escapeHtml(r.nome)}</td><td>${escapeHtml(r.responsavel||r.contato||'—')}</td><td>${escapeHtml(r.telefone||'—')}</td><td>${escapeHtml(r.tipoParceria||'—')}</td><td>${escapeHtml(r.cidade||'')}${r.estado?' / '+r.estado:''}</td><td>${tag(r.status)}</td><td><button class="btn-refresh" onclick='editarMinisterio(${id})'>Editar</button></td></tr>`;
+          } else if (colecao === 'metas-oracao') {
+            const prioTag = r.prioridade === 'urgente' ? 'tag-reprovado' : r.prioridade === 'alta' ? 'tag-pendente' : 'tag-ativo';
+            return `<tr><td>${escapeHtml(r.titulo)}</td><td>${escapeHtml(r.periodo||'—')}</td><td>${r.dataInicio||'—'}</td><td>${r.dataFim||'—'}</td><td><span class="tag ${prioTag}">${r.prioridade||'normal'}</span></td><td>${tag(r.publicado?'ativo':'inativo')}</td><td><button class="btn-refresh" onclick='editarMeta(${id})'>Editar</button></td></tr>`;
+          } else if (colecao === 'reunioes') {
+            return `<tr><td>${escapeHtml(r.titulo)}</td><td>${escapeHtml(r.tipo)}</td><td>${fmt(r.dataHora)}</td><td>${escapeHtml(r.publicoAlvo||'todos')}</td><td>${escapeHtml(r.plataforma||r.local||'—')}</td><td>${tag(r.status)}</td><td>${r.confirmacoes||0}</td><td><button class="btn-refresh" onclick='editarReuniao(${id})'>Editar</button></td></tr>`;
+          } else if (colecao === 'convocacoes') {
+            return `<tr><td>${escapeHtml(r.titulo)}</td><td>${escapeHtml(r.tipo)}</td><td>${escapeHtml(r.canal)}</td><td>${escapeHtml(r.publicoAlvo||'todos')}</td><td>${r.urgente?'🚨 Sim':'—'}</td><td>${tag(r.status)}</td><td><button class="btn-refresh" onclick='editarConvocacao(${id})'>Editar</button> <button class="btn-refresh" onclick='gerarWAConvocacao(${id})'>📱</button></td></tr>`;
+          }
+          return '';
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="${colspan}" class="vazio">Erro ao carregar dados.</td></tr>`;
+      }
+    }
+
+    // GRUPOS
+    function limparFormGrupo() {
+      limparMsg('msgGrupo');
+      ['grupoId','grupoNome','grupoLider','grupoTelefone','grupoEmail','grupoCidade','grupoEstado','grupoDescricao','grupoHorario'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      const m = document.getElementById('grupoMembros'); if(m) m.value = '1';
+      const t = document.getElementById('grupoTipo'); if(t) t.value = 'doméstico';
+      const s = document.getElementById('grupoStatus'); if(s) s.value = 'ativo';
+    }
+    function editarGrupo(id) {
+      const r = window.__gruposCache?.find(g => g.id === id); if(!r) return;
+      document.getElementById('grupoId').value = r.id||'';
+      document.getElementById('grupoNome').value = r.nome||'';
+      document.getElementById('grupoTipo').value = r.tipo||'doméstico';
+      document.getElementById('grupoLider').value = r.lider||'';
+      document.getElementById('grupoTelefone').value = r.telefone||'';
+      document.getElementById('grupoEmail').value = r.email||'';
+      document.getElementById('grupoCidade').value = r.cidade||'';
+      document.getElementById('grupoEstado').value = r.estado||'';
+      document.getElementById('grupoMembros').value = r.membros||1;
+      document.getElementById('grupoHorario').value = r.horarioEncontro||'';
+      document.getElementById('grupoDescricao').value = r.descricao||'';
+      document.getElementById('grupoStatus').value = r.status||'ativo';
+      msg('msgGrupo', 'Grupo carregado para edição.');
+    }
+    async function salvarGrupo() {
+      limparMsg('msgGrupo');
+      const payload = {
+        id: document.getElementById('grupoId').value,
+        nome: document.getElementById('grupoNome').value,
+        tipo: document.getElementById('grupoTipo').value,
+        lider: document.getElementById('grupoLider').value,
+        telefone: document.getElementById('grupoTelefone').value,
+        email: document.getElementById('grupoEmail').value,
+        cidade: document.getElementById('grupoCidade').value,
+        estado: document.getElementById('grupoEstado').value,
+        membros: Number(document.getElementById('grupoMembros').value)||1,
+        horarioEncontro: document.getElementById('grupoHorario').value,
+        descricao: document.getElementById('grupoDescricao').value,
+        status: document.getElementById('grupoStatus').value
+      };
+      try {
+        const res = await fetch('/.netlify/functions/salvar-grupo', {
+          method:'POST', headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.erro||'Falha');
+        msg('msgGrupo', 'Grupo salvo com sucesso.');
+        await carregarRede('grupos-oracao','tabelaGrupos');
+        limparFormGrupo();
+      } catch(err) { msg('msgGrupo', err.message||'Erro ao salvar.', true); }
+    }
+
+    // IGREJAS
+    function limparFormIgreja() {
+      limparMsg('msgIgreja');
+      ['igrejaId','igrejaNome','igrejaContato','igrejaDiocese','igrejaParoquia','igrejaPastor','igrejaTelefone','igrejaEmail','igrejaCidade','igrejaEstado'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      const s = document.getElementById('igrejaStatus'); if(s) s.value = 'ativo';
+    }
+    function editarIgreja(id) {
+      const r = window.__igrejasCache?.find(g => g.id === id); if(!r) return;
+      document.getElementById('igrejaId').value = r.id||'';
+      document.getElementById('igrejaNome').value = r.nome||'';
+      document.getElementById('igrejaContato').value = r.contato||'';
+      document.getElementById('igrejaDiocese').value = r.diocese||'';
+      document.getElementById('igrejaParoquia').value = r.paroquia||'';
+      document.getElementById('igrejaPastor').value = r.pastor||'';
+      document.getElementById('igrejaTelefone').value = r.telefone||'';
+      document.getElementById('igrejaEmail').value = r.email||'';
+      document.getElementById('igrejaCidade').value = r.cidade||'';
+      document.getElementById('igrejaEstado').value = r.estado||'';
+      document.getElementById('igrejaStatus').value = r.status||'ativo';
+      msg('msgIgreja', 'Igreja carregada para edição.');
+    }
+
+    // MINISTÉRIOS
+    function limparFormMinisterio() {
+      limparMsg('msgMinisterio');
+      ['ministerioId','ministerioNome','ministerioContato','ministerioResponsavel','ministerioTelefone','ministerioEmail','ministerioCidade','ministerioEstado','ministerioDescricao'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      const t = document.getElementById('ministerioTipoParceria'); if(t) t.value = 'associado';
+      const s = document.getElementById('ministerioStatus'); if(s) s.value = 'ativo';
+    }
+    function editarMinisterio(id) {
+      const r = window.__ministeriosCache?.find(g => g.id === id); if(!r) return;
+      document.getElementById('ministerioId').value = r.id||'';
+      document.getElementById('ministerioNome').value = r.nome||'';
+      document.getElementById('ministerioContato').value = r.contato||'';
+      document.getElementById('ministerioResponsavel').value = r.responsavel||'';
+      document.getElementById('ministerioTipoParceria').value = r.tipoParceria||'associado';
+      document.getElementById('ministerioTelefone').value = r.telefone||'';
+      document.getElementById('ministerioEmail').value = r.email||'';
+      document.getElementById('ministerioCidade').value = r.cidade||'';
+      document.getElementById('ministerioEstado').value = r.estado||'';
+      document.getElementById('ministerioDescricao').value = r.descricao||'';
+      document.getElementById('ministerioStatus').value = r.status||'ativo';
+      msg('msgMinisterio', 'Ministério carregado para edição.');
+    }
+    async function salvarParceiro(tipo) {
+      const msgId = tipo === 'igrejas' ? 'msgIgreja' : 'msgMinisterio';
+      limparMsg(msgId);
+      const prefixo = tipo === 'igrejas' ? 'igreja' : 'ministerio';
+      const payload = {
+        id: document.getElementById(prefixo + 'Id').value,
+        nome: document.getElementById(prefixo + 'Nome').value,
+        contato: document.getElementById(prefixo + 'Contato').value,
+        telefone: document.getElementById(prefixo + 'Telefone').value,
+        email: document.getElementById(prefixo + 'Email').value,
+        cidade: document.getElementById(prefixo + 'Cidade').value,
+        estado: document.getElementById(prefixo + 'Estado').value,
+        status: document.getElementById(prefixo + 'Status').value,
+        ...(tipo === 'igrejas' ? {
+          diocese: document.getElementById('igrejaDiocese').value,
+          paroquia: document.getElementById('igrejaParoquia').value,
+          pastor: document.getElementById('igrejaPastor').value
+        } : {
+          responsavel: document.getElementById('ministerioResponsavel').value,
+          descricao: document.getElementById('ministerioDescricao').value,
+          tipoParceria: document.getElementById('ministerioTipoParceria').value
+        })
+      };
+      try {
+        const res = await fetch('/.netlify/functions/salvar-parceiro?tipo=' + tipo, {
+          method:'POST', headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.erro||'Falha');
+        msg(msgId, 'Salvo com sucesso.');
+        await carregarRede(tipo, tipo === 'igrejas' ? 'tabelaIgrejas' : 'tabelaMinisterios');
+        if(tipo === 'igrejas') limparFormIgreja(); else limparFormMinisterio();
+      } catch(err) { msg(msgId, err.message||'Erro ao salvar.', true); }
+    }
+
+    // METAS
+    function limparFormMeta() {
+      limparMsg('msgMeta');
+      ['metaId','metaTitulo','metaPeriodo','metaDataInicio','metaDataFim','metaDescricao','metaFocos'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      const p = document.getElementById('metaPrioridade'); if(p) p.value = 'normal';
+      const pub = document.getElementById('metaPublicado'); if(pub) pub.value = 'false';
+    }
+    function editarMeta(id) {
+      const r = window.__metasCache?.find(m => m.id === id); if(!r) return;
+      document.getElementById('metaId').value = r.id||'';
+      document.getElementById('metaTitulo').value = r.titulo||'';
+      document.getElementById('metaPeriodo').value = r.periodo||'';
+      document.getElementById('metaDataInicio').value = r.dataInicio||'';
+      document.getElementById('metaDataFim').value = r.dataFim||'';
+      document.getElementById('metaDescricao').value = r.descricao||'';
+      document.getElementById('metaFocos').value = Array.isArray(r.focos) ? r.focos.join('\n') : (r.focos||'');
+      document.getElementById('metaPrioridade').value = r.prioridade||'normal';
+      document.getElementById('metaPublicado').value = String(r.publicado||false);
+      msg('msgMeta', 'Meta carregada para edição.');
+    }
+    async function salvarMeta() {
+      limparMsg('msgMeta');
+      const payload = {
+        id: document.getElementById('metaId').value,
+        titulo: document.getElementById('metaTitulo').value,
+        periodo: document.getElementById('metaPeriodo').value,
+        dataInicio: document.getElementById('metaDataInicio').value,
+        dataFim: document.getElementById('metaDataFim').value,
+        descricao: document.getElementById('metaDescricao').value,
+        focos: document.getElementById('metaFocos').value,
+        prioridade: document.getElementById('metaPrioridade').value,
+        publicado: document.getElementById('metaPublicado').value === 'true'
+      };
+      try {
+        const res = await fetch('/.netlify/functions/salvar-meta', {
+          method:'POST', headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.erro||'Falha');
+        msg('msgMeta', 'Meta salva com sucesso.');
+        await carregarRede('metas-oracao','tabelaMetas');
+        limparFormMeta();
+      } catch(err) { msg('msgMeta', err.message||'Erro ao salvar.', true); }
+    }
+
+    // REUNIÕES
+    function limparFormReuniao() {
+      limparMsg('msgReuniao');
+      ['reuniaoId','reuniaoTitulo','reuniaoDataHora','reuniaoLocal','reuniaoLink','reuniaoPauta','reuniaoObservacoes'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      const t = document.getElementById('reuniaoTipo'); if(t) t.value = 'online';
+      const p = document.getElementById('reuniaoPublicoAlvo'); if(p) p.value = 'todos';
+      const pl = document.getElementById('reuniaoPlataforma'); if(pl) pl.value = '';
+      const s = document.getElementById('reuniaoStatus'); if(s) s.value = 'agendada';
+      const c = document.getElementById('reuniaoConfirmacoes'); if(c) c.value = '0';
+    }
+    function editarReuniao(id) {
+      const r = window.__reunioesCache?.find(m => m.id === id); if(!r) return;
+      document.getElementById('reuniaoId').value = r.id||'';
+      document.getElementById('reuniaoTitulo').value = r.titulo||'';
+      document.getElementById('reuniaoTipo').value = r.tipo||'online';
+      document.getElementById('reuniaoDataHora').value = r.dataHora ? r.dataHora.slice(0,16) : '';
+      document.getElementById('reuniaoPublicoAlvo').value = r.publicoAlvo||'todos';
+      document.getElementById('reuniaoLocal').value = r.local||'';
+      document.getElementById('reuniaoPlataforma').value = r.plataforma||'';
+      document.getElementById('reuniaoLink').value = r.linkVideoconferencia||'';
+      document.getElementById('reuniaoStatus').value = r.status||'agendada';
+      document.getElementById('reuniaoConfirmacoes').value = r.confirmacoes||0;
+      document.getElementById('reuniaoPauta').value = r.pauta||'';
+      document.getElementById('reuniaoObservacoes').value = r.observacoes||'';
+      msg('msgReuniao', 'Reunião carregada para edição.');
+    }
+    async function salvarReuniao() {
+      limparMsg('msgReuniao');
+      const payload = {
+        id: document.getElementById('reuniaoId').value,
+        titulo: document.getElementById('reuniaoTitulo').value,
+        tipo: document.getElementById('reuniaoTipo').value,
+        dataHora: document.getElementById('reuniaoDataHora').value,
+        publicoAlvo: document.getElementById('reuniaoPublicoAlvo').value,
+        local: document.getElementById('reuniaoLocal').value,
+        plataforma: document.getElementById('reuniaoPlataforma').value,
+        linkVideoconferencia: document.getElementById('reuniaoLink').value,
+        status: document.getElementById('reuniaoStatus').value,
+        confirmacoes: Number(document.getElementById('reuniaoConfirmacoes').value)||0,
+        pauta: document.getElementById('reuniaoPauta').value,
+        observacoes: document.getElementById('reuniaoObservacoes').value
+      };
+      try {
+        const res = await fetch('/.netlify/functions/salvar-reuniao', {
+          method:'POST', headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.erro||'Falha');
+        msg('msgReuniao', 'Reunião salva com sucesso.');
+        await carregarRede('reunioes','tabelaReunioes');
+        limparFormReuniao();
+      } catch(err) { msg('msgReuniao', err.message||'Erro ao salvar.', true); }
+    }
+
+    // CONVOCAÇÕES
+    function limparFormConvocacao() {
+      limparMsg('msgConvocacao');
+      ['convocacaoId','convocacaoTitulo','convocacaoMensagem'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      const t = document.getElementById('convocacaoTipo'); if(t) t.value = 'oração';
+      const c = document.getElementById('convocacaoCanal'); if(c) c.value = 'whatsapp';
+      const p = document.getElementById('convocacaoPublicoAlvo'); if(p) p.value = 'todos';
+      const u = document.getElementById('convocacaoUrgente'); if(u) u.value = 'false';
+      const s = document.getElementById('convocacaoStatus'); if(s) s.value = 'rascunho';
+      document.getElementById('linkWhatsAppBox').style.display = 'none';
+    }
+    function editarConvocacao(id) {
+      const r = window.__convocacoesCache?.find(c => c.id === id); if(!r) return;
+      document.getElementById('convocacaoId').value = r.id||'';
+      document.getElementById('convocacaoTitulo').value = r.titulo||'';
+      document.getElementById('convocacaoTipo').value = r.tipo||'oração';
+      document.getElementById('convocacaoCanal').value = r.canal||'whatsapp';
+      document.getElementById('convocacaoPublicoAlvo').value = r.publicoAlvo||'todos';
+      document.getElementById('convocacaoUrgente').value = String(r.urgente||false);
+      document.getElementById('convocacaoStatus').value = r.status||'rascunho';
+      document.getElementById('convocacaoMensagem').value = r.mensagem||'';
+      msg('msgConvocacao', 'Convocação carregada para edição.');
+    }
+    async function salvarConvocacao() {
+      limparMsg('msgConvocacao');
+      const payload = {
+        id: document.getElementById('convocacaoId').value,
+        titulo: document.getElementById('convocacaoTitulo').value,
+        tipo: document.getElementById('convocacaoTipo').value,
+        mensagem: document.getElementById('convocacaoMensagem').value,
+        canal: document.getElementById('convocacaoCanal').value,
+        publicoAlvo: document.getElementById('convocacaoPublicoAlvo').value,
+        urgente: document.getElementById('convocacaoUrgente').value === 'true',
+        status: document.getElementById('convocacaoStatus').value
+      };
+      try {
+        const res = await fetch('/.netlify/functions/salvar-convocacao', {
+          method:'POST', headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.erro||'Falha');
+        msg('msgConvocacao', 'Convocação salva com sucesso.');
+        await carregarRede('convocacoes','tabelaConvocacoes');
+        limparFormConvocacao();
+      } catch(err) { msg('msgConvocacao', err.message||'Erro ao salvar.', true); }
+    }
+    function gerarLinkWhatsApp() {
+      const mensagem = document.getElementById('convocacaoMensagem').value.trim();
+      if (!mensagem) { msg('msgConvocacao', 'Preencha a mensagem antes de gerar o link.', true); return; }
+      const link = 'https://wa.me/?text=' + encodeURIComponent(mensagem);
+      const box = document.getElementById('linkWhatsAppBox');
+      const a = document.getElementById('linkWhatsApp');
+      a.href = link; a.textContent = link;
+      box.style.display = 'block';
+    }
+    function gerarWAConvocacao(id) {
+      const r = window.__convocacoesCache?.find(c => c.id === id);
+      if (!r || !r.mensagem) { alert('Mensagem não encontrada.'); return; }
+      window.open('https://wa.me/?text=' + encodeURIComponent(r.mensagem), '_blank');
+    }
+
+    // WHATSAPP
+    const modelos = {
+      'convocacao': '🙏 *REMO — Barco da Fé*\n\nIrmão(ã), você está sendo convocado(a) para um momento especial de oração!\n\n📅 Data/hora: [INFORMAR]\n📍 Local/Link: [INFORMAR]\n\nSua intercessão faz diferença. Venha clamar!\n\n— Coordenação Barco da Fé',
+      'reuniao': '📅 *REMO — Barco da Fé*\n\n🔔 *LEMBRETE DE REUNIÃO*\n\nOlá! Passando para lembrar da nossa reunião:\n\n📌 [TÍTULO DA REUNIÃO]\n📅 Data: [DATA]\n⏰ Hora: [HORA]\n🔗 Link: [LINK]\n\nContamos com sua presença!\n\n— Coordenação Barco da Fé',
+      'meta': '🎯 *REMO — META DA SEMANA*\n\nAmados intercessores,\n\nNossa meta de oração para esta semana é:\n\n📌 [TÍTULO DA META]\n📅 Período: [PERÍODO]\n\nFocos de oração:\n• [FOCO 1]\n• [FOCO 2]\n• [FOCO 3]\n\nOremos juntos!\n\n— Coordenação Barco da Fé',
+      'urgente': '🚨 *URGENTE — REMO Barco da Fé* 🚨\n\nIrmão(ã), precisamos de sua oração AGORA!\n\n[DESCREVER A URGÊNCIA]\n\n🙏 Pare tudo e ore por 5 minutos.\n\nDeus ouve o clamor dos seus filhos!\n\n— Coordenação Barco da Fé',
+      'boas-vindas': '👋 *Bem-vindo(a) ao Barco da Fé — REMO!*\n\nOlá [NOME]! É uma alegria ter você conosco.\n\nVocê agora faz parte da nossa rede de intercessores.\n\n📱 Acesse seu painel: [LINK DO PAINEL]\n📅 Próxima reunião: [DATA/HORA]\n🎯 Meta atual: [META]\n\nOremos juntos!\n\n— Coordenação Barco da Fé'
+    };
+    function aplicarModelo() {
+      const v = document.getElementById('waModelo').value;
+      if (v && modelos[v]) document.getElementById('waMensagem').value = modelos[v];
+    }
+    function gerarLinkWA() {
+      const numero = document.getElementById('waNúmero').value.trim().replace(/\D/g,'');
+      const mensagem = document.getElementById('waMensagem').value.trim();
+      if (!mensagem) { alert('Preencha a mensagem.'); return; }
+      const base = numero ? `https://wa.me/${numero}` : 'https://wa.me/';
+      const link = base + '?text=' + encodeURIComponent(mensagem);
+      const box = document.getElementById('waResultado');
+      const a = document.getElementById('waLink');
+      a.href = link; a.textContent = link;
+      box.style.display = 'block';
     }
   </script>
 </body>

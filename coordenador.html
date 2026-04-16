@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel da Coordenação — REMO Barco da Fé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:#1A0808;color:var(--creme);min-height:100vh}
+    header{background:rgba(44,15,15,0.97);border-bottom:1px solid rgba(201,149,42,0.2);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:.75rem}
+    .brand img{height:40px;width:40px;border-radius:50%;object-fit:contain}
+    .brand-text{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:var(--ouro-lt)}
+    .brand-text span{display:block;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ouro-pale);font-weight:400}
+    .nav-links{display:flex;gap:1rem}
+    .nav-links a{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--creme);text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--ouro-lt)}
+    main{max-width:1200px;margin:0 auto;padding:2rem}
+    h1{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;color:var(--creme-lt);margin-bottom:.4rem}
+    .sub{font-size:.85rem;color:rgba(245,236,215,0.45);margin-bottom:2rem}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+    .stat{background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,.9));border:1px solid rgba(201,149,42,.18);border-radius:4px;padding:1.2rem;text-align:center}
+    .stat .num{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:var(--ouro-lt);display:block}
+    .stat .lbl{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,236,215,.4);margin-top:.3rem}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+    .card{background:linear-gradient(135deg,rgba(61,21,21,0.7),rgba(44,15,15,.85));border:1px solid rgba(201,149,42,.15);border-radius:6px;padding:1.4rem}
+    .card h2{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .meta-card{border-left:3px solid var(--ouro);padding:1rem;background:rgba(201,149,42,.06);border-radius:0 4px 4px 0;margin-bottom:.8rem}
+    .meta-titulo{font-weight:700;color:var(--creme-lt);margin-bottom:.3rem}
+    .meta-periodo{font-size:.78rem;color:var(--ouro);margin-bottom:.5rem}
+    .meta-foco{font-size:.82rem;color:rgba(245,236,215,.65);padding:.15rem 0;padding-left:.8rem;position:relative}
+    .meta-foco::before{content:'🙏';position:absolute;left:0;font-size:.7rem}
+    .reuniao-item{display:flex;flex-direction:column;gap:.25rem;padding:.8rem;border-bottom:1px solid rgba(201,149,42,.1)}
+    .reuniao-item:last-child{border-bottom:none}
+    .reuniao-titulo{font-weight:700;color:var(--creme-lt);font-size:.9rem}
+    .reuniao-meta{font-size:.78rem;color:rgba(245,236,215,.5);display:flex;gap:1rem;flex-wrap:wrap}
+    .reuniao-link a{color:var(--ouro-lt);font-size:.8rem;text-decoration:none;font-weight:700}
+    .reuniao-link a:hover{color:var(--ouro-pale)}
+    .tag{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.15rem .5rem;border-radius:2px}
+    .tag-online{background:rgba(37,211,102,.15);color:#7ef5b0}
+    .tag-presencial{background:rgba(201,149,42,.15);color:var(--ouro-lt)}
+    .tag-urgente{background:rgba(220,50,50,.2);color:#f5a0a0}
+    .acao-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;margin-bottom:1.5rem}
+    .btn-acao{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.2rem;background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,.9));border:1px solid rgba(201,149,42,.2);border-radius:6px;color:var(--creme);text-decoration:none;cursor:pointer;transition:all .2s;font-family:'Lato',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-align:center}
+    .btn-acao:hover{border-color:var(--ouro);background:rgba(201,149,42,.08);color:var(--ouro-lt)}
+    .btn-acao .icon{font-size:1.6rem}
+    .loading{text-align:center;padding:2rem;color:rgba(245,236,215,.35);font-style:italic;font-size:.9rem}
+    .vazio{text-align:center;padding:2rem;color:rgba(245,236,215,.3);font-style:italic;font-size:.85rem}
+    .prioridade-urgente{color:#f5a0a0;font-weight:700}
+    .prioridade-alta{color:var(--ouro-lt);font-weight:700}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="logo-remo.png" alt="REMO"/>
+      <div class="brand-text">Coordenação Geral<span>Barco da Fé — REMO</span></div>
+    </div>
+    <nav class="nav-links">
+      <a href="admin.html">⚙️ Admin</a>
+      <a href="lider-nucleo.html">👑 Líderes</a>
+      <a href="painel-intercessor.html">🙏 Intercessores</a>
+      <a href="index.html">🏠 Site</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>🎖️ Painel da Coordenação Geral</h1>
+    <p class="sub">Visão operacional da Rede de Clamor Barco da Fé</p>
+
+    <div class="stats" id="statsBox">
+      <div class="stat"><span class="num" id="sGrupos">—</span><span class="lbl">Grupos Ativos</span></div>
+      <div class="stat"><span class="num" id="sIntercessores">—</span><span class="lbl">Intercessores</span></div>
+      <div class="stat"><span class="num" id="sIgrejas">—</span><span class="lbl">Igrejas</span></div>
+      <div class="stat"><span class="num" id="sMinisterios">—</span><span class="lbl">Ministérios</span></div>
+      <div class="stat"><span class="num" id="sReunioes">—</span><span class="lbl">Próximas Reuniões</span></div>
+      <div class="stat"><span class="num" id="sMetas">—</span><span class="lbl">Meta Vigente</span></div>
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <div class="card">
+        <h2>⚡ Ações Rápidas da Coordenação</h2>
+        <div class="acao-grid">
+          <a class="btn-acao" href="admin.html" onclick="return navegarAdmin('metas')"><span class="icon">🎯</span>Nova Meta de Oração</a>
+          <a class="btn-acao" href="admin.html" onclick="return navegarAdmin('reunioes')"><span class="icon">📅</span>Agendar Reunião</a>
+          <a class="btn-acao" href="admin.html" onclick="return navegarAdmin('convocacoes')"><span class="icon">📣</span>Emitir Convocação</a>
+          <a class="btn-acao" href="admin.html" onclick="return navegarAdmin('grupos')"><span class="icon">🔥</span>Gerenciar Grupos</a>
+          <a class="btn-acao" href="admin.html" onclick="return navegarAdmin('igrejas')"><span class="icon">⛪</span>Gerenciar Igrejas</a>
+          <a class="btn-acao" href="admin.html" onclick="return navegarAdmin('whatsapp')"><span class="icon">📱</span>Enviar WhatsApp</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h2>🎯 Meta de Oração Vigente</h2>
+        <div id="metaAtiva"><div class="loading">Carregando...</div></div>
+      </div>
+      <div class="card">
+        <h2>📅 Próximas Reuniões</h2>
+        <div id="proximasReunioes"><div class="loading">Carregando...</div></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h2>📣 Últimas Convocações</h2>
+        <div id="ultimasConvocacoes"><div class="loading">Carregando...</div></div>
+      </div>
+      <div class="card">
+        <h2>📊 Resumo da Rede</h2>
+        <div id="resumoRede"><div class="loading">Carregando...</div></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function navegarAdmin(secao) {
+      sessionStorage.setItem('adminSecao', secao);
+      return true;
+    }
+
+    async function carregarDados() {
+      try {
+        const res = await fetch('/.netlify/functions/rede-listar');
+        if (!res.ok) throw new Error('Erro ' + res.status);
+        const d = await res.json();
+
+        // Stats
+        document.getElementById('sGrupos').textContent = d.totalGrupos;
+        document.getElementById('sReunioes').textContent = (d.reunioesFuturas||[]).length;
+        document.getElementById('sMetas').textContent = d.metaAtiva ? '✓' : '—';
+
+        // Meta ativa
+        const metaEl = document.getElementById('metaAtiva');
+        if (d.metaAtiva) {
+          const m = d.metaAtiva;
+          const prio = m.prioridade === 'urgente' ? 'prioridade-urgente' : m.prioridade === 'alta' ? 'prioridade-alta' : '';
+          metaEl.innerHTML = `
+            <div class="meta-card">
+              <div class="meta-titulo ${prio}">${esc(m.titulo)}</div>
+              <div class="meta-periodo">📅 ${esc(m.periodo||'')} | ${m.dataInicio||''} → ${m.dataFim||''}</div>
+              ${(m.focos||[]).map(f => `<div class="meta-foco">${esc(f)}</div>`).join('')}
+              ${m.descricao ? `<div style="font-size:.82rem;color:rgba(245,236,215,.5);margin-top:.5rem">${esc(m.descricao)}</div>` : ''}
+            </div>`;
+        } else {
+          metaEl.innerHTML = '<div class="vazio">Nenhuma meta vigente publicada.</div>';
+        }
+
+        // Próximas reuniões
+        const reunEl = document.getElementById('proximasReunioes');
+        if (d.reunioesFuturas && d.reunioesFuturas.length) {
+          reunEl.innerHTML = d.reunioesFuturas.map(r => {
+            const dt = new Date(r.dataHora);
+            const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+            return `<div class="reuniao-item">
+              <div class="reuniao-titulo">${esc(r.titulo)}</div>
+              <div class="reuniao-meta">
+                <span>📅 ${dtStr}</span>
+                <span class="tag tag-${r.tipo==='presencial'?'presencial':'online'}">${esc(r.tipo)}</span>
+                <span>👥 ${esc(r.publicoAlvo||'todos')}</span>
+              </div>
+              ${r.linkVideoconferencia ? `<div class="reuniao-link">🔗 <a href="${esc(r.linkVideoconferencia)}" target="_blank">${esc(r.plataforma||'Entrar')}</a></div>` : ''}
+            </div>`;
+          }).join('');
+        } else {
+          reunEl.innerHTML = '<div class="vazio">Nenhuma reunião agendada.</div>';
+        }
+
+        // Convocações
+        const convEl = document.getElementById('ultimasConvocacoes');
+        if (d.convocacoesAtivas && d.convocacoesAtivas.length) {
+          convEl.innerHTML = d.convocacoesAtivas.map(c => {
+            return `<div class="reuniao-item">
+              <div class="reuniao-titulo">${c.urgente?'🚨 ':''} ${esc(c.titulo)}</div>
+              <div class="reuniao-meta">
+                <span>${esc(c.tipo)}</span>
+                <span>📱 ${esc(c.canal)}</span>
+                <span>👥 ${esc(c.publicoAlvo||'todos')}</span>
+              </div>
+              <div style="font-size:.8rem;color:rgba(245,236,215,.45);margin-top:.3rem">${esc((c.mensagem||'').slice(0,120))}${(c.mensagem||'').length>120?'…':''}</div>
+            </div>`;
+          }).join('');
+        } else {
+          convEl.innerHTML = '<div class="vazio">Nenhuma convocação ativa.</div>';
+        }
+
+        // Resumo da rede (buscar contadores)
+        document.getElementById('resumoRede').innerHTML = `
+          <div style="display:grid;gap:.7rem">
+            <div style="display:flex;justify-content:space-between;padding:.6rem;background:rgba(201,149,42,.06);border-radius:3px">
+              <span style="font-size:.85rem">🔥 Grupos de Oração</span>
+              <span style="font-weight:700;color:var(--ouro-lt)">${d.totalGrupos}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.6rem;background:rgba(201,149,42,.06);border-radius:3px">
+              <span style="font-size:.85rem">📅 Reuniões Futuras</span>
+              <span style="font-weight:700;color:var(--ouro-lt)">${(d.reunioesFuturas||[]).length}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.6rem;background:rgba(201,149,42,.06);border-radius:3px">
+              <span style="font-size:.85rem">📣 Convocações Ativas</span>
+              <span style="font-weight:700;color:var(--ouro-lt)">${(d.convocacoesAtivas||[]).length}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.6rem;background:rgba(201,149,42,.06);border-radius:3px">
+              <span style="font-size:.85rem">🎯 Meta Vigente</span>
+              <span style="font-weight:700;color:var(--ouro-lt)">${d.metaAtiva ? '✅ Sim' : '—'}</span>
+            </div>
+          </div>`;
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('metaAtiva').innerHTML = '<div class="vazio">Erro ao carregar dados da rede.</div>';
+        document.getElementById('proximasReunioes').innerHTML = '<div class="vazio">Erro ao carregar.</div>';
+      }
+    }
+
+    async function carregarContadores() {
+      const ADMIN_TOKEN = 'remo-admin-2025';
+      const cols = [
+        ['intercessores','sIntercessores'],
+        ['igrejas','sIgrejas'],
+        ['ministerios','sMinisterios']
+      ];
+      for (const [col, elId] of cols) {
+        try {
+          const res = await fetch('/.netlify/functions/admin-listar?colecao=' + col, {
+            headers: { 'x-admin-token': ADMIN_TOKEN }
+          });
+          if (res.ok) {
+            const d = await res.json();
+            const el = document.getElementById(elId);
+            if (el) el.textContent = d.total;
+          }
+        } catch (_) {}
+      }
+    }
+
+    function esc(v) {
+      return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    carregarDados();
+    carregarContadores();
+  </script>
+</body>
+</html>

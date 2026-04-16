@@ -25,3 +25,18 @@
   from = "/admin"
   to = "/admin.html"
   status = 200
+
+[[redirects]]
+  from = "/coordenador"
+  to = "/coordenador.html"
+  status = 200
+
+[[redirects]]
+  from = "/lider"
+  to = "/lider-nucleo.html"
+  status = 200
+
+[[redirects]]
+  from = "/intercessor"
+  to = "/painel-intercessor.html"
+  status = 200

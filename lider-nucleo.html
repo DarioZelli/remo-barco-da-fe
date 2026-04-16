@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel do Líder de Núcleo — REMO Barco da Fé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:#1A0808;color:var(--creme);min-height:100vh}
+    header{background:rgba(44,15,15,0.97);border-bottom:1px solid rgba(201,149,42,0.2);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+    .brand{display:flex;align-items:center;gap:.75rem}
+    .brand img{height:40px;width:40px;border-radius:50%;object-fit:contain}
+    .brand-text{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:var(--ouro-lt)}
+    .brand-text span{display:block;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ouro-pale);font-weight:400}
+    .nav-links{display:flex;gap:1rem;flex-wrap:wrap}
+    .nav-links a{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--creme);text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:var(--ouro-lt)}
+    main{max-width:1000px;margin:0 auto;padding:2rem}
+    h1{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:700;color:var(--creme-lt);margin-bottom:.4rem}
+    .sub{font-size:.85rem;color:rgba(245,236,215,.45);margin-bottom:2rem}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+    .card{background:linear-gradient(135deg,rgba(61,21,21,0.7),rgba(44,15,15,.85));border:1px solid rgba(201,149,42,.15);border-radius:6px;padding:1.4rem}
+    .card h2{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .meta-card{border-left:3px solid var(--ouro);padding:1rem;background:rgba(201,149,42,.06);border-radius:0 4px 4px 0;margin-bottom:.8rem}
+    .meta-titulo{font-weight:700;color:var(--creme-lt);margin-bottom:.3rem}
+    .meta-periodo{font-size:.78rem;color:var(--ouro);margin-bottom:.5rem}
+    .meta-foco{font-size:.82rem;color:rgba(245,236,215,.65);padding:.2rem 0 .2rem .9rem;position:relative}
+    .meta-foco::before{content:'•';position:absolute;left:0;color:var(--ouro)}
+    .reuniao-item{display:flex;flex-direction:column;gap:.25rem;padding:.8rem;border-bottom:1px solid rgba(201,149,42,.1)}
+    .reuniao-item:last-child{border-bottom:none}
+    .reuniao-titulo{font-weight:700;color:var(--creme-lt);font-size:.9rem}
+    .reuniao-meta{font-size:.78rem;color:rgba(245,236,215,.5);display:flex;gap:.8rem;flex-wrap:wrap}
+    .reuniao-link a{color:var(--ouro-lt);font-size:.82rem;text-decoration:none;font-weight:700}
+    .reuniao-link a:hover{text-decoration:underline}
+    .tag-online{background:rgba(37,211,102,.15);color:#7ef5b0;font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:2px;letter-spacing:.1em;text-transform:uppercase}
+    .tag-presencial{background:rgba(201,149,42,.15);color:var(--ouro-lt);font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:2px;letter-spacing:.1em;text-transform:uppercase}
+    .grupo-card{background:rgba(201,149,42,.06);border:1px solid rgba(201,149,42,.15);border-radius:4px;padding:1rem;margin-bottom:.8rem}
+    .grupo-nome{font-weight:700;color:var(--creme-lt);font-size:.95rem;margin-bottom:.4rem}
+    .grupo-info{font-size:.8rem;color:rgba(245,236,215,.5);display:flex;gap:1rem;flex-wrap:wrap}
+    .form-group{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.8rem}
+    .form-group label{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro)}
+    .form-group input,.form-group textarea,.form-group select{background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,.25);border-radius:3px;padding:.65rem .8rem;font-family:'Lato',sans-serif;font-size:.9rem;color:var(--creme);width:100%}
+    .btn{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.55rem 1.2rem;border-radius:3px;border:none;cursor:pointer;transition:all .2s}
+    .btn-ouro{background:var(--ouro);color:var(--vinho)}
+    .btn-ouro:hover{background:var(--ouro-lt)}
+    .btn-outline{background:none;border:1px solid rgba(201,149,42,.3);color:var(--ouro)}
+    .btn-outline:hover{background:rgba(201,149,42,.1)}
+    .msg-ok{font-size:.8rem;color:#a0e0a0}
+    .msg-erro{font-size:.8rem;color:#e0a0a0}
+    .loading{text-align:center;padding:2rem;color:rgba(245,236,215,.35);font-style:italic;font-size:.9rem}
+    .vazio{text-align:center;padding:2rem;color:rgba(245,236,215,.3);font-style:italic;font-size:.85rem}
+    .urgente-banner{background:rgba(220,50,50,.15);border:1px solid rgba(220,50,50,.3);border-radius:4px;padding:.8rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#f5b0b0;font-weight:700}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="logo-remo.png" alt="REMO"/>
+      <div class="brand-text">Líder de Núcleo<span>Barco da Fé — REMO</span></div>
+    </div>
+    <nav class="nav-links">
+      <a href="coordenador.html">🎖️ Coordenação</a>
+      <a href="painel-intercessor.html">🙏 Intercessores</a>
+      <a href="index.html">🏠 Site</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>👑 Painel do Líder de Núcleo</h1>
+    <p class="sub">Gerencie seu grupo, acompanhe as metas e organize os encontros</p>
+
+    <div id="urgenteBanner" style="display:none"></div>
+
+    <div class="grid2">
+      <div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <h2>🎯 Meta de Oração desta Semana</h2>
+          <div id="metaAtiva"><div class="loading">Carregando...</div></div>
+        </div>
+        <div class="card">
+          <h2>📅 Próximas Reuniões</h2>
+          <div id="proximasReunioes"><div class="loading">Carregando...</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <h2>📣 Convocações Recentes</h2>
+          <div id="convocacoes"><div class="loading">Carregando...</div></div>
+        </div>
+        <div class="card">
+          <h2>🔥 Registrar Encontro do Grupo</h2>
+          <p style="font-size:.8rem;color:rgba(245,236,215,.4);margin-bottom:1rem">Registre a realização de um encontro do seu grupo de oração.</p>
+          <div class="form-group">
+            <label>Nome do Grupo</label>
+            <input id="fGrupo" type="text" placeholder="Nome do seu grupo"/>
+          </div>
+          <div class="form-group">
+            <label>Data do Encontro</label>
+            <input id="fData" type="date"/>
+          </div>
+          <div class="form-group">
+            <label>Nº de Participantes</label>
+            <input id="fParticipantes" type="number" min="1" value="1"/>
+          </div>
+          <div class="form-group">
+            <label>Observações</label>
+            <textarea id="fObs" rows="3" placeholder="Como foi o encontro? Pedidos especiais, testemunhos..."></textarea>
+          </div>
+          <div style="display:flex;gap:.6rem;align-items:center">
+            <button class="btn btn-ouro" onclick="registrarEncontro()">💾 Registrar</button>
+            <span id="msgEncontro"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📱 Gerar Mensagem WhatsApp para o Grupo</h2>
+      <p style="font-size:.8rem;color:rgba(245,236,215,.4);margin-bottom:1rem">Copie a meta da semana ou crie uma mensagem de convocação para compartilhar no grupo.</p>
+      <div class="form-group">
+        <label>Mensagem</label>
+        <textarea id="waMsgGrupo" rows="8" placeholder="Olá grupo! Esta semana nossa meta de oração é..."></textarea>
+      </div>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:.8rem">
+        <button class="btn btn-outline" onclick="preencherMeta()">🎯 Usar Meta Atual</button>
+        <button class="btn btn-outline" onclick="preencherReuniao()">📅 Usar Próxima Reunião</button>
+        <button class="btn btn-ouro" onclick="abrirWhatsApp()">📱 Abrir WhatsApp</button>
+      </div>
+      <div id="waResultadoGrupo" style="display:none;padding:.8rem;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);border-radius:4px">
+        <div style="font-size:.75rem;color:#7ef5b0;margin-bottom:.4rem;font-weight:700">✅ LINK GERADO</div>
+        <a id="waLinkGrupo" href="#" target="_blank" style="color:#7ef5b0;word-break:break-all;font-size:.8rem"></a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let _metaAtiva = null;
+    let _proximaReuniao = null;
+
+    function esc(v) {
+      return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function carregarDados() {
+      try {
+        const res = await fetch('/.netlify/functions/rede-listar');
+        if (!res.ok) throw new Error();
+        const d = await res.json();
+        _metaAtiva = d.metaAtiva;
+        _proximaReuniao = (d.reunioesFuturas||[])[0] || null;
+
+        // Banner urgente
+        const urgentes = (d.convocacoesAtivas||[]).filter(c => c.urgente);
+        if (urgentes.length) {
+          const b = document.getElementById('urgenteBanner');
+          b.style.display = 'block';
+          b.innerHTML = urgentes.map(u => `<div class="urgente-banner">🚨 URGENTE: ${esc(u.titulo)} — ${esc((u.mensagem||'').slice(0,100))}</div>`).join('');
+        }
+
+        // Meta
+        const metaEl = document.getElementById('metaAtiva');
+        if (_metaAtiva) {
+          const m = _metaAtiva;
+          metaEl.innerHTML = `<div class="meta-card">
+            <div class="meta-titulo">${esc(m.titulo)}</div>
+            <div class="meta-periodo">📅 ${esc(m.periodo||m.dataInicio+' → '+m.dataFim)}</div>
+            ${(m.focos||[]).map(f => `<div class="meta-foco">${esc(f)}</div>`).join('')}
+          </div>`;
+        } else {
+          metaEl.innerHTML = '<div class="vazio">Nenhuma meta publicada esta semana.</div>';
+        }
+
+        // Reuniões
+        const reunEl = document.getElementById('proximasReunioes');
+        if (d.reunioesFuturas && d.reunioesFuturas.length) {
+          reunEl.innerHTML = d.reunioesFuturas.slice(0,3).map(r => {
+            const dt = new Date(r.dataHora);
+            const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+            return `<div class="reuniao-item">
+              <div class="reuniao-titulo">${esc(r.titulo)}</div>
+              <div class="reuniao-meta">
+                <span>📅 ${dtStr}</span>
+                <span class="tag-${r.tipo==='presencial'?'presencial':'online'}">${esc(r.tipo)}</span>
+                ${r.local ? `<span>📍 ${esc(r.local)}</span>` : ''}
+              </div>
+              ${r.linkVideoconferencia ? `<div class="reuniao-link">🔗 <a href="${esc(r.linkVideoconferencia)}" target="_blank">Entrar na ${esc(r.plataforma||'reunião')}</a></div>` : ''}
+              ${r.pauta ? `<div style="font-size:.78rem;color:rgba(245,236,215,.4);margin-top:.3rem;white-space:pre-line">${esc(r.pauta.slice(0,200))}</div>` : ''}
+            </div>`;
+          }).join('');
+        } else {
+          reunEl.innerHTML = '<div class="vazio">Nenhuma reunião agendada.</div>';
+        }
+
+        // Convocações
+        const convEl = document.getElementById('convocacoes');
+        if (d.convocacoesAtivas && d.convocacoesAtivas.length) {
+          convEl.innerHTML = d.convocacoesAtivas.map(c => {
+            return `<div class="reuniao-item">
+              <div class="reuniao-titulo">${c.urgente?'🚨 ':''} ${esc(c.titulo)}</div>
+              <div class="reuniao-meta"><span>${esc(c.tipo)}</span><span>📱 ${esc(c.canal)}</span></div>
+              <div style="font-size:.8rem;color:rgba(245,236,215,.4);margin-top:.3rem">${esc((c.mensagem||'').slice(0,120))}${(c.mensagem||'').length>120?'…':''}</div>
+              <div style="margin-top:.4rem"><button style="font-size:.72rem;background:none;border:1px solid rgba(37,211,102,.3);color:#7ef5b0;padding:.2rem .6rem;border-radius:2px;cursor:pointer" onclick='compartilharWA(${JSON.stringify(c.mensagem||"")})'>📱 Compartilhar</button></div>
+            </div>`;
+          }).join('');
+        } else {
+          convEl.innerHTML = '<div class="vazio">Nenhuma convocação ativa.</div>';
+        }
+      } catch (err) {
+        document.getElementById('metaAtiva').innerHTML = '<div class="vazio">Erro ao carregar dados.</div>';
+        document.getElementById('proximasReunioes').innerHTML = '<div class="vazio">Erro ao carregar.</div>';
+        document.getElementById('convocacoes').innerHTML = '<div class="vazio">Erro ao carregar.</div>';
+      }
+    }
+
+    function compartilharWA(mensagem) {
+      if (!mensagem) return;
+      window.open('https://wa.me/?text=' + encodeURIComponent(mensagem), '_blank');
+    }
+
+    function preencherMeta() {
+      if (!_metaAtiva) { alert('Nenhuma meta vigente encontrada.'); return; }
+      const m = _metaAtiva;
+      let txt = `🎯 *REMO — Meta de Oração da Semana*\n\n📌 ${m.titulo}\n`;
+      if (m.periodo) txt += `📅 ${m.periodo}\n`;
+      if (m.descricao) txt += `\n${m.descricao}\n`;
+      if (m.focos && m.focos.length) txt += `\nFocos de oração:\n${m.focos.map(f => '• ' + f).join('\n')}`;
+      txt += '\n\nOremos juntos! 🙏\n— Barco da Fé | REMO';
+      document.getElementById('waMsgGrupo').value = txt;
+    }
+
+    function preencherReuniao() {
+      if (!_proximaReuniao) { alert('Nenhuma reunião próxima encontrada.'); return; }
+      const r = _proximaReuniao;
+      const dt = new Date(r.dataHora);
+      const dtStr = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      let txt = `📅 *REMO — ${r.titulo}*\n\nOlá grupo! Temos uma reunião agendada:\n\n📌 ${r.titulo}\n⏰ ${dtStr}\n`;
+      if (r.tipo === 'online' || r.tipo === 'híbrido') {
+        if (r.linkVideoconferencia) txt += `🔗 ${r.linkVideoconferencia}\n`;
+        if (r.plataforma) txt += `💻 Plataforma: ${r.plataforma}\n`;
+      }
+      if (r.local) txt += `📍 ${r.local}\n`;
+      if (r.pauta) txt += `\nPauta:\n${r.pauta}`;
+      txt += '\n\nContamos com sua presença! 🙏\n— Barco da Fé | REMO';
+      document.getElementById('waMsgGrupo').value = txt;
+    }
+
+    function abrirWhatsApp() {
+      const msg = document.getElementById('waMsgGrupo').value.trim();
+      if (!msg) { alert('Preencha a mensagem.'); return; }
+      const link = 'https://wa.me/?text=' + encodeURIComponent(msg);
+      const box = document.getElementById('waResultadoGrupo');
+      const a = document.getElementById('waLinkGrupo');
+      a.href = link; a.textContent = link;
+      box.style.display = 'block';
+      window.open(link, '_blank');
+    }
+
+    async function registrarEncontro() {
+      const el = document.getElementById('msgEncontro');
+      el.className = ''; el.textContent = '';
+      const grupo = document.getElementById('fGrupo').value.trim();
+      const data = document.getElementById('fData').value;
+      const participantes = Number(document.getElementById('fParticipantes').value)||1;
+      const obs = document.getElementById('fObs').value;
+      if (!grupo || !data) { el.className = 'msg-erro'; el.textContent = 'Preencha o nome do grupo e a data.'; return; }
+      const registro = {
+        nome: 'encontro_' + Date.now(),
+        tipo: 'encontro',
+        lider: grupo,
+        telefone: 'registro-lider',
+        horarioEncontro: data,
+        membros: participantes,
+        descricao: obs,
+        status: 'ativo'
+      };
+      try {
+        const res = await fetch('/.netlify/functions/salvar-grupo', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','x-admin-token':'remo-admin-2025'},
+          body: JSON.stringify({...registro, nome: grupo + ' — Encontro ' + data})
+        });
+        if (res.ok) {
+          el.className = 'msg-ok'; el.textContent = '✅ Encontro registrado com sucesso!';
+          document.getElementById('fObs').value = '';
+        } else {
+          throw new Error();
+        }
+      } catch (_) {
+        el.className = 'msg-erro'; el.textContent = 'Erro ao registrar. Tente novamente.';
+      }
+    }
+
+    carregarDados();
+  </script>
+</body>
+</html>
