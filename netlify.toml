@@ -21,7 +21,153 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+[[headers]]
+  for = "/painel-admin.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/painel-coordenacao.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/painel-intercessor.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/painel-lider.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/aluno.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# ── Rotas públicas ──────────────────────────────────────────
+[[redirects]]
+  from = "/pedir-oracao"
+  to = "/pedido-oracao.html"
+  status = 200
+
+[[redirects]]
+  from = "/pedidos"
+  to = "/pedidos.html"
+  status = 200
+
+[[redirects]]
+  from = "/pedidos/tema/:slug"
+  to = "/pedidos-tema.html"
+  status = 200
+
+[[redirects]]
+  from = "/testemunhos"
+  to = "/testemunhos.html"
+  status = 200
+
+[[redirects]]
+  from = "/parceiros"
+  to = "/parceiros.html"
+  status = 200
+
+[[redirects]]
+  from = "/campanhas"
+  to = "/campanhas.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+
+[[redirects]]
+  from = "/agenda"
+  to = "/agenda.html"
+  status = 200
+
+# ── Barco da Fé ─────────────────────────────────────────────
+[[redirects]]
+  from = "/barco-da-fe"
+  to = "/barco-da-fe.html"
+  status = 200
+
+[[redirects]]
+  from = "/barco-da-fe/inscricao"
+  to = "/candidatura.html"
+  status = 200
+
+[[redirects]]
+  from = "/barco-da-fe/relogio-de-oracao"
+  to = "/relogio.html"
+  status = 200
+
+[[redirects]]
+  from = "/barco-da-fe/reunioes"
+  to = "/agenda.html"
+  status = 200
+
+# ── Rede de Clamor ──────────────────────────────────────────
+[[redirects]]
+  from = "/rede"
+  to = "/rede-de-clamor.html"
+  status = 200
+
+[[redirects]]
+  from = "/rede/intercessor"
+  to = "/intercessor.html"
+  status = 200
+
+[[redirects]]
+  from = "/rede/grupo"
+  to = "/cadastro-grupo.html"
+  status = 200
+
+# ── Painel de Gestão ────────────────────────────────────────
+[[redirects]]
+  from = "/painel"
+  to = "/painel-login.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/login"
+  to = "/painel-login.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/admin"
+  to = "/painel-admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/admin-classico"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/coordenacao"
+  to = "/painel-coordenacao.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/intercessor"
+  to = "/painel-intercessor.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/lider"
+  to = "/painel-lider.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/formacao"
+  to = "/aluno.html"
+  status = 200
+
+# ── Legado ──────────────────────────────────────────────────
 [[redirects]]
   from = "/admin"
   to = "/admin.html"
   status = 200
+

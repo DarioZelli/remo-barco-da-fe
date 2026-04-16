@@ -15,7 +15,26 @@ exports.handler = async function(event) {
   }
 
   const colecao = event.queryStringParameters?.colecao || 'pedidos-oracao';
-  const colecoesPermitidas = ['pedidos-oracao', 'candidaturas-bf', 'relogio-oracao', 'intercessores'];
+  const colecoesPermitidas = [
+    'pedidos-oracao',
+    'candidaturas-bf',
+    'relogio-oracao',
+    'intercessores',
+    'testemunhos',
+    'parceiros',
+    'grupos',
+    'campanhas-doacoes',
+    'doacoes',
+    'reunioes',
+    'convocacoes',
+    'blog-posts',
+    'alunos',
+    'bf-matriculas',
+    'bf-mensagens',
+    'bf-envios',
+    'bf-certificados',
+    'admin-sessoes'
+  ];
 
   if (!colecoesPermitidas.includes(colecao)) {
     return { statusCode: 400, body: JSON.stringify({ erro: 'Coleção inválida' }) };
