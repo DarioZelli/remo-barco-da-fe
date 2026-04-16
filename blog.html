@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Blog — REMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--vinho);color:var(--creme);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 3rem;background:rgba(44,15,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,0.2)}
+.nav-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+.nav-logo img{height:40px;width:40px;object-fit:contain;border-radius:50%}
+.nav-logo-text{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--ouro-lt);line-height:1.2}
+.nav-logo-text span{display:block;font-size:0.58rem;font-weight:400;letter-spacing:0.2em;color:var(--ouro-pale);text-transform:uppercase}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--creme);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ouro-lt)}
+.nav-cta{background:var(--ouro)!important;color:var(--vinho)!important;padding:0.4rem 1rem;border-radius:2px}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:0}
+.hamburger span{display:block;width:24px;height:2px;background:var(--ouro-lt);border-radius:2px;transition:all 0.3s}
+@media(max-width:768px){.nav-links{display:none;position:fixed;top:61px;left:0;right:0;background:rgba(44,15,15,0.98);flex-direction:column;padding:1.5rem;gap:1rem;align-items:center;text-align:center}.nav-links.open{display:flex;align-items:center;text-align:center}.hamburger{display:flex}nav{padding:0.9rem 1.2rem}}
+
+.page-hero{padding:7rem 2rem 3rem;text-align:center;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 0%,rgba(90,32,32,0.5) 0%,transparent 70%)}
+.page-hero-content{position:relative;z-index:1}
+.page-badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:var(--ouro);color:var(--vinho);padding:0.2rem 0.7rem;border-radius:2px;margin-bottom:0.8rem}
+.page-title{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3.2rem);font-weight:900;color:var(--creme-lt);margin-bottom:1rem;line-height:1.1}
+.page-title em{font-style:normal;color:var(--ouro-lt)}
+.page-desc{font-size:1rem;font-weight:300;line-height:1.8;color:rgba(245,236,215,0.72);max-width:600px;margin:0 auto}
+.page-divider{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:1.5rem auto 0}
+
+.filter-bar{padding:1.5rem 2rem;background:rgba(61,21,21,0.4);border-bottom:1px solid rgba(201,149,42,0.1)}
+.filter-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.filter-inner label{font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);white-space:nowrap}
+.filter-inner select{background:rgba(44,15,15,0.8);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.55rem 1rem;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:300;color:var(--creme);outline:none;cursor:pointer}
+.filter-inner select:focus{border-color:var(--ouro)}
+select option{background:#3D1515;color:var(--creme)}
+
+.content-section{padding:3rem 2rem 5rem}
+.section-inner{max-width:1100px;margin:0 auto}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+@media(max-width:900px){.cards-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.cards-grid{grid-template-columns:1fr}}
+
+.post-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:6px;padding:1.8rem;position:relative;overflow:hidden;transition:border-color 0.3s,transform 0.2s;display:flex;flex-direction:column}
+.post-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+.post-card:hover{border-color:rgba(201,149,42,0.4);transform:translateY(-2px)}
+.post-cat{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:rgba(201,149,42,0.15);color:var(--ouro);padding:0.15rem 0.5rem;border-radius:2px;display:inline-block;margin-bottom:0.8rem;align-self:flex-start}
+.post-titulo{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--creme-lt);margin-bottom:0.6rem;line-height:1.4}
+.post-resumo{font-size:0.88rem;font-weight:300;color:rgba(245,236,215,0.72);line-height:1.7;margin-bottom:1rem;flex:1}
+.post-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.post-data{font-size:0.72rem;color:rgba(245,236,215,0.4)}
+.post-link{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(201,149,42,0.5);cursor:default}
+.empty-state{text-align:center;padding:4rem 2rem;grid-column:1/-1;color:rgba(245,236,215,0.4)}
+.load-more-wrap{text-align:center;margin-top:2.5rem}
+.btn-more{background:transparent;color:var(--ouro-lt);font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.75rem 2rem;border:1px solid rgba(201,149,42,0.35);border-radius:3px;cursor:pointer;transition:border-color 0.2s,color 0.2s}
+.btn-more:hover{border-color:var(--ouro);color:var(--ouro-pale)}
+.btn-more:disabled{opacity:0.4;cursor:not-allowed}
+footer{text-align:center;padding:2.5rem 2rem;border-top:1px solid rgba(201,149,42,0.1);font-size:0.78rem;color:rgba(245,236,215,0.35)}
+footer a{color:rgba(245,236,215,0.35);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/logo-remo.png" alt="REMO"/>
+    <div class="nav-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="/pedir-oracao">Orar</a></li>
+    <li><a href="/pedidos">Pedidos</a></li>
+    <li><a href="/barco-da-fe">Barco da Fé</a></li>
+    <li><a href="/rede">Rede</a></li>
+    <li><a href="/agenda">Agenda</a></li>
+    <li><a href="/painel/login" class="nav-cta">Entrar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-content">
+    <span class="page-badge">✍️ Artigos e Ensinos</span>
+    <h1 class="page-title">Ensino e <em>Direção</em></h1>
+    <p class="page-desc">Artigos sobre intercessão, vida espiritual e missão.</p>
+    <div class="page-divider"></div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-inner">
+    <label for="catSelect">Categoria:</label>
+    <select id="catSelect">
+      <option value="">Todas as categorias</option>
+      <option value="intercessao">Intercessão</option>
+      <option value="vida-espiritual">Vida Espiritual</option>
+      <option value="missao">Missão</option>
+      <option value="formacao">Formação</option>
+      <option value="testemunhos">Testemunhos</option>
+      <option value="outros">Outros</option>
+    </select>
+  </div>
+</div>
+
+<div class="content-section">
+  <div class="section-inner">
+    <div class="cards-grid" id="blogGrid">
+      <div class="empty-state"><p>Carregando artigos…</p></div>
+    </div>
+    <div class="load-more-wrap">
+      <button class="btn-more" id="btnMais" style="display:none" onclick="carregarMais()">Carregar mais artigos</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 REMO — Rede Mundial de Orações &nbsp;·&nbsp; <a href="/">Início</a> &nbsp;·&nbsp; contato@globalremo.com</p>
+</footer>
+
+<script>
+document.getElementById('hamburger').addEventListener('click',()=>{document.getElementById('navLinks').classList.toggle('open')});
+
+let paginaAtual=1;
+let catAtual='';
+
+function formatarData(ds){
+  if(!ds)return '';
+  try{return new Date(ds).toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});}catch(e){return ds;}
+}
+
+function renderPost(p){
+  return `<div class="post-card">
+    <span class="post-cat">${p.categoria||p.category||'Artigo'}</span>
+    <div class="post-titulo">${p.titulo||p.title||''}</div>
+    <p class="post-resumo">${p.resumo||p.summary||''}</p>
+    <div class="post-footer">
+      <span class="post-data">${formatarData(p.publicadoEm||p.createdAt||p.data)}</span>
+      <span class="post-link" title="Em breve">Ler mais →</span>
+    </div>
+  </div>`;
+}
+
+async function carregarPosts(reset=false){
+  if(reset){paginaAtual=1;document.getElementById('blogGrid').innerHTML='';}
+  const btn=document.getElementById('btnMais');
+  btn.disabled=true;
+  let url=`/.netlify/functions/blog-listar?pagina=${paginaAtual}`;
+  if(catAtual)url+=`&categoria=${encodeURIComponent(catAtual)}`;
+  try{
+    const r=await fetch(url);
+    const d=await r.json();
+    const lista=d.posts||d||[];
+    const grid=document.getElementById('blogGrid');
+    if(!lista.length&&paginaAtual===1){
+      grid.innerHTML='<div class="empty-state"><p>Nenhum post encontrado nesta categoria.</p></div>';
+      btn.style.display='none';return;
+    }
+    lista.forEach(p=>{grid.innerHTML+=renderPost(p);});
+    if(lista.length<(d.porPagina||12)||lista.length===0){btn.style.display='none';}
+    else{btn.style.display='inline-block';btn.disabled=false;}
+  }catch(e){
+    if(paginaAtual===1)document.getElementById('blogGrid').innerHTML='<div class="empty-state"><p>Não foi possível carregar os artigos.</p></div>';
+    btn.style.display='none';
+  }
+}
+
+function carregarMais(){paginaAtual++;carregarPosts();}
+
+document.getElementById('catSelect').addEventListener('change',function(){catAtual=this.value;carregarPosts(true);});
+
+carregarPosts(true);
+</script>
+</body>
+</html>

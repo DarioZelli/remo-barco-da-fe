@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Painel REMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--vinho);color:var(--creme);min-height:100vh}
+
+/* HEADER */
+.painel-header{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 2rem;background:rgba(44,15,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,0.2)}
+.header-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+.header-logo img{height:36px;width:36px;object-fit:contain;border-radius:50%}
+.header-logo-text{font-family:'Cinzel',serif;font-size:0.88rem;font-weight:700;color:var(--ouro-lt)}
+.header-center{font-family:'Cinzel',serif;font-size:0.82rem;font-weight:600;color:var(--ouro-pale);letter-spacing:0.12em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:0.8rem}
+.btn-sair{background:transparent;color:rgba(245,236,215,0.5);font-family:'Lato',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;border:1px solid rgba(245,236,215,0.2);padding:0.35rem 0.9rem;border-radius:2px;cursor:pointer;transition:color 0.2s,border-color 0.2s}
+.btn-sair:hover{color:var(--creme);border-color:rgba(245,236,215,0.5)}
+
+/* NAV LATERAL */
+.layout{display:flex;min-height:100vh;padding-top:61px}
+.sidebar{width:220px;flex-shrink:0;background:rgba(44,15,15,0.5);border-right:1px solid rgba(201,149,42,0.12);padding:1.5rem 0;position:sticky;top:61px;height:calc(100vh - 61px);overflow-y:auto}
+.sidebar-nav{list-style:none}
+.sidebar-nav li a{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 1.4rem;font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,236,215,0.55);text-decoration:none;transition:color 0.2s,background 0.2s}
+.sidebar-nav li a:hover{color:var(--ouro-lt);background:rgba(201,149,42,0.06)}
+.sidebar-nav li a.ativo{color:var(--ouro);background:rgba(201,149,42,0.1);border-right:2px solid var(--ouro)}
+.sidebar-sep{height:1px;background:rgba(201,149,42,0.1);margin:0.8rem 1.4rem}
+.sidebar-label{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(245,236,215,0.25);padding:0.5rem 1.4rem 0.3rem}
+
+/* CONTEÚDO */
+.main{flex:1;padding:2rem;overflow-x:hidden}
+.section-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(201,149,42,0.15)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.stats-grid{grid-template-columns:1fr 1fr}}
+.stat-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:5px;padding:1.3rem;text-align:center}
+.stat-num{font-family:'Cinzel',serif;font-size:1.9rem;font-weight:900;color:var(--ouro-lt);display:block}
+.stat-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,236,215,0.45);margin-top:0.25rem}
+
+/* AÇÕES */
+.acoes-row{display:flex;gap:0.7rem;flex-wrap:wrap;margin-bottom:2rem}
+.btn-acao{background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;border:none;padding:0.55rem 1.1rem;border-radius:3px;cursor:pointer;transition:background 0.2s}
+.btn-acao:hover{background:var(--ouro-lt)}
+.btn-acao.ghost{background:transparent;color:var(--ouro-lt);border:1px solid rgba(201,149,42,0.4)}
+.btn-acao.ghost:hover{border-color:var(--ouro);color:var(--ouro-pale)}
+.btn-acao.danger{background:rgba(180,30,30,0.8);color:var(--creme)}
+.btn-acao.danger:hover{background:rgba(200,50,50,0.9)}
+
+/* TABELA */
+.table-wrap{overflow-x:auto;border-radius:5px;border:1px solid rgba(201,149,42,0.12);margin-bottom:2rem}
+table{width:100%;border-collapse:collapse;font-size:0.85rem}
+thead tr{background:rgba(61,21,21,0.95)}
+thead th{padding:0.75rem 1rem;text-align:left;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ouro);white-space:nowrap}
+tbody tr{border-top:1px solid rgba(201,149,42,0.07);transition:background 0.15s}
+tbody tr:hover{background:rgba(201,149,42,0.04)}
+tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
+.badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:0.18rem 0.55rem;border-radius:2px}
+.badge-pendente{background:rgba(200,180,40,0.2);color:#d4c855}
+.badge-aprovado,.badge-ativo,.badge-matriculado{background:rgba(40,180,80,0.2);color:#6cdb8e}
+.badge-reprovado,.badge-cancelado,.badge-inativo{background:rgba(200,50,50,0.2);color:#e08080}
+.badge-analise{background:rgba(80,120,200,0.2);color:#90b0f0}
+.table-empty{text-align:center;padding:2.5rem;color:rgba(245,236,215,0.3);font-size:0.85rem}
+
+/* FILTROS */
+.filtros-row{display:flex;gap:0.8rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.filtro-input{background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.22);border-radius:3px;padding:0.5rem 0.8rem;color:var(--creme);font-family:'Lato',sans-serif;font-size:0.85rem;outline:none;min-width:180px}
+.filtro-input:focus{border-color:var(--ouro)}
+.filtro-input option{background:#3D1515}
+.filtro-count{font-size:0.78rem;color:rgba(245,236,215,0.4);margin-left:auto}
+
+/* PAINEL DE SEÇÕES */
+.painel-section{display:none}
+.painel-section.ativa{display:block}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,5,5,0.88);z-index:200;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--vinho-md);border:1px solid rgba(201,149,42,0.3);border-radius:6px;padding:2rem;width:100%;max-width:520px;position:relative;margin:auto}
+.modal-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1.2rem}
+.modal-close{position:absolute;top:0.8rem;right:1rem;background:none;border:none;color:rgba(245,236,215,0.5);font-size:1.3rem;cursor:pointer}
+.modal-close:hover{color:var(--creme)}
+.modal label{display:block;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin:0.9rem 0 0.4rem}
+.modal input,.modal textarea,.modal select{width:100%;background:rgba(44,15,15,0.7);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.65rem 0.9rem;font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--creme);outline:none}
+.modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--ouro)}
+.modal select option{background:#3D1515}
+.modal textarea{resize:vertical;min-height:80px}
+.modal-btn{margin-top:1.2rem;width:100%;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:0.75rem;border-radius:3px;cursor:pointer}
+.modal-btn:hover{background:var(--ouro-lt)}
+.modal-btn:disabled{opacity:0.6;cursor:not-allowed}
+.modal-msg{margin-top:0.8rem;font-size:0.85rem;text-align:center}
+.modal-msg.ok{color:#a0e0a0}
+.modal-msg.err{color:#e0a0a0}
+
+@media(max-width:768px){.sidebar{display:none}.layout{display:block}.main{padding:1.2rem}}
+</style>
+</head>
+<body>
+
+<header class="painel-header">
+  <a href="/" class="header-logo">
+    <img src="/logo-remo.png" alt="REMO"/>
+    <span class="header-logo-text">REMO</span>
+  </a>
+  <span class="header-center">⚙️ Painel Administrativo</span>
+  <div class="header-right">
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <ul class="sidebar-nav" id="sidebarNav">
+      <li><a href="#" class="ativo" data-section="dashboard" onclick="trocarSecao('dashboard',this)">📊 Dashboard</a></li>
+      <li class="sidebar-sep"></li>
+      <li class="sidebar-label">Oração</li>
+      <li><a href="#" data-section="pedidos" onclick="trocarSecao('pedidos',this)">🙏 Pedidos</a></li>
+      <li><a href="#" data-section="temas" onclick="trocarSecao('temas',this)">🏷️ Temas</a></li>
+      <li class="sidebar-sep"></li>
+      <li class="sidebar-label">Rede</li>
+      <li><a href="#" data-section="intercessores" onclick="trocarSecao('intercessores',this)">🌐 Intercessores</a></li>
+      <li><a href="#" data-section="grupos" onclick="trocarSecao('grupos',this)">🏠 Grupos</a></li>
+      <li><a href="#" data-section="parceiros" onclick="trocarSecao('parceiros',this)">🤝 Parceiros</a></li>
+      <li class="sidebar-sep"></li>
+      <li class="sidebar-label">Barco da Fé</li>
+      <li><a href="#" data-section="candidatos" onclick="trocarSecao('candidatos',this)">⚓ Candidatos</a></li>
+      <li><a href="#" data-section="alunos" onclick="trocarSecao('alunos',this)">🎓 Alunos</a></li>
+      <li class="sidebar-sep"></li>
+      <li class="sidebar-label">Mobilização</li>
+      <li><a href="#" data-section="reunioes" onclick="trocarSecao('reunioes',this)">📅 Reuniões</a></li>
+      <li><a href="#" data-section="convocacoes" onclick="trocarSecao('convocacoes',this)">📢 Convocações</a></li>
+      <li class="sidebar-sep"></li>
+      <li class="sidebar-label">Conteúdo</li>
+      <li><a href="#" data-section="testemunhos" onclick="trocarSecao('testemunhos',this)">✨ Testemunhos</a></li>
+      <li><a href="#" data-section="blog" onclick="trocarSecao('blog',this)">📝 Blog</a></li>
+      <li><a href="#" data-section="campanhas" onclick="trocarSecao('campanhas',this)">💰 Campanhas</a></li>
+    </ul>
+  </aside>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="painel-section ativa" id="sec-dashboard">
+      <div class="section-title">📊 Visão Geral</div>
+      <div class="stats-grid">
+        <div class="stat-card"><span class="stat-num" id="statPedidos">—</span><div class="stat-label">Pedidos</div></div>
+        <div class="stat-card"><span class="stat-num" id="statIntercessores">—</span><div class="stat-label">Intercessores</div></div>
+        <div class="stat-card"><span class="stat-num" id="statCandidatos">—</span><div class="stat-label">Candidatos BF</div></div>
+        <div class="stat-card"><span class="stat-num" id="statGrupos">—</span><div class="stat-label">Grupos</div></div>
+      </div>
+      <div class="acoes-row">
+        <button class="btn-acao" onclick="trocarSecao('pedidos')">Ver pedidos</button>
+        <button class="btn-acao ghost" onclick="trocarSecao('candidatos')">Candidatos pendentes</button>
+        <button class="btn-acao ghost" onclick="abrirModal('modalReuniao')">Nova reunião</button>
+        <button class="btn-acao ghost" onclick="abrirModal('modalConvocacao')">Nova convocação</button>
+      </div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div class="painel-section" id="sec-pedidos">
+      <div class="section-title">🙏 Pedidos de Oração</div>
+      <div class="filtros-row">
+        <select class="filtro-input" id="filtroPedidoStatus" onchange="filtrarTabela('tabPedidos','status',this.value)">
+          <option value="">Todos os status</option>
+          <option value="ativo">Ativo</option>
+          <option value="respondido">Respondido</option>
+          <option value="arquivado">Arquivado</option>
+        </select>
+        <span class="filtro-count" id="countPedidos"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="tabPedidos">
+          <thead><tr><th>Solicitante</th><th>Tema</th><th>Descrição</th><th>Compartilhar</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="bodyPedidos"><tr><td colspan="7" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TEMAS -->
+    <div class="painel-section" id="sec-temas">
+      <div class="section-title">🏷️ Temas de Oração</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ícone</th><th>Nome</th><th>Slug</th><th>Ativo</th></tr></thead>
+          <tbody id="bodyTemas"><tr><td colspan="4" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- INTERCESSORES -->
+    <div class="painel-section" id="sec-intercessores">
+      <div class="section-title">🌐 Intercessores</div>
+      <div class="table-wrap">
+        <table id="tabIntercessores">
+          <thead><tr><th>Nome</th><th>Email</th><th>Telefone</th><th>Cidade</th><th>Status</th><th>Data</th></tr></thead>
+          <tbody id="bodyIntercessores"><tr><td colspan="6" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GRUPOS -->
+    <div class="painel-section" id="sec-grupos">
+      <div class="section-title">🏠 Grupos / Igrejas / Ministérios</div>
+      <div class="filtros-row">
+        <select class="filtro-input" id="filtroGrupoStatus" onchange="filtrarTabela('tabGrupos','status',this.value)">
+          <option value="">Todos</option>
+          <option value="pendente">Pendente</option>
+          <option value="aprovado">Aprovado</option>
+          <option value="recusado">Recusado</option>
+        </select>
+        <span class="filtro-count" id="countGrupos"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="tabGrupos">
+          <thead><tr><th>Nome</th><th>Tipo</th><th>Responsável</th><th>Cidade/UF</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="bodyGrupos"><tr><td colspan="6" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PARCEIROS -->
+    <div class="painel-section" id="sec-parceiros">
+      <div class="section-title">🤝 Parceiros</div>
+      <div class="table-wrap">
+        <table id="tabParceiros">
+          <thead><tr><th>Nome</th><th>Tipo</th><th>Responsável</th><th>Cidade</th><th>Aprovado</th><th>Ações</th></tr></thead>
+          <tbody id="bodyParceiros"><tr><td colspan="6" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CANDIDATOS BF -->
+    <div class="painel-section" id="sec-candidatos">
+      <div class="section-title">⚓ Candidatos — Barco da Fé</div>
+      <div class="filtros-row">
+        <select class="filtro-input" id="filtroCandStatus" onchange="filtrarTabela('tabCandidatos','status',this.value)">
+          <option value="">Todos</option>
+          <option value="pendente">Pendente</option>
+          <option value="aprovado">Aprovado</option>
+          <option value="reprovado">Reprovado</option>
+        </select>
+        <span class="filtro-count" id="countCandidatos"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="tabCandidatos">
+          <thead><tr><th>Nome</th><th>Email</th><th>Módulo</th><th>Cidade/UF</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="bodyCandidatos"><tr><td colspan="7" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ALUNOS BF -->
+    <div class="painel-section" id="sec-alunos">
+      <div class="section-title">🎓 Alunos do Barco da Fé</div>
+      <div class="table-wrap">
+        <table id="tabAlunos">
+          <thead><tr><th>Nome</th><th>Email</th><th>Módulo Atual</th><th>Progresso</th><th>Status</th></tr></thead>
+          <tbody id="bodyAlunos"><tr><td colspan="5" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REUNIÕES -->
+    <div class="painel-section" id="sec-reunioes">
+      <div class="section-title">📅 Reuniões</div>
+      <div class="acoes-row">
+        <button class="btn-acao" onclick="abrirModal('modalReuniao')">+ Nova Reunião</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tabReunioes">
+          <thead><tr><th>Título</th><th>Tipo</th><th>Data/Hora</th><th>Público</th><th>Status</th></tr></thead>
+          <tbody id="bodyReunioes"><tr><td colspan="5" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONVOCAÇÕES -->
+    <div class="painel-section" id="sec-convocacoes">
+      <div class="section-title">📢 Convocações</div>
+      <div class="acoes-row">
+        <button class="btn-acao" onclick="abrirModal('modalConvocacao')">+ Nova Convocação</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tabConvocacoes">
+          <thead><tr><th>Título</th><th>Tipo</th><th>Canal</th><th>Público</th><th>Disparo</th><th>Status</th></tr></thead>
+          <tbody id="bodyConvocacoes"><tr><td colspan="6" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TESTEMUNHOS -->
+    <div class="painel-section" id="sec-testemunhos">
+      <div class="section-title">✨ Testemunhos</div>
+      <div class="table-wrap">
+        <table id="tabTestemunhos">
+          <thead><tr><th>Nome</th><th>Cidade</th><th>Texto</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="bodyTestemunhos"><tr><td colspan="6" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BLOG -->
+    <div class="painel-section" id="sec-blog">
+      <div class="section-title">📝 Blog</div>
+      <div class="acoes-row">
+        <button class="btn-acao" onclick="abrirModal('modalPost')">+ Novo Post</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tabBlog">
+          <thead><tr><th>Título</th><th>Categoria</th><th>Destaque</th><th>Publicado</th><th>Data</th></tr></thead>
+          <tbody id="bodyBlog"><tr><td colspan="5" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CAMPANHAS -->
+    <div class="painel-section" id="sec-campanhas">
+      <div class="section-title">💰 Campanhas e Doações</div>
+      <div class="acoes-row">
+        <button class="btn-acao" onclick="abrirModal('modalCampanha')">+ Nova Campanha</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tabCampanhas">
+          <thead><tr><th>Título</th><th>Local</th><th>Data</th><th>Status</th></tr></thead>
+          <tbody id="bodyCampanhas"><tr><td colspan="4" class="table-empty">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL REUNIÃO -->
+<div class="modal-overlay" id="modalReuniao">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal('modalReuniao')">×</button>
+    <div class="modal-title">📅 Nova Reunião</div>
+    <label>Título *</label><input id="reuTitulo" placeholder="Ex.: Encontro de Clamor" />
+    <label>Tipo *</label>
+    <select id="reuTipo">
+      <option value="">Selecione</option>
+      <option>Encontro Online</option>
+      <option>Retiro</option>
+      <option>Culto de Clamor</option>
+      <option>Reunião de Líderes</option>
+      <option>Outro</option>
+    </select>
+    <label>Data e Hora *</label><input id="reuDataHora" type="datetime-local" />
+    <label>Link de Videoconferência</label><input id="reuLink" placeholder="https://meet.google.com/..." />
+    <label>Pauta</label><textarea id="reuPauta" placeholder="Descreva a pauta da reunião..."></textarea>
+    <label>Público-alvo</label><input id="reuPublico" placeholder="Ex.: Todos os intercessores" />
+    <button class="modal-btn" id="btnSalvarReuniao" onclick="salvarReuniao()">Salvar Reunião</button>
+    <div class="modal-msg" id="msgReuniao"></div>
+  </div>
+</div>
+
+<!-- MODAL CONVOCAÇÃO -->
+<div class="modal-overlay" id="modalConvocacao">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal('modalConvocacao')">×</button>
+    <div class="modal-title">📢 Nova Convocação</div>
+    <label>Título *</label><input id="convTitulo" placeholder="Ex.: Clamor Extraordinário" />
+    <label>Tipo</label><input id="convTipo" placeholder="Ex.: Urgência, Meta Semanal" />
+    <label>Mensagem *</label><textarea id="convMensagem" placeholder="Escreva a mensagem de convocação..."></textarea>
+    <label>Público-alvo</label><input id="convPublico" placeholder="Ex.: Todos, Líderes, Intercessores" />
+    <label>Canal *</label>
+    <select id="convCanal">
+      <option value="">Selecione</option>
+      <option>WhatsApp</option>
+      <option>Email</option>
+      <option>Ambos</option>
+    </select>
+    <label>Data de Disparo</label><input id="convDisparo" type="datetime-local" />
+    <button class="modal-btn" id="btnSalvarConvocacao" onclick="salvarConvocacao()">Salvar Convocação</button>
+    <div class="modal-msg" id="msgConvocacao"></div>
+  </div>
+</div>
+
+<!-- MODAL POST BLOG -->
+<div class="modal-overlay" id="modalPost">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal('modalPost')">×</button>
+    <div class="modal-title">📝 Novo Post</div>
+    <label>Título *</label><input id="postTitulo" placeholder="Título do post" />
+    <label>Slug *</label><input id="postSlug" placeholder="titulo-do-post" />
+    <label>Categoria *</label>
+    <select id="postCategoria">
+      <option value="">Selecione</option>
+      <option>Intercessão</option>
+      <option>Vida Espiritual</option>
+      <option>Missão</option>
+      <option>Formação</option>
+      <option>Testemunhos</option>
+      <option>Outros</option>
+    </select>
+    <label>Resumo</label><textarea id="postResumo" placeholder="Breve resumo do conteúdo..."></textarea>
+    <label>Conteúdo *</label><textarea id="postConteudo" style="min-height:120px" placeholder="Conteúdo completo do post..."></textarea>
+    <label style="display:flex;align-items:center;gap:0.5rem;margin-top:0.9rem">
+      <input type="checkbox" id="postDestaque" style="width:auto;accent-color:var(--ouro)"/> Destaque
+      &nbsp;&nbsp;
+      <input type="checkbox" id="postPublicado" style="width:auto;accent-color:var(--ouro)"/> Publicar agora
+    </label>
+    <button class="modal-btn" id="btnSalvarPost" onclick="salvarPost()">Salvar Post</button>
+    <div class="modal-msg" id="msgPost"></div>
+  </div>
+</div>
+
+<!-- MODAL CAMPANHA -->
+<div class="modal-overlay" id="modalCampanha">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal('modalCampanha')">×</button>
+    <div class="modal-title">💰 Nova Campanha</div>
+    <label>Título *</label><input id="campTitulo" placeholder="Nome da campanha" />
+    <label>Descrição</label><textarea id="campDescricao" placeholder="Descreva o objetivo da campanha..."></textarea>
+    <label>Local</label><input id="campLocal" placeholder="Cidade ou Online" />
+    <label>Data</label><input id="campData" type="date" />
+    <button class="modal-btn" id="btnSalvarCampanha" onclick="salvarCampanha()">Salvar Campanha</button>
+    <div class="modal-msg" id="msgCampanha"></div>
+  </div>
+</div>
+
+<script>
+  // ── Auth Guard ───────────────────────────────────────────
+  const token = localStorage.getItem('remo_admin_token');
+  if (!token) window.location.href = '/painel/login';
+
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', 'X-Admin-Token': token };
+  }
+
+  function sair() {
+    localStorage.removeItem('remo_admin_token');
+    window.location.href = '/painel/login';
+  }
+
+  // ── Navegação ────────────────────────────────────────────
+  const secoesCarregadas = {};
+
+  function trocarSecao(id, linkEl) {
+    document.querySelectorAll('.painel-section').forEach(s => s.classList.remove('ativa'));
+    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('ativo'));
+    const sec = document.getElementById('sec-' + id);
+    if (sec) sec.classList.add('ativa');
+    if (linkEl) linkEl.classList.add('ativo');
+    if (!secoesCarregadas[id]) { carregarSecao(id); secoesCarregadas[id] = true; }
+    return false;
+  }
+
+  function carregarSecao(id) {
+    const mapa = {
+      dashboard: carregarDashboard,
+      pedidos: () => carregarColecao('pedidos-oracao', renderPedidos, 'bodyPedidos', 'countPedidos'),
+      temas: carregarTemas,
+      intercessores: () => carregarColecao('intercessores', renderIntercessores, 'bodyIntercessores'),
+      grupos: () => carregarColecao('grupos', renderGrupos, 'bodyGrupos', 'countGrupos'),
+      parceiros: () => carregarColecao('parceiros', renderParceiros, 'bodyParceiros'),
+      candidatos: () => carregarColecao('candidaturas-bf', renderCandidatos, 'bodyCandidatos', 'countCandidatos'),
+      alunos: () => carregarColecao('alunos', renderAlunos, 'bodyAlunos'),
+      reunioes: () => carregarColecao('reunioes', renderReunioes, 'bodyReunioes'),
+      convocacoes: () => carregarColecao('convocacoes', renderConvocacoes, 'bodyConvocacoes'),
+      testemunhos: () => carregarColecao('testemunhos', renderTestemunhos, 'bodyTestemunhos'),
+      blog: () => carregarColecao('blog-posts', renderBlog, 'bodyBlog'),
+      campanhas: () => carregarColecao('campanhas-doacoes', renderCampanhas, 'bodyCampanhas'),
+    };
+    if (mapa[id]) mapa[id]();
+  }
+
+  // ── Helpers ──────────────────────────────────────────────
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function fmtData(iso) { return iso ? new Date(iso).toLocaleDateString('pt-BR') : '—'; }
+  function fmtDH(iso) { if (!iso) return '—'; const d = new Date(iso); return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+  function badge(status) {
+    const cls = { pendente:'badge-pendente', ativo:'badge-ativo', aprovado:'badge-aprovado', matriculado:'badge-matriculado', reprovado:'badge-reprovado', cancelado:'badge-cancelado', inativo:'badge-inativo', analise:'badge-analise' };
+    return `<span class="badge ${cls[status]||'badge-pendente'}">${esc(status)}</span>`;
+  }
+
+  async function carregarColecao(colecao, renderFn, tbodyId, countId) {
+    const tbody = document.getElementById(tbodyId);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="20" class="table-empty">Carregando...</td></tr>`;
+    try {
+      const res = await fetch(`/.netlify/functions/admin-listar?colecao=${colecao}`, { headers: authHeaders() });
+      if (!res.ok) throw new Error('Sem acesso');
+      const data = await res.json();
+      const registros = Array.isArray(data.registros) ? data.registros : [];
+      if (countId) {
+        const el = document.getElementById(countId);
+        if (el) el.textContent = `${registros.length} registro(s)`;
+      }
+      renderFn(registros, tbodyId);
+    } catch (e) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="20" class="table-empty">Erro ao carregar: ${esc(e.message)}</td></tr>`;
+    }
+  }
+
+  function filtrarTabela(tabelaId, campo, valor) {
+    // Armazena dados originais e re-renderiza
+    const tbody = document.getElementById('body' + capitalize(tabelaId.replace('tab','')));
+    if (!tbody) return;
+    const linhas = tbody.querySelectorAll('tr[data-status]');
+    linhas.forEach(tr => {
+      tr.style.display = (!valor || tr.dataset[campo] === valor) ? '' : 'none';
+    });
+  }
+
+  function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  // ── Renderizações ─────────────────────────────────────────
+  function renderPedidos(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="7" class="table-empty">Nenhum pedido.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(p => `
+      <tr data-status="${esc(p.status)}">
+        <td>${esc(p.nomeSolicitante)}</td>
+        <td>${esc(p.tema)}</td>
+        <td style="max-width:200px;white-space:normal">${esc((p.descricao||'').slice(0,80))}${(p.descricao||'').length>80?'…':''}</td>
+        <td>${p.compartilhar?'✅':'—'}</td>
+        <td>${badge(p.status)}</td>
+        <td>${fmtData(p.criadoEm)}</td>
+        <td>
+          <button class="btn-acao ghost btn-inline" data-fn="atualizarPedido" data-id="${esc(p.id)}" data-status="respondido" style="font-size:0.65rem;padding:0.25rem 0.5rem">Respondido</button>
+          <button class="btn-acao ghost btn-inline" data-fn="atualizarPedido" data-id="${esc(p.id)}" data-status="arquivado" style="font-size:0.65rem;padding:0.25rem 0.5rem;margin-top:0.3rem">Arquivar</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderTemas(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="4" class="table-empty">Nenhum tema.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(t => `
+      <tr><td>${esc(t.icone)}</td><td>${esc(t.nome)}</td><td>${esc(t.slug)}</td><td>${t.ativo?'✅':'❌'}</td></tr>`).join('');
+  }
+
+  function renderIntercessores(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" class="table-empty">Nenhum intercessor.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(i => `
+      <tr><td>${esc(i.nomeCompleto||i.nome)}</td><td>${esc(i.email)}</td><td>${esc(i.telefone)}</td><td>${esc(i.cidade)}</td><td>${badge(i.status||'ativo')}</td><td>${fmtData(i.criadoEm||i.dataEnvio)}</td></tr>`).join('');
+  }
+
+  function renderGrupos(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" class="table-empty">Nenhum grupo.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(g => `
+      <tr data-status="${esc(g.status)}">
+        <td>${esc(g.nomeGrupo)}</td><td>${esc(g.tipo)}</td><td>${esc(g.responsavel)}</td>
+        <td>${esc(g.cidade)}/${esc(g.estado)}</td>
+        <td>${badge(g.status)}</td>
+        <td>
+          <button class="btn-acao ghost btn-inline" data-fn="aprovarItem" data-col="grupos" data-id="${esc(g.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button>
+          <button class="btn-acao btn-inline" data-fn="aprovarItem" data-col="grupos" data-id="${esc(g.id)}" data-status="recusado" style="font-size:0.65rem;padding:0.25rem 0.5rem;background:transparent;color:#e08080;border:1px solid rgba(200,80,80,0.3);margin-top:0.3rem">Recusar</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderParceiros(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" class="table-empty">Nenhum parceiro.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(p => `
+      <tr>
+        <td>${esc(p.nomePublico)}</td><td>${esc(p.tipo)}</td><td>${esc(p.responsavel)}</td>
+        <td>${esc(p.cidade)}</td>
+        <td>${p.aprovado?'✅':'❌'}</td>
+        <td>
+          <button class="btn-acao ghost btn-inline" data-fn="aprovarItem" data-col="parceiros" data-id="${esc(p.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderCandidatos(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="7" class="table-empty">Nenhum candidato.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(c => `
+      <tr data-status="${esc(c.status)}">
+        <td>${esc(c.nomeCompleto||c.nome)}</td><td>${esc(c.email)}</td><td>${esc(c.moduloDesejado||'—')}</td>
+        <td>${esc(c.cidade)}/${esc(c.estado)}</td>
+        <td>${badge(c.status)}</td>
+        <td>${fmtData(c.criadoEm)}</td>
+        <td>
+          <button class="btn-acao ghost btn-inline" data-fn="atualizarCandidatura" data-id="${esc(c.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button>
+          <button class="btn-acao btn-inline" data-fn="atualizarCandidatura" data-id="${esc(c.id)}" data-status="reprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem;background:transparent;color:#e08080;border:1px solid rgba(200,80,80,0.3);margin-top:0.3rem">Reprovar</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderAlunos(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="5" class="table-empty">Nenhum aluno.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(a => `
+      <tr><td>${esc(a.nome)}</td><td>${esc(a.email)}</td><td>${esc(a.moduloAtual||'N1')}</td>
+      <td>${Number(a.progresso||0)}%</td><td>${badge(a.status||'ativo')}</td></tr>`).join('');
+  }
+
+  function renderReunioes(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="5" class="table-empty">Nenhuma reunião.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(r => `
+      <tr><td>${esc(r.titulo)}</td><td>${esc(r.tipo)}</td><td>${fmtDH(r.dataHora)}</td>
+      <td>${esc(r.publicoAlvo||'—')}</td><td>${badge(r.status)}</td></tr>`).join('');
+  }
+
+  function renderConvocacoes(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" class="table-empty">Nenhuma convocação.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(c => `
+      <tr><td>${esc(c.titulo)}</td><td>${esc(c.tipo||'—')}</td><td>${esc(c.canal)}</td>
+      <td>${esc(c.publicoAlvo||'—')}</td><td>${fmtDH(c.dataDisparo)}</td><td>${badge(c.status)}</td></tr>`).join('');
+  }
+
+  function renderTestemunhos(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="6" class="table-empty">Nenhum testemunho.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(t => `
+      <tr><td>${esc(t.nome)}</td><td>${esc(t.cidade||'—')}</td>
+      <td style="max-width:200px;white-space:normal">${esc((t.texto||'').slice(0,80))}…</td>
+      <td>${badge(t.status)}</td><td>${fmtData(t.criadoEm)}</td>
+      <td><button class="btn-acao ghost btn-inline" data-fn="aprovarItem" data-col="testemunhos" data-id="${esc(t.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button></td>
+      </tr>`).join('');
+  }
+
+  function renderBlog(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="5" class="table-empty">Nenhum post.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(p => `
+      <tr><td>${esc(p.titulo)}</td><td>${esc(p.categoria)}</td>
+      <td>${p.destaque?'⭐':'—'}</td><td>${p.publicado?'✅':'❌'}</td><td>${fmtData(p.criadoEm)}</td></tr>`).join('');
+  }
+
+  function renderCampanhas(lista, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!lista.length) { tbody.innerHTML = `<tr><td colspan="4" class="table-empty">Nenhuma campanha.</td></tr>`; return; }
+    tbody.innerHTML = lista.map(c => `
+      <tr><td>${esc(c.titulo)}</td><td>${esc(c.local||'—')}</td><td>${fmtData(c.data)}</td><td>${badge(c.status)}</td></tr>`).join('');
+  }
+
+  // ── Dashboard ─────────────────────────────────────────────
+  async function carregarDashboard() {
+    const cols = [
+      { col: 'pedidos-oracao', statId: 'statPedidos' },
+      { col: 'intercessores', statId: 'statIntercessores' },
+      { col: 'candidaturas-bf', statId: 'statCandidatos' },
+      { col: 'grupos', statId: 'statGrupos' },
+    ];
+    for (const { col, statId } of cols) {
+      try {
+        const res = await fetch(`/.netlify/functions/admin-listar?colecao=${col}`, { headers: authHeaders() });
+        const data = await res.json();
+        const el = document.getElementById(statId);
+        if (el) el.textContent = data.total || (Array.isArray(data.registros) ? data.registros.length : '—');
+      } catch { /* ignora */ }
+    }
+  }
+
+  async function carregarTemas() {
+    const tbody = document.getElementById('bodyTemas');
+    try {
+      const res = await fetch('/.netlify/functions/temas-listar');
+      const data = await res.json();
+      renderTemas(Array.isArray(data.temas) ? data.temas : [], 'bodyTemas');
+    } catch {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="table-empty">Erro ao carregar temas.</td></tr>`;
+    }
+  }
+
+  // ── Ações ─────────────────────────────────────────────────
+  async function atualizarPedido(id, status) {
+    try {
+      const res = await fetch('/.netlify/functions/pedido-atualizar', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ id, status })
+      });
+      if (!res.ok) throw new Error();
+      secoesCarregadas['pedidos'] = false;
+      carregarColecao('pedidos-oracao', renderPedidos, 'bodyPedidos', 'countPedidos');
+    } catch { alert('Erro ao atualizar pedido.'); }
+  }
+
+  async function atualizarCandidatura(id, status) {
+    try {
+      const res = await fetch('/.netlify/functions/candidaturas-atualizar', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ id, status })
+      });
+      if (!res.ok) throw new Error();
+      secoesCarregadas['candidatos'] = false;
+      carregarColecao('candidaturas-bf', renderCandidatos, 'bodyCandidatos', 'countCandidatos');
+    } catch { alert('Erro ao atualizar candidatura.'); }
+  }
+
+  async function aprovarItem(colecao, id, status) {
+    // Para testemunhos, parceiros e grupos — atualiza via admin-listar + salvar genérico
+    // Por simplicidade, usa fetch direto na função específica quando disponível
+    const endpointMap = {
+      testemunhos: 'testemunhos-salvar',
+      grupos: 'grupos-salvar',
+    };
+    // Para itens sem endpoint de update, alerta por ora
+    alert(`Status "${status}" para item ${id} em "${colecao}" — implemente o endpoint de update específico.`);
+  }
+
+  // ── Modais ────────────────────────────────────────────────
+  function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+  function fecharModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.querySelectorAll(`#${id} .modal-msg`).forEach(m => { m.textContent = ''; m.className = 'modal-msg'; });
+  }
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) fecharModal(m.id); });
+  });
+
+  // ── Salvar Reunião ────────────────────────────────────────
+  async function salvarReuniao() {
+    const btn = document.getElementById('btnSalvarReuniao');
+    const msg = document.getElementById('msgReuniao');
+    const titulo = document.getElementById('reuTitulo').value.trim();
+    const tipo = document.getElementById('reuTipo').value;
+    const dataHora = document.getElementById('reuDataHora').value;
+    if (!titulo || !tipo || !dataHora) { msg.textContent = 'Preencha título, tipo e data.'; msg.className = 'modal-msg err'; return; }
+    btn.disabled = true;
+    try {
+      const res = await fetch('/.netlify/functions/reunioes-salvar', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ titulo, tipo, dataHora, linkVideo: document.getElementById('reuLink').value, pauta: document.getElementById('reuPauta').value, publicoAlvo: document.getElementById('reuPublico').value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erro || 'Falha');
+      msg.textContent = '✅ Reunião salva!'; msg.className = 'modal-msg ok';
+      setTimeout(() => fecharModal('modalReuniao'), 1500);
+      secoesCarregadas['reunioes'] = false;
+    } catch (e) { msg.textContent = '❌ ' + e.message; msg.className = 'modal-msg err'; }
+    finally { btn.disabled = false; }
+  }
+
+  // ── Salvar Convocação ─────────────────────────────────────
+  async function salvarConvocacao() {
+    const btn = document.getElementById('btnSalvarConvocacao');
+    const msg = document.getElementById('msgConvocacao');
+    const titulo = document.getElementById('convTitulo').value.trim();
+    const mensagem = document.getElementById('convMensagem').value.trim();
+    const canal = document.getElementById('convCanal').value;
+    if (!titulo || !mensagem || !canal) { msg.textContent = 'Preencha título, mensagem e canal.'; msg.className = 'modal-msg err'; return; }
+    btn.disabled = true;
+    try {
+      const res = await fetch('/.netlify/functions/convocacoes-salvar', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ titulo, tipo: document.getElementById('convTipo').value, mensagem, publicoAlvo: document.getElementById('convPublico').value, canal, dataDisparo: document.getElementById('convDisparo').value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erro || 'Falha');
+      msg.textContent = '✅ Convocação salva!'; msg.className = 'modal-msg ok';
+      setTimeout(() => fecharModal('modalConvocacao'), 1500);
+      secoesCarregadas['convocacoes'] = false;
+    } catch (e) { msg.textContent = '❌ ' + e.message; msg.className = 'modal-msg err'; }
+    finally { btn.disabled = false; }
+  }
+
+  // ── Salvar Post ───────────────────────────────────────────
+  async function salvarPost() {
+    const btn = document.getElementById('btnSalvarPost');
+    const msg = document.getElementById('msgPost');
+    const titulo = document.getElementById('postTitulo').value.trim();
+    const slug = document.getElementById('postSlug').value.trim();
+    const categoria = document.getElementById('postCategoria').value;
+    const conteudo = document.getElementById('postConteudo').value.trim();
+    if (!titulo || !slug || !categoria || !conteudo) { msg.textContent = 'Preencha título, slug, categoria e conteúdo.'; msg.className = 'modal-msg err'; return; }
+    btn.disabled = true;
+    try {
+      const res = await fetch('/.netlify/functions/blog-salvar', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ titulo, slug, categoria, resumo: document.getElementById('postResumo').value, conteudo, destaque: document.getElementById('postDestaque').checked, publicado: document.getElementById('postPublicado').checked })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erro || 'Falha');
+      msg.textContent = '✅ Post salvo!'; msg.className = 'modal-msg ok';
+      setTimeout(() => fecharModal('modalPost'), 1500);
+      secoesCarregadas['blog'] = false;
+    } catch (e) { msg.textContent = '❌ ' + e.message; msg.className = 'modal-msg err'; }
+    finally { btn.disabled = false; }
+  }
+
+  // ── Salvar Campanha ───────────────────────────────────────
+  async function salvarCampanha() {
+    const btn = document.getElementById('btnSalvarCampanha');
+    const msg = document.getElementById('msgCampanha');
+    const titulo = document.getElementById('campTitulo').value.trim();
+    if (!titulo) { msg.textContent = 'Informe o título.'; msg.className = 'modal-msg err'; return; }
+    btn.disabled = true;
+    try {
+      const res = await fetch('/.netlify/functions/campanhas-salvar', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ titulo, descricao: document.getElementById('campDescricao').value, local: document.getElementById('campLocal').value, data: document.getElementById('campData').value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erro || 'Falha');
+      msg.textContent = '✅ Campanha salva!'; msg.className = 'modal-msg ok';
+      setTimeout(() => fecharModal('modalCampanha'), 1500);
+      secoesCarregadas['campanhas'] = false;
+    } catch (e) { msg.textContent = '❌ ' + e.message; msg.className = 'modal-msg err'; }
+    finally { btn.disabled = false; }
+  }
+
+  // ── Inicializar ───────────────────────────────────────────
+  carregarDashboard();
+  secoesCarregadas['dashboard'] = true;
+
+  // ── Event delegation para botões gerados dinamicamente ───
+  document.querySelector('.main').addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-inline');
+    if (!btn) return;
+    const fn = btn.dataset.fn;
+    const id = btn.dataset.id;
+    const status = btn.dataset.status;
+    const col = btn.dataset.col;
+    if (fn === 'atualizarPedido') atualizarPedido(id, status);
+    else if (fn === 'atualizarCandidatura') atualizarCandidatura(id, status);
+    else if (fn === 'aprovarItem') aprovarItem(col, id, status);
+  });
+</script>
+</body>
+</html>

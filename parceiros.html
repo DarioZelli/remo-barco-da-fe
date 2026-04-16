@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Parceiros — REMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--vinho:#2C0F0F;--vinho-md:#3D1515;--vinho-lt:#5A2020;--ouro:#C9952A;--ouro-lt:#E8B84B;--ouro-pale:#F5D98B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Lato',sans-serif;font-weight:300;background:var(--vinho);color:var(--creme);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 3rem;background:rgba(44,15,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,149,42,0.2)}
+.nav-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+.nav-logo img{height:40px;width:40px;object-fit:contain;border-radius:50%}
+.nav-logo-text{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--ouro-lt);line-height:1.2}
+.nav-logo-text span{display:block;font-size:0.58rem;font-weight:400;letter-spacing:0.2em;color:var(--ouro-pale);text-transform:uppercase}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--creme);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ouro-lt)}
+.nav-cta{background:var(--ouro)!important;color:var(--vinho)!important;padding:0.4rem 1rem;border-radius:2px}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:0}
+.hamburger span{display:block;width:24px;height:2px;background:var(--ouro-lt);border-radius:2px;transition:all 0.3s}
+@media(max-width:768px){.nav-links{display:none;position:fixed;top:61px;left:0;right:0;background:rgba(44,15,15,0.98);flex-direction:column;padding:1.5rem;gap:1rem;align-items:center;text-align:center}.nav-links.open{display:flex;align-items:center;text-align:center}.hamburger{display:flex}nav{padding:0.9rem 1.2rem}}
+
+.page-hero{padding:7rem 2rem 3rem;text-align:center;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 80% at 50% 0%,rgba(90,32,32,0.5) 0%,transparent 70%)}
+.page-hero-content{position:relative;z-index:1}
+.page-badge{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:var(--ouro);color:var(--vinho);padding:0.2rem 0.7rem;border-radius:2px;margin-bottom:0.8rem}
+.page-title{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3.2rem);font-weight:900;color:var(--creme-lt);margin-bottom:1rem;line-height:1.1}
+.page-title em{font-style:normal;color:var(--ouro-lt)}
+.page-desc{font-size:1rem;font-weight:300;line-height:1.8;color:rgba(245,236,215,0.72);max-width:600px;margin:0 auto}
+.page-divider{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:1.5rem auto 0}
+
+.beneficios-section{padding:4rem 2rem;background:rgba(61,21,21,0.3)}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-title{font-family:'Cinzel',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--ouro-lt);margin-bottom:2rem;text-align:center}
+.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+@media(max-width:900px){.cards-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.cards-3{grid-template-columns:1fr}}
+.benef-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:6px;padding:1.8rem;text-align:center;transition:transform 0.2s,border-color 0.2s}
+.benef-card:hover{transform:translateY(-3px);border-color:rgba(201,149,42,0.4)}
+.benef-icon{font-size:2.2rem;margin-bottom:0.8rem}
+.benef-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:0.5rem}
+.benef-desc{font-size:0.88rem;font-weight:300;color:rgba(245,236,215,0.72);line-height:1.7}
+
+.parceiros-section{padding:3rem 2rem}
+.parceiros-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:900px){.parceiros-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.parceiros-grid{grid-template-columns:1fr}}
+.parceiro-card{background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.15);border-radius:5px;padding:1.4rem;transition:border-color 0.2s}
+.parceiro-card:hover{border-color:rgba(201,149,42,0.35)}
+.parceiro-tipo{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:rgba(201,149,42,0.15);color:var(--ouro);padding:0.15rem 0.5rem;border-radius:2px;display:inline-block;margin-bottom:0.6rem}
+.parceiro-nome{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--creme-lt);margin-bottom:0.3rem}
+.parceiro-local{font-size:0.8rem;font-weight:300;color:rgba(245,236,215,0.5)}
+.empty-state{text-align:center;padding:3rem;grid-column:1/-1;color:rgba(245,236,215,0.4)}
+
+.form-section{padding:3rem 2rem 5rem;background:rgba(61,21,21,0.25)}
+.form-container{max-width:720px;margin:0 auto}
+.form-card{background:linear-gradient(135deg,rgba(61,21,21,0.9),rgba(44,15,15,0.95));border:1px solid rgba(201,149,42,0.2);border-radius:6px;padding:2.5rem;position:relative;overflow:hidden}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent)}
+.form-section-title{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--ouro-lt);margin-bottom:1.2rem;padding-bottom:0.6rem;border-bottom:1px solid rgba(201,149,42,0.15)}
+.form-group{margin-bottom:1.4rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.4rem}
+label{display:block;font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:0.5rem}
+input,textarea,select{width:100%;background:rgba(44,15,15,0.6);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.75rem 1rem;font-family:'Lato',sans-serif;font-size:0.95rem;font-weight:300;color:var(--creme);transition:border-color 0.2s;outline:none}
+input::placeholder{color:rgba(245,236,215,0.35)}
+input:focus,select:focus{border-color:var(--ouro);box-shadow:0 0 0 3px rgba(201,149,42,0.1)}
+select option{background:#3D1515;color:var(--creme)}
+.check-item{display:flex;align-items:flex-start;gap:0.7rem;margin-bottom:0.8rem;cursor:pointer}
+.check-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--ouro);cursor:pointer}
+.check-item span{font-size:0.93rem;font-weight:300;color:rgba(245,236,215,0.8);line-height:1.5}
+.btn-submit{width:100%;background:var(--ouro);color:var(--vinho);font-family:'Lato',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;border:none;padding:1rem 2rem;border-radius:3px;cursor:pointer;box-shadow:0 4px 20px rgba(201,149,42,0.3);transition:background 0.2s,transform 0.2s;display:flex;align-items:center;justify-content:center;gap:0.6rem}
+.btn-submit:hover{background:var(--ouro-lt);transform:translateY(-1px)}
+.btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.msg{padding:1rem 1.4rem;border-radius:3px;font-size:0.92rem;margin-top:1.2rem;text-align:center;display:none}
+.msg.sucesso{background:rgba(60,120,60,0.25);border:1px solid rgba(100,200,100,0.3);color:#a0e0a0;display:block}
+.msg.erro{background:rgba(120,40,40,0.25);border:1px solid rgba(200,80,80,0.3);color:#e0a0a0;display:block}
+@media(max-width:700px){.form-row{grid-template-columns:1fr}.form-card{padding:1.5rem}}
+footer{text-align:center;padding:2.5rem 2rem;border-top:1px solid rgba(201,149,42,0.1);font-size:0.78rem;color:rgba(245,236,215,0.35)}
+footer a{color:rgba(245,236,215,0.35);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/logo-remo.png" alt="REMO"/>
+    <div class="nav-logo-text">Remo<span>Rede Mundial de Orações</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="/pedir-oracao">Orar</a></li>
+    <li><a href="/pedidos">Pedidos</a></li>
+    <li><a href="/barco-da-fe">Barco da Fé</a></li>
+    <li><a href="/rede">Rede</a></li>
+    <li><a href="/agenda">Agenda</a></li>
+    <li><a href="/painel/login" class="nav-cta">Entrar</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-content">
+    <span class="page-badge">🤝 Rede de Parceiros</span>
+    <h1 class="page-title">Parceiros da <em>Rede</em></h1>
+    <p class="page-desc">Igrejas, ministérios e organizações unidas em propósito. Juntos, oramos e avançamos o Reino.</p>
+    <div class="page-divider"></div>
+  </div>
+</div>
+
+<div class="beneficios-section">
+  <div class="section-inner">
+    <h2 class="section-title">Por que ser parceiro?</h2>
+    <div class="cards-3">
+      <div class="benef-card">
+        <div class="benef-icon">📢</div>
+        <div class="benef-title">Visibilidade na Rede</div>
+        <div class="benef-desc">Seu ministério ou organização é apresentado a intercessores e líderes de todo o Brasil e do mundo.</div>
+      </div>
+      <div class="benef-card">
+        <div class="benef-icon">🎯</div>
+        <div class="benef-title">Campanhas de Oração</div>
+        <div class="benef-desc">Participe de campanhas temáticas e convocações especiais com apoio da rede REMO.</div>
+      </div>
+      <div class="benef-card">
+        <div class="benef-icon">🌐</div>
+        <div class="benef-title">Conexão com Intercessores</div>
+        <div class="benef-desc">Acesso direto a intercessores comprometidos, grupos de oração e líderes espirituais da rede.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="parceiros-section">
+  <div class="section-inner">
+    <h2 class="section-title">Parceiros da Rede</h2>
+    <div class="parceiros-grid" id="parceirosGrid">
+      <div class="empty-state"><p>Carregando parceiros…</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-container">
+    <div class="form-card">
+      <div class="form-section-title">🤝 Cadastrar como Parceiro</div>
+      <form id="formParceiro" novalidate>
+        <div class="form-group">
+          <label for="pTipo">Tipo *</label>
+          <select id="pTipo" name="tipo" required>
+            <option value="">Selecione o tipo</option>
+            <option value="Igreja">Igreja</option>
+            <option value="Ministerio">Ministério</option>
+            <option value="Organizacao">Organização</option>
+            <option value="Empresa">Empresa</option>
+            <option value="Pessoa">Pessoa</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pNomePublico">Nome público *</label>
+            <input type="text" id="pNomePublico" name="nomePublico" placeholder="Como será exibido" required/>
+          </div>
+          <div class="form-group">
+            <label for="pResponsavel">Responsável *</label>
+            <input type="text" id="pResponsavel" name="responsavel" placeholder="Nome do responsável" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pTelefone">Telefone *</label>
+            <input type="tel" id="pTelefone" name="telefone" placeholder="(00) 00000-0000" required/>
+          </div>
+          <div class="form-group">
+            <label for="pEmail">E-mail *</label>
+            <input type="email" id="pEmail" name="email" placeholder="contato@parceiro.com" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pCidade">Cidade</label>
+            <input type="text" id="pCidade" name="cidade" placeholder="Cidade"/>
+          </div>
+          <div class="form-group">
+            <label for="pEstado">Estado</label>
+            <input type="text" id="pEstado" name="estado" placeholder="UF" maxlength="2"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="check-item">
+            <input type="checkbox" id="pAutoriza" name="autorizaDivulgacao"/>
+            <span>Autorizo a divulgação do nome e cidade na página de parceiros da REMO.</span>
+          </label>
+        </div>
+        <button type="submit" class="btn-submit" id="btnParceiro">🤝 Enviar cadastro</button>
+        <div class="msg" id="msgParceiro"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 REMO — Rede Mundial de Orações &nbsp;·&nbsp; <a href="/">Início</a> &nbsp;·&nbsp; contato@globalremo.com</p>
+</footer>
+
+<script>
+document.getElementById('hamburger').addEventListener('click',()=>{document.getElementById('navLinks').classList.toggle('open')});
+
+async function carregarParceiros(){
+  const grid=document.getElementById('parceirosGrid');
+  try{
+    const r=await fetch('/.netlify/functions/parceiros-listar');
+    const d=await r.json();
+    const lista=d.parceiros||d||[];
+    if(!lista.length){grid.innerHTML='<div class="empty-state"><p>Nenhum parceiro cadastrado ainda.</p></div>';return;}
+    grid.innerHTML=lista.map(p=>`
+      <div class="parceiro-card">
+        <span class="parceiro-tipo">${p.tipo||'Parceiro'}</span>
+        <div class="parceiro-nome">${p.nomePublico||p.nome||''}</div>
+        <div class="parceiro-local">${[p.cidade,p.estado].filter(Boolean).join(' / ')}</div>
+      </div>
+    `).join('');
+  }catch(e){grid.innerHTML='<div class="empty-state"><p>Não foi possível carregar os parceiros.</p></div>';}
+}
+
+document.getElementById('formParceiro').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=document.getElementById('btnParceiro');
+  const msg=document.getElementById('msgParceiro');
+  btn.disabled=true;btn.textContent='Enviando…';msg.className='msg';msg.textContent='';
+  const payload={
+    tipo:document.getElementById('pTipo').value,
+    nomePublico:document.getElementById('pNomePublico').value.trim(),
+    responsavel:document.getElementById('pResponsavel').value.trim(),
+    telefone:document.getElementById('pTelefone').value.trim(),
+    email:document.getElementById('pEmail').value.trim(),
+    cidade:document.getElementById('pCidade').value.trim(),
+    estado:document.getElementById('pEstado').value.trim(),
+    autorizaDivulgacao:document.getElementById('pAutoriza').checked
+  };
+  if(!payload.tipo||!payload.nomePublico||!payload.responsavel||!payload.telefone||!payload.email){
+    msg.className='msg erro';msg.textContent='Preencha todos os campos obrigatórios.';
+    btn.disabled=false;btn.textContent='🤝 Enviar cadastro';return;
+  }
+  try{
+    const r=await fetch('/.netlify/functions/parceiros-salvar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(r.ok){
+      msg.className='msg sucesso';msg.textContent='Cadastro enviado com sucesso! Nossa equipe entrará em contato.';
+      this.reset();
+    }else{
+      const err=await r.json().catch(()=>({}));
+      msg.className='msg erro';msg.textContent=err.message||'Erro ao enviar. Tente novamente.';
+    }
+  }catch(ex){msg.className='msg erro';msg.textContent='Erro de conexão. Verifique sua internet e tente novamente.';}
+  btn.disabled=false;btn.textContent='🤝 Enviar cadastro';
+});
+
+carregarParceiros();
+</script>
+</body>
+</html>

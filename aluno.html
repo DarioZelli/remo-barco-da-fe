@@ -181,8 +181,8 @@
   <section class="hero">
     <div class="hero-content">
       <p class="hero-eyebrow">Área do Estudante</p>
-      <h1 class="hero-title">Bem-vindo à <em>Escola Barco da Fé</em></h1>
-      <p class="hero-desc" id="heroAlunoDesc">Aqui você encontra todas as aulas, materiais e recursos para sua formação em intercessão. Continue sua jornada espiritual conosco.</p>
+      <h1 class="hero-title">Bem-vindo, <em id="nomeAluno">Intercessor</em></h1>
+      <p class="hero-desc" id="heroAlunoDesc">Aqui você encontra todas as aulas, materiais e recursos para sua formação. Continue sua jornada espiritual conosco.</p>
     </div>
   </section>
 
@@ -481,7 +481,8 @@
         __alunoCtx.professorId = aluno.professorId || '';
         const resumo = data.resumo || {};
 
-        setText('heroAlunoDesc', `Aluno: ${aluno.nome || '—'} • Módulo atual: ${aluno.moduloAtual || '—'}`);
+        setText('nomeAluno', aluno.nome || 'Intercessor');
+        setText('heroAlunoDesc', `Módulo atual: ${aluno.moduloAtual || '—'} • Status: ${aluno.status || '—'}`);
         setText('dashAulasDesc', `${resumo.aulasDisponiveis || 0} aulas disponíveis no módulo atual.`);
         setText('dashProgressoDesc', `Progresso atual: ${aluno.progresso || 0}%. Status: ${aluno.status || '—'}.`);
         setText('dashPendenciasDesc', `${resumo.atividadesPendentes || 0} atividades pendentes.`);
