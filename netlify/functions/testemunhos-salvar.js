@@ -33,11 +33,11 @@ exports.handler = async function(event) {
   try {
     const dados = JSON.parse(event.body || '{}');
 
-    if (!dados.nome || !dados.cidade || !dados.texto) {
+    if (!dados.nome || !dados.texto) {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ erro: 'Campos obrigatórios ausentes: nome, cidade, texto' })
+        body: JSON.stringify({ erro: 'Campos obrigatórios ausentes: nome, texto' })
       };
     }
 

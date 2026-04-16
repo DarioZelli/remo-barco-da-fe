@@ -17,8 +17,8 @@ exports.handler = async function(event) {
   try {
     const dados = JSON.parse(event.body || '{}');
 
-    if (!dados.titulo || !dados.descricao) {
-      return json(400, { erro: 'Campos obrigatórios ausentes: titulo, descricao' });
+    if (!dados.titulo) {
+      return json(400, { erro: 'Campos obrigatórios ausentes: titulo' });
     }
 
     const id = 'campanha_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);

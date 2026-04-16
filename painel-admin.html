@@ -474,7 +474,7 @@ tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
   }
 
   // ── Helpers ──────────────────────────────────────────────
-  function esc(s) { return String(s || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
   function fmtData(iso) { return iso ? new Date(iso).toLocaleDateString('pt-BR') : '—'; }
   function fmtDH(iso) { if (!iso) return '—'; const d = new Date(iso); return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
   function badge(status) {
@@ -525,8 +525,8 @@ tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
         <td>${badge(p.status)}</td>
         <td>${fmtData(p.criadoEm)}</td>
         <td>
-          <button class="btn-acao ghost" style="font-size:0.65rem;padding:0.25rem 0.5rem" onclick="atualizarPedido('${esc(p.id)}','respondido')">Respondido</button>
-          <button class="btn-acao ghost" style="font-size:0.65rem;padding:0.25rem 0.5rem;margin-top:0.3rem" onclick="atualizarPedido('${esc(p.id)}','arquivado')">Arquivar</button>
+          <button class="btn-acao ghost btn-inline" data-fn="atualizarPedido" data-id="${esc(p.id)}" data-status="respondido" style="font-size:0.65rem;padding:0.25rem 0.5rem">Respondido</button>
+          <button class="btn-acao ghost btn-inline" data-fn="atualizarPedido" data-id="${esc(p.id)}" data-status="arquivado" style="font-size:0.65rem;padding:0.25rem 0.5rem;margin-top:0.3rem">Arquivar</button>
         </td>
       </tr>`).join('');
   }
@@ -554,8 +554,8 @@ tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
         <td>${esc(g.cidade)}/${esc(g.estado)}</td>
         <td>${badge(g.status)}</td>
         <td>
-          <button class="btn-acao ghost" style="font-size:0.65rem;padding:0.25rem 0.5rem" onclick="aprovarItem('grupos','${esc(g.id)}','aprovado')">Aprovar</button>
-          <button class="btn-acao danger" style="font-size:0.65rem;padding:0.25rem 0.5rem;background:transparent;color:#e08080;border:1px solid rgba(200,80,80,0.3);margin-top:0.3rem" onclick="aprovarItem('grupos','${esc(g.id)}','recusado')">Recusar</button>
+          <button class="btn-acao ghost btn-inline" data-fn="aprovarItem" data-col="grupos" data-id="${esc(g.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button>
+          <button class="btn-acao btn-inline" data-fn="aprovarItem" data-col="grupos" data-id="${esc(g.id)}" data-status="recusado" style="font-size:0.65rem;padding:0.25rem 0.5rem;background:transparent;color:#e08080;border:1px solid rgba(200,80,80,0.3);margin-top:0.3rem">Recusar</button>
         </td>
       </tr>`).join('');
   }
@@ -569,7 +569,7 @@ tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
         <td>${esc(p.cidade)}</td>
         <td>${p.aprovado?'✅':'❌'}</td>
         <td>
-          <button class="btn-acao ghost" style="font-size:0.65rem;padding:0.25rem 0.5rem" onclick="aprovarItem('parceiros','${esc(p.id)}','aprovado')">Aprovar</button>
+          <button class="btn-acao ghost btn-inline" data-fn="aprovarItem" data-col="parceiros" data-id="${esc(p.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button>
         </td>
       </tr>`).join('');
   }
@@ -584,8 +584,8 @@ tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
         <td>${badge(c.status)}</td>
         <td>${fmtData(c.criadoEm)}</td>
         <td>
-          <button class="btn-acao ghost" style="font-size:0.65rem;padding:0.25rem 0.5rem" onclick="atualizarCandidatura('${esc(c.id)}','aprovado')">Aprovar</button>
-          <button class="btn-acao danger" style="font-size:0.65rem;padding:0.25rem 0.5rem;background:transparent;color:#e08080;border:1px solid rgba(200,80,80,0.3);margin-top:0.3rem" onclick="atualizarCandidatura('${esc(c.id)}','reprovado')">Reprovar</button>
+          <button class="btn-acao ghost btn-inline" data-fn="atualizarCandidatura" data-id="${esc(c.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button>
+          <button class="btn-acao btn-inline" data-fn="atualizarCandidatura" data-id="${esc(c.id)}" data-status="reprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem;background:transparent;color:#e08080;border:1px solid rgba(200,80,80,0.3);margin-top:0.3rem">Reprovar</button>
         </td>
       </tr>`).join('');
   }
@@ -621,7 +621,7 @@ tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
       <tr><td>${esc(t.nome)}</td><td>${esc(t.cidade||'—')}</td>
       <td style="max-width:200px;white-space:normal">${esc((t.texto||'').slice(0,80))}…</td>
       <td>${badge(t.status)}</td><td>${fmtData(t.criadoEm)}</td>
-      <td><button class="btn-acao ghost" style="font-size:0.65rem;padding:0.25rem 0.5rem" onclick="aprovarItem('testemunhos','${esc(t.id)}','aprovado')">Aprovar</button></td>
+      <td><button class="btn-acao ghost btn-inline" data-fn="aprovarItem" data-col="testemunhos" data-id="${esc(t.id)}" data-status="aprovado" style="font-size:0.65rem;padding:0.25rem 0.5rem">Aprovar</button></td>
       </tr>`).join('');
   }
 
@@ -815,6 +815,19 @@ tbody td{padding:0.7rem 1rem;color:rgba(245,236,215,0.85);vertical-align:middle}
   // ── Inicializar ───────────────────────────────────────────
   carregarDashboard();
   secoesCarregadas['dashboard'] = true;
+
+  // ── Event delegation para botões gerados dinamicamente ───
+  document.querySelector('.main').addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn-inline');
+    if (!btn) return;
+    const fn = btn.dataset.fn;
+    const id = btn.dataset.id;
+    const status = btn.dataset.status;
+    const col = btn.dataset.col;
+    if (fn === 'atualizarPedido') atualizarPedido(id, status);
+    else if (fn === 'atualizarCandidatura') atualizarCandidatura(id, status);
+    else if (fn === 'aprovarItem') aprovarItem(col, id, status);
+  });
 </script>
 </body>
 </html>

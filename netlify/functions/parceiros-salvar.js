@@ -35,11 +35,11 @@ exports.handler = async function(event) {
   try {
     const dados = JSON.parse(event.body || '{}');
 
-    if (!dados.nomePublico || !dados.responsavel || !dados.telefone || !dados.email || !dados.cidade || !dados.tipo) {
+    if (!dados.nomePublico || !dados.responsavel || !dados.telefone || !dados.email || !dados.tipo) {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ erro: 'Campos obrigatórios ausentes: nomePublico, responsavel, telefone, email, cidade, tipo' })
+        body: JSON.stringify({ erro: 'Campos obrigatórios ausentes: nomePublico, responsavel, telefone, email, tipo' })
       };
     }
 
