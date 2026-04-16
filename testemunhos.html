@@ -199,7 +199,7 @@ document.getElementById('formTest').addEventListener('submit',async function(e){
     nome:document.getElementById('tNome').value.trim(),
     cidade:document.getElementById('tCidade').value.trim(),
     texto:document.getElementById('tTexto').value.trim(),
-    autorizaPublicacao:true
+    autorizacaoPublicacao:true
   };
   if(!payload.nome||!payload.texto){
     msg.className='msg erro';msg.textContent='Nome e testemunho são obrigatórios.';

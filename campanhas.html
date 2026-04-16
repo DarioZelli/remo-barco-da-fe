@@ -209,7 +209,7 @@ document.getElementById('formDoacao').addEventListener('submit',async function(e
     nome:document.getElementById('dNome').value.trim(),
     valorPrometido:parseFloat(document.getElementById('dValorPrometido').value)||0,
     valorEnviado:parseFloat(document.getElementById('dValorEnviado').value)||null,
-    urlComprovante:document.getElementById('dComprovante').value.trim()||null,
+    comprovanteUrl:document.getElementById('dComprovante').value.trim()||null,
     exibirPublicamente:document.getElementById('dPublico').checked
   };
   if(!payload.nome||!payload.valorPrometido){
