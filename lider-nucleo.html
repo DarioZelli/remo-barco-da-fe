@@ -264,23 +264,23 @@
       const grupo = document.getElementById('fGrupo').value.trim();
       const data = document.getElementById('fData').value;
       const participantes = Number(document.getElementById('fParticipantes').value)||1;
-      const obs = document.getElementById('fObs').value;
+      const obs = document.getElementById('fObs').value.trim();
       if (!grupo || !data) { el.className = 'msg-erro'; el.textContent = 'Preencha o nome do grupo e a data.'; return; }
-      const registro = {
-        nome: 'encontro_' + Date.now(),
-        tipo: 'encontro',
-        lider: grupo,
-        telefone: 'registro-lider',
-        horarioEncontro: data,
-        membros: participantes,
-        descricao: obs,
-        status: 'ativo'
+      // Salvar como relato de oração (endpoint público)
+      const payload = {
+        nome: grupo,
+        telefone: 'lider-nucleo',
+        horario: data + ' — Encontro do grupo',
+        duracaoIntercessao: participantes + ' participantes',
+        duracaoCompromisso: 'Registro de encontro',
+        anonimo: false,
+        descricao: obs
       };
       try {
-        const res = await fetch('/.netlify/functions/salvar-grupo', {
-          method:'POST',
-          headers:{'Content-Type':'application/json','x-admin-token':'remo-admin-2025'},
-          body: JSON.stringify({...registro, nome: grupo + ' — Encontro ' + data})
+        const res = await fetch('/.netlify/functions/salvar-relogio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
         if (res.ok) {
           el.className = 'msg-ok'; el.textContent = '✅ Encontro registrado com sucesso!';
