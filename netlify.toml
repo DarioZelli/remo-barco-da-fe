@@ -46,6 +46,11 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+[[headers]]
+  for = "/intercessores-admin.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # ── Rotas públicas ──────────────────────────────────────────
 [[redirects]]
   from = "/pedir-oracao"
@@ -165,9 +170,18 @@
   to = "/aluno.html"
   status = 200
 
+[[redirects]]
+  from = "/painel/intercessores"
+  to = "/intercessores-admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/painel/triagem-intercessores"
+  to = "/intercessores-admin.html"
+  status = 200
+
 # ── Legado ──────────────────────────────────────────────────
 [[redirects]]
   from = "/admin"
   to = "/admin.html"
   status = 200
-
