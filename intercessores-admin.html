@@ -16,6 +16,7 @@
       --muted:#6b5c52;
       --ok:#2f6b3e;
       --erro:#8d2d2d;
+      --azul:#2c4d8f;
     }
     * { box-sizing: border-box; }
     body {
@@ -41,7 +42,7 @@
       font-weight: 700;
     }
     .wrap {
-      max-width: 1320px;
+      max-width: 1380px;
       margin: 0 auto;
       padding: 24px 18px 36px;
     }
@@ -53,6 +54,7 @@
       color: rgba(245,236,215,.72);
       margin-bottom: 18px;
       line-height: 1.45;
+      max-width: 900px;
     }
     .grid {
       display: grid;
@@ -73,10 +75,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       border-bottom: 1px solid rgba(0,0,0,.08);
+      flex-wrap: wrap;
     }
     .panel-head strong {
       font-size: 15px;
+    }
+    .filters, .head-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
     }
     .btn {
       border: 1px solid rgba(0,0,0,.15);
@@ -88,8 +98,18 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .btn.alt {
-      background: #fff;
+    .btn.alt { background: #fff; }
+    .btn.filter.active {
+      background: #241b16;
+      color: #fff;
+      border-color: #241b16;
+    }
+    .status-summary {
+      padding: 10px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      background: #f8f2e6;
     }
     table {
       width: 100%;
@@ -108,9 +128,7 @@
       text-transform: uppercase;
       letter-spacing: .08em;
     }
-    tr:hover td {
-      background: rgba(0,0,0,.02);
-    }
+    tr:hover td { background: rgba(0,0,0,.02); }
     .tag {
       display: inline-block;
       padding: 3px 8px;
@@ -118,14 +136,14 @@
       font-size: 10px;
       font-weight: 700;
       letter-spacing: .03em;
+      white-space: nowrap;
     }
     .tag-pendente { background: rgba(201,149,42,.18); color: #7a5508; }
     .tag-ativo { background: rgba(47,107,62,.16); color: #2f6b3e; }
     .tag-encaminhado { background: rgba(70,100,170,.16); color: #2c4d8f; }
     .tag-reprovado { background: rgba(141,45,45,.14); color: #8d2d2d; }
-    .detail {
-      padding: 16px;
-    }
+    .tag-recomendacao { background: rgba(63,95,85,.14); color: #2f564e; }
+    .detail { padding: 16px; }
     .field-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -151,9 +169,7 @@
       color: #241b16;
     }
     textarea { min-height: 88px; resize: vertical; }
-    .readonly {
-      background: #faf7f1;
-    }
+    .readonly { background: #faf7f1; }
     .actions {
       display: flex;
       gap: 10px;
@@ -161,10 +177,13 @@
       align-items: center;
       margin-top: 14px;
     }
-    .msg {
-      font-size: 12px;
-      font-weight: 700;
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
+    .msg { font-size: 12px; font-weight: 700; }
     .ok { color: var(--ok); }
     .err { color: var(--erro); }
     .empty {
@@ -178,6 +197,16 @@
       padding: 14px 16px;
       border-radius: 6px;
       line-height: 1.5;
+    }
+    .note {
+      margin-top: 12px;
+      padding: 12px 13px;
+      background: #f8f2e6;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #5d4e43;
     }
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr; }
@@ -193,7 +222,7 @@
 
   <div class="wrap">
     <h1>Triagem de Intercessores</h1>
-    <div class="sub">Aqui o coordenador pode ver a recomendação automática do sistema e decidir entre aprovação direta como intercessor, encaminhamento para a Escola Barco da Fé ou reprovação.</div>
+    <div class="sub">Aqui o coordenador vê a recomendação automática do sistema, filtra a fila de triagem e decide entre aprovação direta como intercessor, encaminhamento para a Escola Barco da Fé ou reprovação.</div>
 
     <div id="loginAviso" class="login-note" style="display:none;">
       Seu acesso administrativo não foi validado. Entre primeiro em <a href="admin.html" style="color:#fff;text-decoration:underline;">admin.html</a> e depois volte para esta página.
@@ -203,8 +232,18 @@
       <div class="panel">
         <div class="panel-head">
           <strong>Inscrições recebidas</strong>
-          <button class="btn alt" onclick="carregarIntercessores()">Atualizar</button>
+          <div class="head-actions">
+            <button class="btn alt" onclick="carregarIntercessores()">Atualizar</button>
+          </div>
+          <div class="filters">
+            <button class="btn alt filter active" data-filter="todos" onclick="definirFiltro('todos', this)">Todos</button>
+            <button class="btn alt filter" data-filter="pendente_triagem" onclick="definirFiltro('pendente_triagem', this)">Pendentes</button>
+            <button class="btn alt filter" data-filter="ativo" onclick="definirFiltro('ativo', this)">Ativos</button>
+            <button class="btn alt filter" data-filter="encaminhado_barco_da_fe" onclick="definirFiltro('encaminhado_barco_da_fe', this)">Encaminhados</button>
+            <button class="btn alt filter" data-filter="reprovado" onclick="definirFiltro('reprovado', this)">Reprovados</button>
+          </div>
         </div>
+        <div class="status-summary" id="statusResumo">Carregando fila...</div>
         <div style="overflow:auto; max-height: 74vh;">
           <table>
             <thead>
@@ -259,10 +298,16 @@
             <div><label>Status final</label><input id="detStatus" class="readonly" readonly /></div>
             <div class="full"><label>Observações do coordenador</label><textarea id="detObservacoes"></textarea></div>
           </div>
+          <div class="quick-actions">
+            <button class="btn alt" onclick="aplicarDecisaoRapida('aprovar_direto')">Aprovar direto</button>
+            <button class="btn alt" onclick="aplicarDecisaoRapida('encaminhar_escola_barco_da_fe')">Encaminhar para escola</button>
+            <button class="btn alt" onclick="aplicarDecisaoRapida('reprovar')">Reprovar</button>
+          </div>
           <div class="actions">
             <button class="btn" onclick="salvarTriagem()">Salvar triagem</button>
             <span id="msg"></span>
           </div>
+          <div class="note">Quando a decisão for <strong>Encaminhar para Escola Barco da Fé</strong>, o sistema registra isso na triagem. A candidatura completa da escola continua sendo uma etapa própria, porque ela exige dados adicionais que este formulário de intercessor não coleta.</div>
         </div>
       </div>
     </div>
@@ -272,6 +317,7 @@
     const ADMIN_STORAGE_KEY = 'remo_admin_token';
     let ADMIN_TOKEN = localStorage.getItem(ADMIN_STORAGE_KEY) || '';
     let cache = [];
+    let filtroAtual = 'todos';
 
     function fmt(iso) {
       if (!iso) return '—';
@@ -311,6 +357,10 @@
       return `<span class="tag ${cls}">${nome}</span>`;
     }
 
+    function tagRecomendacao(v) {
+      return `<span class="tag tag-recomendacao">${nomeRecomendacao(v)}</span>`;
+    }
+
     function setMsg(texto, erro = false) {
       const el = document.getElementById('msg');
       el.className = erro ? 'msg err' : 'msg ok';
@@ -327,6 +377,16 @@
       } catch {
         return false;
       }
+    }
+
+    function ordemStatus(v) {
+      const mapa = {
+        pendente_triagem: 0,
+        encaminhado_barco_da_fe: 1,
+        ativo: 2,
+        reprovado: 3
+      };
+      return mapa[v] ?? 9;
     }
 
     function preencherDetalhes(item) {
@@ -352,6 +412,55 @@
       setMsg('');
     }
 
+    function obterListaFiltrada() {
+      const lista = [...cache].sort((a, b) => {
+        const ordem = ordemStatus(a.status) - ordemStatus(b.status);
+        if (ordem !== 0) return ordem;
+        return new Date(b.criadoEm || b.createdAt || 0) - new Date(a.criadoEm || a.createdAt || 0);
+      });
+      if (filtroAtual === 'todos') return lista;
+      return lista.filter(item => (item.status || 'pendente_triagem') === filtroAtual);
+    }
+
+    function atualizarResumo(listaFiltrada) {
+      const total = cache.length;
+      const pendentes = cache.filter(item => (item.status || 'pendente_triagem') === 'pendente_triagem').length;
+      const ativos = cache.filter(item => item.status === 'ativo').length;
+      const encaminhados = cache.filter(item => item.status === 'encaminhado_barco_da_fe').length;
+      const reprovados = cache.filter(item => item.status === 'reprovado').length;
+      const textoFiltro = filtroAtual === 'todos' ? 'Mostrando toda a fila.' : `Filtro ativo: ${nomeStatus(filtroAtual)}.`;
+      document.getElementById('statusResumo').textContent = `${textoFiltro} Total: ${total} • Pendentes: ${pendentes} • Ativos: ${ativos} • Encaminhados: ${encaminhados} • Reprovados: ${reprovados} • Visíveis agora: ${listaFiltrada.length}.`;
+    }
+
+    function renderTabela() {
+      const tbody = document.getElementById('tabelaIntercessores');
+      const lista = obterListaFiltrada();
+      atualizarResumo(lista);
+      if (!lista.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma inscrição encontrada para este filtro.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = lista.map(item => `
+        <tr>
+          <td>${fmt(item.criadoEm || item.createdAt)}</td>
+          <td>${item.nomeCompleto || '—'}</td>
+          <td>${simNao(item.participouGrupoOracao)}</td>
+          <td>${simNao(item.liderouIntercessao)}</td>
+          <td>${item.tempoCaminhada || '—'}</td>
+          <td>${tagRecomendacao(item.triagem?.recomendacao)}</td>
+          <td>${tagStatus(item.status)}</td>
+          <td><button class="btn alt" onclick="abrirItem('${item.id}')">Detalhes</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function definirFiltro(filtro, el) {
+      filtroAtual = filtro;
+      document.querySelectorAll('.filter').forEach(btn => btn.classList.remove('active'));
+      if (el) el.classList.add('active');
+      renderTabela();
+    }
+
     async function carregarIntercessores() {
       const tbody = document.getElementById('tabelaIntercessores');
       tbody.innerHTML = '<tr><td colspan="8" class="empty">Carregando...</td></tr>';
@@ -362,23 +471,13 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.erro || 'Falha ao carregar intercessores');
         cache = Array.isArray(data.registros) ? data.registros : [];
-        if (!cache.length) {
-          tbody.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma inscrição encontrada.</td></tr>';
-          return;
+        renderTabela();
+        if (cache.length) {
+          const params = new URLSearchParams(window.location.search);
+          const alvo = params.get('id') || params.get('intercessor');
+          const primeiro = alvo ? cache.find(item => item.id === alvo) : cache[0];
+          preencherDetalhes(primeiro || cache[0]);
         }
-        tbody.innerHTML = cache.map(item => `
-          <tr>
-            <td>${fmt(item.criadoEm || item.createdAt)}</td>
-            <td>${item.nomeCompleto || '—'}</td>
-            <td>${simNao(item.participouGrupoOracao)}</td>
-            <td>${simNao(item.liderouIntercessao)}</td>
-            <td>${item.tempoCaminhada || '—'}</td>
-            <td>${nomeRecomendacao(item.triagem?.recomendacao)}</td>
-            <td>${tagStatus(item.status)}</td>
-            <td><button class="btn alt" onclick="abrirItem('${item.id}')">Detalhes</button></td>
-          </tr>
-        `).join('');
-        preencherDetalhes(cache[0]);
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="8" class="empty">${err.message || 'Erro ao carregar.'}</td></tr>`;
       }
@@ -388,7 +487,23 @@
       const item = cache.find(reg => reg.id === id);
       if (!item) return;
       preencherDetalhes(item);
+      const url = new URL(window.location.href);
+      url.searchParams.set('id', id);
+      window.history.replaceState({}, '', url.toString());
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function aplicarDecisaoRapida(decisao) {
+      document.getElementById('detDecisao').value = decisao;
+      const status = decisao === 'aprovar_direto'
+        ? 'Ativo'
+        : decisao === 'encaminhar_escola_barco_da_fe'
+          ? 'Encaminhado para Escola Barco da Fé'
+          : decisao === 'reprovar'
+            ? 'Reprovado'
+            : 'Pendente de triagem';
+      document.getElementById('detStatus').value = status;
+      setMsg('Decisão preparada. Agora salve a triagem.');
     }
 
     async function salvarTriagem() {
