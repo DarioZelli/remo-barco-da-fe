@@ -104,6 +104,11 @@
   status = 200
 
 [[redirects]]
+  from = "/barco-da-fe/complementar"
+  to = "/candidatura-complementar.html"
+  status = 200
+
+[[redirects]]
   from = "/barco-da-fe/relogio-de-oracao"
   to = "/relogio.html"
   status = 200
