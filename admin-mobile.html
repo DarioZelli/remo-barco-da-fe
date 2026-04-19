@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Mobile — REMO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--ouro:#C9952A;--ouro-lt:#E8B84B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:#1A0808;color:var(--creme);min-height:100vh}
+    .top{position:sticky;top:0;z-index:50;background:rgba(44,15,15,.97);border-bottom:1px solid rgba(201,149,42,.2);padding:0.9rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem}
+    .brand{display:flex;align-items:center;gap:.7rem}
+    .brand img{width:34px;height:34px;border-radius:50%}
+    .brand b{font-family:'Cinzel',serif;color:var(--ouro-lt);font-size:.95rem;display:block}
+    .brand span{font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(245,236,215,.6)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:1px solid rgba(201,149,42,.3);background:none;color:var(--ouro);padding:.55rem .9rem;border-radius:4px;font-size:.76rem;font-weight:700;text-decoration:none;cursor:pointer}
+    .btn.gold{background:var(--ouro);color:#2C0F0F;border-color:var(--ouro)}
+    .wrap{max-width:760px;margin:0 auto;padding:1rem}
+    .hero{margin-bottom:1rem;padding:1rem 1rem 1.1rem;border:1px solid rgba(201,149,42,.14);border-radius:8px;background:linear-gradient(135deg,rgba(61,21,21,.88),rgba(44,15,15,.96))}
+    .hero h1{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--creme-lt);margin-bottom:.45rem}
+    .hero p{font-size:.9rem;line-height:1.6;color:rgba(245,236,215,.72)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin:1rem 0}
+    .card{padding:1rem;border:1px solid rgba(201,149,42,.14);border-radius:8px;background:linear-gradient(135deg,rgba(61,21,21,.82),rgba(44,15,15,.94));text-align:center}
+    .num{font-family:'Cinzel',serif;font-size:1.7rem;color:var(--ouro-lt);display:block}
+    .lbl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,236,215,.48);margin-top:.3rem}
+    .actions{display:grid;grid-template-columns:1fr;gap:.7rem;margin:1rem 0 1.2rem}
+    .section{margin-top:1rem;border:1px solid rgba(201,149,42,.14);border-radius:8px;overflow:hidden;background:rgba(44,15,15,.55)}
+    .section-head{padding:.9rem 1rem;background:rgba(61,21,21,.9);display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+    .section-head strong{font-family:'Cinzel',serif;color:var(--creme-lt);font-size:.95rem}
+    .list{padding:.3rem 0}
+    .item{padding:.9rem 1rem;border-top:1px solid rgba(201,149,42,.08)}
+    .item:first-child{border-top:none}
+    .item h4{font-size:.95rem;color:var(--creme-lt);margin-bottom:.25rem}
+    .meta{font-size:.78rem;line-height:1.55;color:rgba(245,236,215,.66)}
+    .row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.65rem}
+    .muted{font-size:.82rem;color:rgba(245,236,215,.5);padding:1rem}
+    .hidden{display:none !important}
+    .login{max-width:420px;margin:10vh auto 0;padding:1rem}
+    .login-card{padding:1.4rem;border:1px solid rgba(201,149,42,.18);border-radius:8px;background:linear-gradient(135deg,rgba(61,21,21,.9),rgba(44,15,15,.98))}
+    .login-card h2{font-family:'Cinzel',serif;color:var(--creme-lt);margin-bottom:.35rem}
+    .login-card p{color:rgba(245,236,215,.65);font-size:.9rem;margin-bottom:1rem}
+    .field{margin-bottom:.8rem}
+    .field label{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:.3rem}
+    .field input{width:100%;padding:.78rem .85rem;border-radius:4px;border:1px solid rgba(201,149,42,.25);background:rgba(44,15,15,.7);color:var(--creme);font-size:.95rem}
+    .err{margin-top:.5rem;color:#f1a0a0;font-size:.84rem}
+  </style>
+</head>
+<body>
+  <div id="loginView" class="login hidden">
+    <div class="login-card">
+      <h2>Admin Mobile</h2>
+      <p>Acesso rápido da REMO para uso no celular.</p>
+      <div class="field"><label for="u">Usuário</label><input id="u" type="text" placeholder="admin" /></div>
+      <div class="field"><label for="p">Senha</label><input id="p" type="password" placeholder="••••••••" /></div>
+      <button class="btn gold" style="width:100%" onclick="fazerLogin()">Entrar</button>
+      <div id="loginErr" class="err"></div>
+    </div>
+  </div>
+
+  <div id="appView" class="hidden">
+    <div class="top">
+      <div class="brand">
+        <img src="logo-remo.png" alt="REMO" />
+        <div><b>REMO Admin</b><span>Painel mobile</span></div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end">
+        <a class="btn" href="admin.html">Admin completo</a>
+        <button class="btn" onclick="sair()">Sair</button>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="hero">
+        <h1>Acesso rápido no celular</h1>
+        <p>Esta página resolve a limitação atual do admin no telefone e já entrega o que você mais precisa: contadores, listas recentes e acesso direto à triagem de intercessores.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card"><span class="num" id="nPedidos">—</span><span class="lbl">Pedidos</span></div>
+        <div class="card"><span class="num" id="nCandidaturas">—</span><span class="lbl">Candidaturas BF</span></div>
+        <div class="card"><span class="num" id="nIntercessores">—</span><span class="lbl">Intercessores</span></div>
+        <div class="card"><span class="num" id="nRelogio">—</span><span class="lbl">Relógio</span></div>
+      </div>
+
+      <div class="actions">
+        <a class="btn gold" href="/painel/intercessores">🧭 Abrir triagem de intercessores</a>
+        <a class="btn" href="intercessores-admin.html">Abrir página clássica da triagem</a>
+        <a class="btn" href="admin.html">Abrir admin completo</a>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><strong>Intercessores recentes</strong><a class="btn" href="/painel/intercessores">Triagem</a></div>
+        <div id="listaIntercessores" class="list"><div class="muted">Carregando...</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><strong>Candidaturas BF recentes</strong><a class="btn" href="admin.html">Ver no admin</a></div>
+        <div id="listaCandidaturas" class="list"><div class="muted">Carregando...</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><strong>Pedidos de oração recentes</strong><a class="btn" href="admin.html">Ver no admin</a></div>
+        <div id="listaPedidos" class="list"><div class="muted">Carregando...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const KEY = 'remo_admin_token';
+    let TOKEN = localStorage.getItem(KEY) || '';
+
+    function fmt(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    }
+
+    async function authHeaders() {
+      return { 'x-admin-token': TOKEN };
+    }
+
+    async function validarSessao() {
+      if (!TOKEN) return false;
+      try {
+        const res = await fetch('/.netlify/functions/auth-validate', { headers: await authHeaders() });
+        return res.ok;
+      } catch { return false; }
+    }
+
+    async function fazerLogin() {
+      const usuario = document.getElementById('u').value.trim();
+      const senha = document.getElementById('p').value;
+      const err = document.getElementById('loginErr');
+      err.textContent = '';
+      try {
+        const res = await fetch('/.netlify/functions/auth-login', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ usuario, senha })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.token) throw new Error(data.erro || 'Falha no login');
+        TOKEN = data.token;
+        localStorage.setItem(KEY, TOKEN);
+        iniciar();
+      } catch (e) {
+        err.textContent = 'Não foi possível entrar.';
+      }
+    }
+
+    function sair() {
+      localStorage.removeItem(KEY);
+      TOKEN = '';
+      document.getElementById('appView').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+    }
+
+    async function listar(colecao) {
+      const res = await fetch('/.netlify/functions/admin-listar?colecao=' + encodeURIComponent(colecao), { headers: await authHeaders() });
+      if (!res.ok) throw new Error('Falha em ' + colecao);
+      return res.json();
+    }
+
+    function renderIntercessores(registros) {
+      const el = document.getElementById('listaIntercessores');
+      if (!registros.length) { el.innerHTML = '<div class="muted">Nenhum intercessor encontrado.</div>'; return; }
+      el.innerHTML = registros.slice(0,6).map(r => {
+        const status = r.status || 'pendente_triagem';
+        const caminhada = r.tempoCaminhada || '—';
+        return `<div class="item">
+          <h4>${r.nomeCompleto || 'Sem nome'}</h4>
+          <div class="meta">${fmt(r.criadoEm)}<br>E-mail: ${r.email || '—'}<br>Telefone: ${r.telefone || r.telefoneCelular || '—'}<br>Status: ${status}<br>Caminhada: ${caminhada}</div>
+          <div class="row">
+            <a class="btn gold" href="/painel/intercessores?id=${encodeURIComponent(r.id || '')}">Triar este cadastro</a>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderCandidaturas(registros) {
+      const el = document.getElementById('listaCandidaturas');
+      if (!registros.length) { el.innerHTML = '<div class="muted">Nenhuma candidatura encontrada.</div>'; return; }
+      el.innerHTML = registros.slice(0,6).map(r => `<div class="item">
+        <h4>${r.nomeCompleto || 'Sem nome'}</h4>
+        <div class="meta">${fmt(r.criadoEm)}<br>E-mail: ${r.email || '—'}<br>Telefone: ${r.telefone || '—'}<br>Status: ${r.status || 'pendente'}<br>Módulo: ${r.moduloDesejado || '—'}</div>
+      </div>`).join('');
+    }
+
+    function renderPedidos(registros) {
+      const el = document.getElementById('listaPedidos');
+      if (!registros.length) { el.innerHTML = '<div class="muted">Nenhum pedido encontrado.</div>'; return; }
+      el.innerHTML = registros.slice(0,6).map(r => `<div class="item">
+        <h4>${r.paraQuem || 'Pedido sem destinatário'}</h4>
+        <div class="meta">${fmt(r.criadoEm)}<br>Solicitante: ${r.nomeSolicitante || '—'}<br>Tema: ${r.tema || '—'}<br>Causa: ${r.causa || '—'}<br>Status: ${r.status || '—'}</div>
+      </div>`).join('');
+    }
+
+    async function carregarTudo() {
+      try {
+        const [pedidos, candidaturas, intercessores, relogio] = await Promise.all([
+          listar('pedidos-oracao'),
+          listar('candidaturas-bf'),
+          listar('intercessores'),
+          listar('relogio-oracao')
+        ]);
+        document.getElementById('nPedidos').textContent = pedidos.total ?? (pedidos.registros || []).length;
+        document.getElementById('nCandidaturas').textContent = candidaturas.total ?? (candidaturas.registros || []).length;
+        document.getElementById('nIntercessores').textContent = intercessores.total ?? (intercessores.registros || []).length;
+        document.getElementById('nRelogio').textContent = relogio.total ?? (relogio.registros || []).length;
+        renderIntercessores(intercessores.registros || []);
+        renderCandidaturas(candidaturas.registros || []);
+        renderPedidos(pedidos.registros || []);
+      } catch {
+        document.getElementById('listaIntercessores').innerHTML = '<div class="muted">Não foi possível carregar os dados.</div>';
+        document.getElementById('listaCandidaturas').innerHTML = '<div class="muted">Não foi possível carregar os dados.</div>';
+        document.getElementById('listaPedidos').innerHTML = '<div class="muted">Não foi possível carregar os dados.</div>';
+      }
+    }
+
+    async function iniciar() {
+      const ok = await validarSessao();
+      if (!ok) {
+        document.getElementById('appView').classList.add('hidden');
+        document.getElementById('loginView').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+      carregarTudo();
+    }
+
+    document.getElementById('p').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLogin(); });
+    iniciar();
+  </script>
+</body>
+</html>
