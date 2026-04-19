@@ -134,6 +134,7 @@
         <div class="sidebar-link" onclick="mostrarPagina('pedidos',this);carregarTabela('pedidos-oracao','tabelaPedidos')">🙏 Pedidos de Oração <span class="badge" id="badgePedidos">…</span></div>
         <div class="sidebar-link" onclick="mostrarPagina('candidaturas',this);carregarTabela('candidaturas-bf','tabelaCandidaturas')">⚓ Candidaturas BF <span class="badge" id="badgeCandidaturas">…</span></div>
         <div class="sidebar-link" onclick="mostrarPagina('intercessores',this);carregarTabela('intercessores','tabelaIntercessores')">🌐 Intercessores <span class="badge" id="badgeIntercessores">…</span></div>
+        <div class="sidebar-link" onclick="abrirTriagemIntercessor()">🧭 Triagem de Intercessores</div>
         <div class="sidebar-link" onclick="mostrarPagina('relogio',this);carregarTabela('relogio-oracao','tabelaRelogio')">⏱️ Relógio de Oração <span class="badge" id="badgeRelogio">…</span></div>
 
         <div class="sidebar-section">Conteúdo</div>
@@ -228,13 +229,19 @@
         <div class="admin-page" id="pageIntercessores">
           <div class="tabela-header">
             <div class="tabela-title">🌐 Intercessores Cadastrados</div>
-            <button class="btn-refresh" onclick="carregarTabela('intercessores','tabelaIntercessores')">↻ Atualizar</button>
+            <div style="display:flex;gap:0.6rem;">
+              <button class="btn-refresh" onclick="carregarTabela('intercessores','tabelaIntercessores')">↻ Atualizar</button>
+              <button class="btn-refresh" onclick="abrirTriagemIntercessor()">🧭 Abrir triagem</button>
+            </div>
           </div>
           <div class="tabela-wrap">
             <table>
-              <thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade</th><th>Experiência</th><th>Temas</th></tr></thead>
-              <tbody id="tabelaIntercessores"><tr><td colspan="7" class="loading">Carregando...</td></tr></tbody>
+              <thead><tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cidade</th><th>Experiência</th><th>Temas</th><th>Ação</th></tr></thead>
+              <tbody id="tabelaIntercessores"><tr><td colspan="8" class="loading">Carregando...</td></tr></tbody>
             </table>
+          </div>
+          <div style="margin-top:0.9rem;font-size:0.82rem;color:rgba(245,236,215,0.48);line-height:1.6;">
+            A avaliação ministerial, a aprovação direta e o encaminhamento para a Escola Barco da Fé são feitos na tela de triagem. Use o botão <strong style="color:var(--ouro-lt)">Triar</strong> em cada linha ou o botão <strong style="color:var(--ouro-lt)">Abrir triagem</strong> acima.
           </div>
         </div>
 
@@ -581,6 +588,11 @@
       el.classList.add('ativo');
     }
 
+    function abrirTriagemIntercessor(id = '') {
+      const base = '/painel/intercessores';
+      window.location.href = id ? `${base}?id=${encodeURIComponent(id)}` : base;
+    }
+
     async function buscarColecao(colecao) {
       const res = await fetch('/.netlify/functions/admin-listar?colecao=' + colecao, {
         headers: { 'x-admin-token': ADMIN_TOKEN }
@@ -668,8 +680,9 @@
 
     async function carregarTabela(colecao, tbodyId) {
       const tbody = document.getElementById(tbodyId);
-      let colspan = 7; // padrão
+      let colspan = 7;
       if (colecao === 'candidaturas-bf') colspan = 8;
+      if (colecao === 'intercessores') colspan = 8;
       if (colecao === 'professores') colspan = 6;
       if (colecao === 'alunos') colspan = 7;
 
@@ -677,7 +690,6 @@
       try {
         let data;
         if (colecao === 'professores' || colecao === 'alunos') {
-          // Usar nova função para usuários
           const res = await fetch('/.netlify/functions/usuarios-listar?colecao=' + colecao, {
             headers: { 'x-admin-token': ADMIN_TOKEN }
           });
@@ -705,7 +717,7 @@
             return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${(r.cidade||'')+(r.estado?' / '+r.estado:'')}</td><td>${r.experienciaOracao||'—'}</td><td>${tag(r.status)}</td><td><button class="btn-refresh" onclick='abrirCandidatura(${JSON.stringify(r.id)})'>Detalhes</button></td></tr>`;
           } else if (colecao === 'intercessores') {
             const temas = Array.isArray(r.temas) ? r.temas.join(', ') : (r.temas||'—');
-            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||'—'}</td><td>${r.cidade||'—'}</td><td>${r.experiencia||'—'}</td><td style="max-width:160px;font-size:0.78rem">${temas}</td></tr>`;
+            return `<tr><td>${fmt(r.criadoEm)}</td><td>${r.nomeCompleto||'—'}</td><td>${r.email||'—'}</td><td>${r.telefone||r.telefoneCelular||'—'}</td><td>${r.cidade||'—'}</td><td>${r.experiencia||r.tempoCaminhada||'—'}</td><td style="max-width:160px;font-size:0.78rem">${temas}</td><td><button class="btn-refresh" onclick='abrirTriagemIntercessor(${JSON.stringify(r.id || '')})'>Triar</button></td></tr>`;
           } else if (colecao === 'professores') {
             return `<tr><td>${r.nome||'—'}</td><td>${r.email||'—'}</td><td>${r.turmas ? r.turmas.join(', ') : (r.especialidade || '—')}</td><td>${tag(r.status || 'ativo')}</td><td>${fmt(r.createdAt)}</td><td><button class="btn-refresh" onclick='editarUsuario("${colecao}", "${r.id}")'>Carregar</button></td></tr>`;
           } else if (colecao === 'alunos') {
@@ -957,8 +969,6 @@
         tbody.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar cards.</td></tr>';
       }
     }
-
-
 
     function limparFormAula() {
       limparMsg('msgAulas');
