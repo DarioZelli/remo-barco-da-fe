@@ -97,6 +97,11 @@
       font-weight: 700;
       border-radius: 4px;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
     .btn.alt { background: #fff; }
     .btn.filter.active {
@@ -208,6 +213,33 @@
       line-height: 1.55;
       color: #5d4e43;
     }
+    .link-box {
+      margin-top: 14px;
+      padding: 12px 13px;
+      background: #eef4ff;
+      border: 1px solid rgba(44,77,143,.16);
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #23406f;
+      display: none;
+    }
+    .link-box strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+    .link-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .link-row input {
+      flex: 1;
+      min-width: 240px;
+      background: #fff;
+    }
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr; }
       .field-grid { grid-template-columns: 1fr; }
@@ -305,9 +337,19 @@
           </div>
           <div class="actions">
             <button class="btn" onclick="salvarTriagem()">Salvar triagem</button>
+            <button class="btn alt" onclick="gerarPreCandidaturaBF()">Gerar link da Escola Barco da Fé</button>
             <span id="msg"></span>
           </div>
-          <div class="note">Quando a decisão for <strong>Encaminhar para Escola Barco da Fé</strong>, o sistema registra isso na triagem. A candidatura completa da escola continua sendo uma etapa própria, porque ela exige dados adicionais que este formulário de intercessor não coleta.</div>
+          <div id="linkBox" class="link-box">
+            <strong>Link de complementação da Escola Barco da Fé</strong>
+            <div>Use este link para encaminhar a pessoa completar a pré-candidatura da escola, já com os dados reaproveitados da triagem.</div>
+            <div class="link-row">
+              <input id="linkComplementacao" type="text" readonly />
+              <button class="btn alt" onclick="copiarLinkComplementacao()">Copiar link</button>
+              <a id="abrirLinkComplementacao" class="btn alt" href="#" target="_blank" rel="noopener">Abrir</a>
+            </div>
+          </div>
+          <div class="note">Quando a decisão for <strong>Encaminhar para Escola Barco da Fé</strong>, você pode salvar a triagem e depois gerar aqui o link de complementação da pré-candidatura. A candidatura completa da escola continua sendo uma etapa própria, porque ela exige dados adicionais que este formulário de intercessor não coleta.</div>
         </div>
       </div>
     </div>
@@ -367,6 +409,35 @@
       el.textContent = texto;
     }
 
+    function mostrarLinkComplementacao(link) {
+      const box = document.getElementById('linkBox');
+      const input = document.getElementById('linkComplementacao');
+      const abrir = document.getElementById('abrirLinkComplementacao');
+      if (!link) {
+        box.style.display = 'none';
+        input.value = '';
+        abrir.href = '#';
+        return;
+      }
+      const absoluto = link.startsWith('http') ? link : window.location.origin + link;
+      input.value = absoluto;
+      abrir.href = absoluto;
+      box.style.display = 'block';
+    }
+
+    async function copiarLinkComplementacao() {
+      const input = document.getElementById('linkComplementacao');
+      if (!input.value) return;
+      try {
+        await navigator.clipboard.writeText(input.value);
+        setMsg('Link copiado com sucesso.');
+      } catch {
+        input.select();
+        document.execCommand('copy');
+        setMsg('Link copiado com sucesso.');
+      }
+    }
+
     async function validarSessao() {
       if (!ADMIN_TOKEN) return false;
       try {
@@ -409,6 +480,7 @@
       document.getElementById('detDecisao').value = item.decisaoCoordenador || '';
       document.getElementById('detStatus').value = nomeStatus(item.status);
       document.getElementById('detObservacoes').value = item.observacoesCoordenador || '';
+      mostrarLinkComplementacao(item.candidaturaBfLink || '');
       setMsg('');
     }
 
@@ -504,6 +576,32 @@
             : 'Pendente de triagem';
       document.getElementById('detStatus').value = status;
       setMsg('Decisão preparada. Agora salve a triagem.');
+    }
+
+    async function gerarPreCandidaturaBF() {
+      const id = document.getElementById('detId').value;
+      if (!id) {
+        setMsg('Selecione uma inscrição primeiro.', true);
+        return;
+      }
+      try {
+        const res = await fetch('/.netlify/functions/intercessor-encaminhar-bf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify({ intercessorId: id })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Não foi possível gerar a pré-candidatura da escola.');
+        mostrarLinkComplementacao(data.linkComplementacao || '');
+        await carregarIntercessores();
+        abrirItem(id);
+        setMsg(data.reutilizado ? 'Pré-candidatura já existia. Link recuperado com sucesso.' : 'Pré-candidatura da Escola Barco da Fé gerada com sucesso.');
+      } catch (err) {
+        setMsg(err.message || 'Erro ao gerar a pré-candidatura da escola.', true);
+      }
     }
 
     async function salvarTriagem() {
