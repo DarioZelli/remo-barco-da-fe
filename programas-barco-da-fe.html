@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Programas por Nível — Escola Barco da Fé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--ouro:#C9952A;--ouro-lt:#E8B84B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:var(--vinho);color:var(--creme);min-height:100vh}
+    nav{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:.95rem 1.2rem;background:rgba(44,15,15,.95);border-bottom:1px solid rgba(201,149,42,.18)}
+    a{text-decoration:none}
+    .brand{display:flex;align-items:center;gap:.75rem;color:var(--ouro-lt);font-family:'Cinzel',serif;font-weight:700}
+    .brand img{width:40px;height:40px;border-radius:50%}
+    .brand span{display:block;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,236,215,.65)}
+    .back{color:var(--creme);font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+    .hero{padding:5.5rem 1.2rem 2.4rem;text-align:center;background:radial-gradient(ellipse at top,rgba(90,32,32,.5),transparent 65%)}
+    .badge{display:inline-block;background:var(--ouro);color:var(--vinho);font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:.22rem .72rem;border-radius:3px;margin-bottom:.9rem}
+    h1{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3rem);color:var(--creme-lt);line-height:1.15}
+    h1 em{font-style:normal;color:var(--ouro-lt)}
+    .desc{max-width:760px;margin:1rem auto 0;font-size:1rem;line-height:1.8;color:rgba(245,236,215,.72)}
+    .grid{max-width:1100px;margin:0 auto;padding:0 1.2rem 4rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+    .card{display:flex;flex-direction:column;gap:.8rem;padding:1.35rem;border-radius:8px;background:linear-gradient(135deg,rgba(61,21,21,.9),rgba(44,15,15,.98));border:1px solid rgba(201,149,42,.16);transition:.25s transform,.25s border-color}
+    .card:hover{transform:translateY(-3px);border-color:rgba(201,149,42,.38)}
+    .icon{font-size:2.2rem}
+    .title{font-family:'Cinzel',serif;font-size:1.05rem;color:var(--creme-lt)}
+    .subtitle{font-size:.82rem;line-height:1.55;color:var(--ouro-pale)}
+    .summary{font-size:.9rem;line-height:1.7;color:rgba(245,236,215,.68);flex:1}
+    .cta{display:inline-flex;align-items:center;gap:.45rem;font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro)}
+    .footer{text-align:center;padding:1.5rem 1rem 2.5rem;color:rgba(245,236,215,.35);font-size:.78rem}
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" href="index.html"><img src="logo-remo.png" alt="REMO" /><div>Remo<span>Rede Mundial de Orações</span></div></a>
+    <a class="back" href="candidatura.html">← Voltar</a>
+  </nav>
+  <section class="hero">
+    <span class="badge">Formação</span>
+    <h1>Programas por <em>Nível</em></h1>
+    <p class="desc">Conheça cada etapa da Escola Barco da Fé. Ao tocar em um nível, você verá a explicação detalhada, com objetivos, conteúdos e público-alvo.</p>
+  </section>
+  <section class="grid" id="gridProgramas">
+    <div class="card"><div class="summary">Carregando programas...</div></div>
+  </section>
+  <div class="footer">© 2025 REMO — Escola Barco da Fé</div>
+  <script>
+    async function carregar() {
+      const grid = document.getElementById('gridProgramas');
+      try {
+        const res = await fetch('/.netlify/functions/programas-niveis-listar');
+        const data = await res.json();
+        const programas = Array.isArray(data.programas) ? data.programas : [];
+        if (!programas.length) {
+          grid.innerHTML = '<div class="card"><div class="summary">Nenhum programa disponível no momento.</div></div>';
+          return;
+        }
+        grid.innerHTML = programas.map((item) => `
+          <a class="card" href="programa-nivel.html?nivel=${encodeURIComponent(item.nivel)}">
+            <div class="icon">${item.icone || '📘'}</div>
+            <div class="title">${item.titulo || item.nivel}</div>
+            <div class="subtitle">${item.subtitulo || ''}</div>
+            <div class="summary">${item.resumo || ''}</div>
+            <span class="cta">Abrir programa →</span>
+          </a>
+        `).join('');
+      } catch {
+        grid.innerHTML = '<div class="card"><div class="summary">Não foi possível carregar os programas.</div></div>';
+      }
+    }
+    carregar();
+  </script>
+</body>
+</html>
