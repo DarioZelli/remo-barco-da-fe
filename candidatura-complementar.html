@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Complementar Candidatura — Escola Barco da Fé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--ouro:#C9952A;--ouro-lt:#E8B84B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:var(--vinho);color:var(--creme);min-height:100vh}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.4rem;background:rgba(44,15,15,0.95);border-bottom:1px solid rgba(201,149,42,0.2)}
+    .nav-logo{display:flex;align-items:center;gap:0.75rem;text-decoration:none;color:var(--ouro-lt);font-family:'Cinzel',serif;font-weight:700}
+    .nav-logo img{height:40px;width:40px;border-radius:50%}
+    .hero{padding:7rem 1.5rem 2rem;text-align:center}
+    .hero h1{font-family:'Cinzel',serif;font-size:clamp(1.8rem,4vw,3rem);color:var(--creme-lt);margin-bottom:0.8rem}
+    .hero h1 em{font-style:normal;color:var(--ouro-lt)}
+    .hero p{max-width:680px;margin:0 auto;line-height:1.75;color:rgba(245,236,215,0.75)}
+    .container{max-width:760px;margin:0 auto;padding:0 1.5rem 4rem}
+    .card{background:linear-gradient(135deg,rgba(61,21,21,0.92),rgba(44,15,15,0.97));border:1px solid rgba(201,149,42,0.2);border-radius:6px;padding:2rem}
+    .card::before{content:'';display:block;height:2px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:-2rem -2rem 1.6rem}
+    .notice{background:rgba(201,149,42,0.08);border:1px solid rgba(201,149,42,0.18);padding:1rem 1.1rem;border-radius:4px;line-height:1.65;color:rgba(245,236,215,0.82);margin-bottom:1.5rem}
+    .section-title{font-family:'Cinzel',serif;font-size:0.95rem;color:var(--ouro-lt);margin:1.6rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid rgba(201,149,42,0.15)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+    .form-group{margin-bottom:1rem}
+    label{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:0.45rem}
+    input,textarea,select{width:100%;background:rgba(44,15,15,0.6);border:1px solid rgba(201,149,42,0.25);border-radius:3px;padding:0.75rem 0.95rem;font-family:'Lato',sans-serif;font-size:0.95rem;color:var(--creme);outline:none}
+    textarea{min-height:100px;resize:vertical}
+    select option{background:#3D1515;color:var(--creme)}
+    .check-item{display:flex;align-items:flex-start;gap:0.7rem;margin-bottom:0.8rem;cursor:pointer}
+    .check-item input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--ouro)}
+    .check-item span{line-height:1.5;color:rgba(245,236,215,0.82)}
+    .btn-submit{width:100%;background:var(--ouro);color:#2C0F0F;border:none;padding:1rem 1.4rem;border-radius:3px;font-size:0.85rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer}
+    .btn-submit:disabled{opacity:.7;cursor:wait}
+    .msg{display:none;padding:1rem 1.2rem;border-radius:4px;margin-top:1rem;text-align:center}
+    .msg.ok{background:rgba(60,120,60,0.25);border:1px solid rgba(100,200,100,0.3);color:#a0e0a0}
+    .msg.err{background:rgba(120,40,40,0.25);border:1px solid rgba(200,80,80,0.3);color:#e0a0a0}
+    @media(max-width:700px){.form-row{grid-template-columns:1fr}.card{padding:1.4rem}.card::before{margin:-1.4rem -1.4rem 1.3rem}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo"><img src="logo-remo.png" alt="REMO"/>REMO</a>
+    <a href="barco-da-fe.html" style="color:var(--ouro-lt);text-decoration:none;font-weight:700">Barco da Fé</a>
+  </nav>
+
+  <section class="hero">
+    <h1>Complementar <em>Candidatura</em></h1>
+    <p>Você foi encaminhado para a Escola Barco da Fé. Complete os dados abaixo para concluir sua candidatura e permitir a análise da coordenação.</p>
+  </section>
+
+  <div class="container">
+    <div class="card">
+      <div class="notice" id="notice">Carregando seus dados...</div>
+      <form id="formComplemento" novalidate>
+        <div class="section-title">Dados Pessoais</div>
+        <div class="form-group">
+          <label for="nomeCompleto">Nome Completo *</label>
+          <input id="nomeCompleto" type="text" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cpf">CPF *</label>
+            <input id="cpf" type="text" maxlength="14" required />
+          </div>
+          <div class="form-group">
+            <label for="dataNascimento">Data de Nascimento</label>
+            <input id="dataNascimento" type="date" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">E-mail *</label>
+            <input id="email" type="email" required />
+          </div>
+          <div class="form-group">
+            <label for="telefone">Telefone / WhatsApp *</label>
+            <input id="telefone" type="text" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cidade">Cidade *</label>
+            <input id="cidade" type="text" required />
+          </div>
+          <div class="form-group">
+            <label for="estado">Estado *</label>
+            <select id="estado" required>
+              <option value="">UF</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+              <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+              <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+              <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+              <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+              <option>SP</option><option>SE</option><option>TO</option>
+              <option>— Exterior —</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="pais">País *</label>
+          <input id="pais" type="text" value="Brasil" required />
+        </div>
+
+        <div class="section-title">Contexto Espiritual</div>
+        <div class="form-group">
+          <label for="moduloDesejado">Módulo de interesse *</label>
+          <select id="moduloDesejado" required>
+            <option value="">Selecione o módulo</option>
+            <option>N1 — Fundamentação</option>
+            <option>N2 — Aprofundamento</option>
+            <option>N3 — Prática</option>
+            <option>N4 — Liderança</option>
+            <option>N5 — Missão</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="igrejaMinisterio">Igreja ou Ministério</label>
+          <input id="igrejaMinisterio" type="text" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="experienciaOracao">Experiência com Oração *</label>
+            <select id="experienciaOracao" required>
+              <option value="">Selecione</option>
+              <option>Iniciante — estou aprendendo a orar</option>
+              <option>Básico — oro regularmente de forma pessoal</option>
+              <option>Intermediário — já participo de grupos de oração</option>
+              <option>Avançado — tenho ministério de intercessão</option>
+              <option>Líder — coordeno intercessores ou grupos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="disponibilidade">Disponibilidade Semanal *</label>
+            <select id="disponibilidade" required>
+              <option value="">Selecione</option>
+              <option>Até 2 horas por semana</option>
+              <option>De 2 a 5 horas por semana</option>
+              <option>De 5 a 10 horas por semana</option>
+              <option>Mais de 10 horas por semana</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="motivacao">Motivação / Testemunho *</label>
+          <textarea id="motivacao" required></textarea>
+        </div>
+
+        <div class="section-title">Termo</div>
+        <label class="check-item"><input type="checkbox" id="aceiteVoluntariado" required /><span>Declaro que li e concordo com o Termo de Voluntariado da REMO.</span></label>
+        <label class="check-item"><input type="checkbox" id="aceiteComunicacoes" /><span>Autorizo o uso dos meus dados para contato e comunicações da REMO relacionadas à formação.</span></label>
+
+        <button type="submit" class="btn-submit" id="btnEnviar">Concluir candidatura</button>
+        <div id="msgOk" class="msg ok"></div>
+        <div id="msgErr" class="msg err"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const token = new URLSearchParams(window.location.search).get('token') || '';
+
+    document.getElementById('cpf').addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g,'');
+      v = v.replace(/(\d{3})(\d)/,'$1.$2');
+      v = v.replace(/(\d{3})(\d)/,'$1.$2');
+      v = v.replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+      e.target.value = v;
+    });
+
+    async function carregarPreCadastro() {
+      const notice = document.getElementById('notice');
+      const msgErr = document.getElementById('msgErr');
+      if (!token) {
+        notice.textContent = 'Link inválido. O token de complementação não foi encontrado.';
+        return;
+      }
+      try {
+        const res = await fetch('/.netlify/functions/bf-pre-candidatura-obter?token=' + encodeURIComponent(token));
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Não foi possível carregar seus dados.');
+        const c = data.candidatura || {};
+        document.getElementById('nomeCompleto').value = c.nomeCompleto || '';
+        document.getElementById('dataNascimento').value = c.dataNascimento || '';
+        document.getElementById('email').value = c.email || '';
+        document.getElementById('telefone').value = c.telefone || '';
+        document.getElementById('cidade').value = c.cidade || '';
+        document.getElementById('estado').value = c.estado || '';
+        document.getElementById('pais').value = c.pais || 'Brasil';
+        document.getElementById('moduloDesejado').value = c.moduloDesejado || '';
+        document.getElementById('igrejaMinisterio').value = c.igrejaMinisterio || '';
+        document.getElementById('experienciaOracao').value = c.experienciaOracao || '';
+        document.getElementById('disponibilidade').value = c.disponibilidade || '';
+        document.getElementById('motivacao').value = c.motivacao || '';
+        notice.textContent = 'Seus dados iniciais já foram carregados. Confira, complete o que falta e conclua sua candidatura.';
+      } catch (err) {
+        msgErr.textContent = err.message || 'Não foi possível carregar seus dados.';
+        msgErr.style.display = 'block';
+        notice.textContent = 'Não foi possível carregar a pré-candidatura.';
+      }
+    }
+
+    document.getElementById('formComplemento').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnEnviar');
+      const ok = document.getElementById('msgOk');
+      const err = document.getElementById('msgErr');
+      ok.style.display = 'none';
+      err.style.display = 'none';
+
+      const payload = {
+        token,
+        nomeCompleto: document.getElementById('nomeCompleto').value.trim(),
+        cpf: document.getElementById('cpf').value.trim(),
+        dataNascimento: document.getElementById('dataNascimento').value,
+        email: document.getElementById('email').value.trim(),
+        telefone: document.getElementById('telefone').value.trim(),
+        cidade: document.getElementById('cidade').value.trim(),
+        estado: document.getElementById('estado').value,
+        pais: document.getElementById('pais').value.trim(),
+        moduloDesejado: document.getElementById('moduloDesejado').value,
+        igrejaMinisterio: document.getElementById('igrejaMinisterio').value.trim(),
+        experienciaOracao: document.getElementById('experienciaOracao').value,
+        disponibilidade: document.getElementById('disponibilidade').value,
+        motivacao: document.getElementById('motivacao').value.trim(),
+        aceiteVoluntariado: document.getElementById('aceiteVoluntariado').checked,
+        aceiteComunicacoes: document.getElementById('aceiteComunicacoes').checked
+      };
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        const res = await fetch('/.netlify/functions/bf-pre-candidatura-complementar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Não foi possível concluir sua candidatura.');
+        ok.textContent = 'Candidatura concluída com sucesso. ID: ' + data.candidaturaId;
+        ok.style.display = 'block';
+        document.getElementById('notice').textContent = 'Sua candidatura foi concluída e agora seguirá para análise da coordenação.';
+      } catch (erro) {
+        err.textContent = erro.message || 'Não foi possível concluir sua candidatura.';
+        err.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Concluir candidatura';
+      }
+    });
+
+    carregarPreCadastro();
+  </script>
+</body>
+</html>
