@@ -99,6 +99,7 @@
       align-items: center;
       margin-bottom: 10px;
       font-size: 12px;
+      flex-wrap: wrap;
     }
     .radio-group label,
     .check label {
@@ -110,14 +111,15 @@
       margin: 0;
     }
     .check {
-      margin: 6px 0;
+      margin: 10px 0;
     }
-    .help {
-      display: block;
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: -6px;
-      margin-bottom: 10px;
+    .declaracao {
+      background: rgba(255,255,255,0.38);
+      border: 1px solid rgba(0,0,0,0.08);
+      padding: 12px 13px;
+      font-size: 12px;
+      line-height: 1.55;
+      margin: 12px 0 8px;
     }
     .submit-wrap {
       text-align: center;
@@ -137,17 +139,41 @@
       opacity: .7;
       cursor: wait;
     }
-    .ids {
+    .orientacao {
       font-size: 13px;
-      line-height: 1.35;
+      line-height: 1.55;
     }
-    .ids-title {
+    .orientacao-title {
       font-size: 16px;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .ids b {
-      font-weight: 800;
+    .orientacao-box {
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(0,0,0,0.08);
+      padding: 14px 14px 12px;
+      margin-bottom: 14px;
+    }
+    .orientacao-box p {
+      margin: 0 0 10px;
+    }
+    .orientacao-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .orientacao-box li {
+      margin-bottom: 6px;
+    }
+    .verso {
+      background: rgba(63,95,85,0.08);
+      border-left: 4px solid var(--accent);
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .verso strong {
+      display: block;
+      margin-bottom: 6px;
     }
     .msg {
       display: none;
@@ -176,8 +202,8 @@
 <body>
   <div class="page">
     <div class="topbar">
-      <a href="index.html">← Voltar ao site</a>
-      <a href="intercessores-admin.html">Triagem administrativa</a>
+      <a href="rede-de-clamor.html">← Voltar para Rede de Clamor</a>
+      <a href="barco-da-fe.html">Barco da Fé</a>
     </div>
 
     <div class="card">
@@ -190,7 +216,7 @@
           <input id="nomeCompleto" name="nomeCompleto" type="text" required />
 
           <label for="dataNascimento">Data de Nascimento *</label>
-          <input id="dataNascimento" name="dataNascimento" type="date" required />
+          <input id="dataNascimento" name="dataNascimento" type="date" min="1900-01-01" required />
 
           <label for="email">Email *</label>
           <input id="email" name="email" type="email" placeholder="exemplo@exemplo.com" required />
@@ -199,10 +225,10 @@
           <input id="telefoneCelular" name="telefoneCelular" type="text" placeholder="47 9 9999-9999" required />
 
           <label for="enderecoCompleto">Endereço completo com CEP *</label>
-          <input id="enderecoCompleto" name="enderecoCompleto" type="text" placeholder="Rua: Exemplo, nº 001, Centro, Balneário Camboriú, SC, CEP: 88330-000" required />
+          <input id="enderecoCompleto" name="enderecoCompleto" type="text" placeholder="Rua, número, bairro, cidade, estado e CEP" required />
 
           <label for="motivacao">Por que deseja ser intercessor? *</label>
-          <textarea id="motivacao" name="motivacao" placeholder="Explique a motivação." required></textarea>
+          <textarea id="motivacao" name="motivacao" placeholder="Explique com sinceridade sua motivação." required></textarea>
 
           <label>Já participa de algum grupo de oração? *</label>
           <div class="radio-group">
@@ -223,7 +249,7 @@
           </div>
 
           <label for="comunidadeCongrega">Em qual igreja ou comunidade cristã você congrega atualmente? *</label>
-          <input id="comunidadeCongrega" name="comunidadeCongrega" type="text" placeholder="Explique a motivação." required />
+          <input id="comunidadeCongrega" name="comunidadeCongrega" type="text" placeholder="Informe sua igreja ou comunidade cristã" required />
 
           <label for="tempoCaminhada">Quanto tempo tem de caminhada cristã? *</label>
           <input id="tempoCaminhada" name="tempoCaminhada" type="text" placeholder="Ex: 7 anos" required />
@@ -234,8 +260,13 @@
             <label><input type="radio" name="aceitaServir" value="false" required /> Não</label>
           </div>
 
+          <div class="declaracao">
+            <strong>Declaração de alinhamento doutrinário</strong><br>
+            Declaro que minha participação como intercessor na REMO será exercida em conformidade com a fé cristã bíblica, centrada em Jesus Cristo, segundo as Escrituras Sagradas, e que não utilizarei práticas, invocações ou fundamentos contrários à orientação espiritual adotada pela missão.
+          </div>
+
           <div class="check">
-            <label><input id="declaracaoAlinhamento" name="declaracaoAlinhamento" type="checkbox" required /> Declaração de alinhamento doutrinário. Ver termo de uso</label>
+            <label><input id="declaracaoAlinhamento" name="declaracaoAlinhamento" type="checkbox" required /> Li e concordo</label>
           </div>
 
           <div class="submit-wrap">
@@ -246,23 +277,21 @@
           <div id="msgErro" class="msg err"></div>
         </form>
 
-        <div class="ids">
-          <div class="ids-title">IDs DOS CAMPOS DO FORMULÁRIO:</div>
-          <div><b>Nome completo:</b> nomeCompleto</div>
-          <div><b>Data Nasc;</b> dataNascimento</div>
-          <div><b>Email:</b> email</div>
-          <div><b>Telefone Celular:</b> telefoneCelular</div>
-          <div><b>Endereço:</b> enderecoCompleto</div>
-          <div><b>Porque deseja ser intercessor?:</b> motivação</div>
-          <div><b>Já participou de grupo de oração?:</b> participouGrupoOracao</div>
-          <div><b>Já liderou Intercessão?:</b> liderouIntercessao</div>
-          <div><b>Você professa a fé cristã evangélica?:</b> feProfessa</div>
-          <div><b>Em qual igreja ou comunidade cristã você congrega atualmente? :</b> comunidadeCongrega</div>
-          <div><b>Quanto tempo tem de caminhada cristã? :</b> tempoCaminhada</div>
-          <div><b>ocê aceita servir na REMO...?:</b> aceitaServir</div>
-          <div><b>Declaração Alinhamento:</b> declaracaoAlinhamento</div>
-          <div style="margin-top:16px;font-size:12px;color:#404040;line-height:1.45">
-            Este formulário já sai com recomendação automática para o coordenador decidir entre aprovação direta como intercessor ou encaminhamento para a Escola Barco da Fé.
+        <div class="orientacao">
+          <div class="orientacao-title">Orientações de preenchimento</div>
+          <div class="orientacao-box">
+            <p>Preencha este formulário com seriedade e sinceridade. Ele será analisado pela coordenação para definir o melhor encaminhamento.</p>
+            <ul>
+              <li>Informe seus dados corretamente, principalmente e-mail e telefone.</li>
+              <li>Na motivação, escreva com clareza por que deseja servir como intercessor.</li>
+              <li>Responda com verdade sobre sua caminhada cristã, experiência em oração e vínculo com igreja ou comunidade cristã.</li>
+              <li>O envio deste formulário não significa aprovação automática. A decisão final será da coordenação.</li>
+            </ul>
+          </div>
+          <div class="verso">
+            <strong>Lembrete bíblico</strong>
+            “Perseverai em oração, velando nela com ações de graças.”<br>
+            <span>Colossenses 4:2</span>
           </div>
         </div>
       </div>
@@ -274,6 +303,9 @@
       const marcado = document.querySelector(`input[name="${nome}"]:checked`);
       return marcado ? marcado.value : '';
     }
+
+    const campoDataNascimento = document.getElementById('dataNascimento');
+    campoDataNascimento.max = new Date().toISOString().split('T')[0];
 
     document.getElementById('formIntercessor').addEventListener('submit', async function(e) {
       e.preventDefault();
