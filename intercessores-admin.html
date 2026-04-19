@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triagem de Intercessores — REMO</title>
+  <style>
+    :root {
+      --vinho:#2C0F0F;
+      --vinho-md:#3D1515;
+      --ouro:#C9952A;
+      --ouro-lt:#E8B84B;
+      --creme:#F5ECD7;
+      --painel:#f6f0e3;
+      --texto:#241b16;
+      --muted:#6b5c52;
+      --ok:#2f6b3e;
+      --erro:#8d2d2d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--vinho-md), var(--vinho));
+      color: var(--creme);
+    }
+    .topbar {
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(201,149,42,.15);
+      position: sticky;
+      top: 0;
+      background: rgba(44,15,15,.96);
+      z-index: 10;
+    }
+    .topbar a {
+      color: var(--ouro-lt);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .wrap {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 18px 36px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .sub {
+      color: rgba(245,236,215,.72);
+      margin-bottom: 18px;
+      line-height: 1.45;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .panel {
+      background: var(--painel);
+      color: var(--texto);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.08);
+    }
+    .panel-head {
+      padding: 14px 16px;
+      background: #ece4d0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+    }
+    .panel-head strong {
+      font-size: 15px;
+    }
+    .btn {
+      border: 1px solid rgba(0,0,0,.15);
+      background: var(--ouro-lt);
+      color: #241b16;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn.alt {
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(0,0,0,.07);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #f1ead8;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    tr:hover td {
+      background: rgba(0,0,0,.02);
+    }
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+    .tag-pendente { background: rgba(201,149,42,.18); color: #7a5508; }
+    .tag-ativo { background: rgba(47,107,62,.16); color: #2f6b3e; }
+    .tag-encaminhado { background: rgba(70,100,170,.16); color: #2c4d8f; }
+    .tag-reprovado { background: rgba(141,45,45,.14); color: #8d2d2d; }
+    .detail {
+      padding: 16px;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .full { grid-column: 1 / -1; }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #5d4e43;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid rgba(0,0,0,.18);
+      background: #fff;
+      padding: 9px 10px;
+      font-size: 13px;
+      border-radius: 4px;
+      color: #241b16;
+    }
+    textarea { min-height: 88px; resize: vertical; }
+    .readonly {
+      background: #faf7f1;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .msg {
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .ok { color: var(--ok); }
+    .err { color: var(--erro); }
+    .empty {
+      padding: 28px 16px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .login-note {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 14px 16px;
+      border-radius: 6px;
+      line-height: 1.5;
+    }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .field-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a href="admin.html">← Voltar ao admin</a>
+    <a href="intercessor.html">Abrir formulário público</a>
+  </div>
+
+  <div class="wrap">
+    <h1>Triagem de Intercessores</h1>
+    <div class="sub">Aqui o coordenador pode ver a recomendação automática do sistema e decidir entre aprovação direta como intercessor, encaminhamento para a Escola Barco da Fé ou reprovação.</div>
+
+    <div id="loginAviso" class="login-note" style="display:none;">
+      Seu acesso administrativo não foi validado. Entre primeiro em <a href="admin.html" style="color:#fff;text-decoration:underline;">admin.html</a> e depois volte para esta página.
+    </div>
+
+    <div id="conteudo" class="grid" style="display:none;">
+      <div class="panel">
+        <div class="panel-head">
+          <strong>Inscrições recebidas</strong>
+          <button class="btn alt" onclick="carregarIntercessores()">Atualizar</button>
+        </div>
+        <div style="overflow:auto; max-height: 74vh;">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Grupo</th>
+                <th>Liderou</th>
+                <th>Caminhada</th>
+                <th>Recomendação</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaIntercessores">
+              <tr><td colspan="8" class="empty">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <strong>Detalhes da triagem</strong>
+        </div>
+        <div class="detail">
+          <input id="detId" type="hidden" />
+          <div class="field-grid">
+            <div><label>Nome completo</label><input id="detNome" class="readonly" readonly /></div>
+            <div><label>Data de nascimento</label><input id="detDataNascimento" class="readonly" readonly /></div>
+            <div><label>Email</label><input id="detEmail" class="readonly" readonly /></div>
+            <div><label>Telefone celular</label><input id="detTelefone" class="readonly" readonly /></div>
+            <div class="full"><label>Endereço completo</label><input id="detEndereco" class="readonly" readonly /></div>
+            <div class="full"><label>Por que deseja ser intercessor?</label><textarea id="detMotivacao" class="readonly" readonly></textarea></div>
+            <div><label>Já participou de grupo de oração?</label><input id="detGrupo" class="readonly" readonly /></div>
+            <div><label>Já liderou intercessão?</label><input id="detLiderou" class="readonly" readonly /></div>
+            <div><label>Professa a fé cristã evangélica?</label><input id="detFe" class="readonly" readonly /></div>
+            <div><label>Tempo de caminhada cristã</label><input id="detCaminhada" class="readonly" readonly /></div>
+            <div class="full"><label>Comunidade em que congrega</label><input id="detComunidade" class="readonly" readonly /></div>
+            <div><label>Aceita servir na REMO?</label><input id="detAceitaServir" class="readonly" readonly /></div>
+            <div><label>Declaração de alinhamento</label><input id="detAlinhamento" class="readonly" readonly /></div>
+            <div><label>Recomendação automática</label><input id="detRecomendacao" class="readonly" readonly /></div>
+            <div class="full"><label>Justificativa do sistema</label><textarea id="detJustificativa" class="readonly" readonly></textarea></div>
+            <div><label>Decisão do coordenador</label>
+              <select id="detDecisao">
+                <option value="">Pendente</option>
+                <option value="aprovar_direto">Aprovar direto como intercessor</option>
+                <option value="encaminhar_escola_barco_da_fe">Encaminhar para Escola Barco da Fé</option>
+                <option value="reprovar">Não aprovar</option>
+              </select>
+            </div>
+            <div><label>Status final</label><input id="detStatus" class="readonly" readonly /></div>
+            <div class="full"><label>Observações do coordenador</label><textarea id="detObservacoes"></textarea></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="salvarTriagem()">Salvar triagem</button>
+            <span id="msg"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_STORAGE_KEY = 'remo_admin_token';
+    let ADMIN_TOKEN = localStorage.getItem(ADMIN_STORAGE_KEY) || '';
+    let cache = [];
+
+    function fmt(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function simNao(v) {
+      return v ? 'Sim' : 'Não';
+    }
+
+    function nomeRecomendacao(v) {
+      const mapa = {
+        aprovacao_direta: 'Aprovação direta',
+        encaminhar_escola_barco_da_fe: 'Encaminhar para Escola Barco da Fé',
+        avaliacao_doutrinaria: 'Avaliação doutrinária'
+      };
+      return mapa[v] || 'Pendente';
+    }
+
+    function nomeStatus(v) {
+      const mapa = {
+        pendente_triagem: 'Pendente de triagem',
+        ativo: 'Ativo',
+        encaminhado_barco_da_fe: 'Encaminhado para Escola Barco da Fé',
+        reprovado: 'Reprovado'
+      };
+      return mapa[v] || 'Pendente de triagem';
+    }
+
+    function tagStatus(v) {
+      const nome = nomeStatus(v);
+      let cls = 'tag-pendente';
+      if (v === 'ativo') cls = 'tag-ativo';
+      else if (v === 'encaminhado_barco_da_fe') cls = 'tag-encaminhado';
+      else if (v === 'reprovado') cls = 'tag-reprovado';
+      return `<span class="tag ${cls}">${nome}</span>`;
+    }
+
+    function setMsg(texto, erro = false) {
+      const el = document.getElementById('msg');
+      el.className = erro ? 'msg err' : 'msg ok';
+      el.textContent = texto;
+    }
+
+    async function validarSessao() {
+      if (!ADMIN_TOKEN) return false;
+      try {
+        const res = await fetch('/.netlify/functions/auth-validate', {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    }
+
+    function preencherDetalhes(item) {
+      document.getElementById('detId').value = item.id || '';
+      document.getElementById('detNome').value = item.nomeCompleto || '';
+      document.getElementById('detDataNascimento').value = item.dataNascimento || '';
+      document.getElementById('detEmail').value = item.email || '';
+      document.getElementById('detTelefone').value = item.telefoneCelular || item.telefone || '';
+      document.getElementById('detEndereco').value = item.enderecoCompleto || '';
+      document.getElementById('detMotivacao').value = item.motivacao || '';
+      document.getElementById('detGrupo').value = simNao(item.participouGrupoOracao);
+      document.getElementById('detLiderou').value = simNao(item.liderouIntercessao);
+      document.getElementById('detFe').value = simNao(item.feProfessa);
+      document.getElementById('detCaminhada').value = item.tempoCaminhada || '';
+      document.getElementById('detComunidade').value = item.comunidadeCongrega || '';
+      document.getElementById('detAceitaServir').value = simNao(item.aceitaServir);
+      document.getElementById('detAlinhamento').value = simNao(item.declaracaoAlinhamento);
+      document.getElementById('detRecomendacao').value = nomeRecomendacao(item.triagem?.recomendacao);
+      document.getElementById('detJustificativa').value = item.triagem?.justificativa || '';
+      document.getElementById('detDecisao').value = item.decisaoCoordenador || '';
+      document.getElementById('detStatus').value = nomeStatus(item.status);
+      document.getElementById('detObservacoes').value = item.observacoesCoordenador || '';
+      setMsg('');
+    }
+
+    async function carregarIntercessores() {
+      const tbody = document.getElementById('tabelaIntercessores');
+      tbody.innerHTML = '<tr><td colspan="8" class="empty">Carregando...</td></tr>';
+      try {
+        const res = await fetch('/.netlify/functions/admin-listar?colecao=intercessores', {
+          headers: { 'x-admin-token': ADMIN_TOKEN }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao carregar intercessores');
+        cache = Array.isArray(data.registros) ? data.registros : [];
+        if (!cache.length) {
+          tbody.innerHTML = '<tr><td colspan="8" class="empty">Nenhuma inscrição encontrada.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = cache.map(item => `
+          <tr>
+            <td>${fmt(item.criadoEm || item.createdAt)}</td>
+            <td>${item.nomeCompleto || '—'}</td>
+            <td>${simNao(item.participouGrupoOracao)}</td>
+            <td>${simNao(item.liderouIntercessao)}</td>
+            <td>${item.tempoCaminhada || '—'}</td>
+            <td>${nomeRecomendacao(item.triagem?.recomendacao)}</td>
+            <td>${tagStatus(item.status)}</td>
+            <td><button class="btn alt" onclick="abrirItem('${item.id}')">Detalhes</button></td>
+          </tr>
+        `).join('');
+        preencherDetalhes(cache[0]);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" class="empty">${err.message || 'Erro ao carregar.'}</td></tr>`;
+      }
+    }
+
+    function abrirItem(id) {
+      const item = cache.find(reg => reg.id === id);
+      if (!item) return;
+      preencherDetalhes(item);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function salvarTriagem() {
+      const id = document.getElementById('detId').value;
+      if (!id) {
+        setMsg('Selecione uma inscrição primeiro.', true);
+        return;
+      }
+      const payload = {
+        id,
+        decisaoCoordenador: document.getElementById('detDecisao').value,
+        observacoesCoordenador: document.getElementById('detObservacoes').value
+      };
+      try {
+        const res = await fetch('/.netlify/functions/intercessores-atualizar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-token': ADMIN_TOKEN
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.erro || 'Falha ao salvar triagem');
+        setMsg('Triagem salva com sucesso.');
+        document.getElementById('detStatus').value = nomeStatus(data.registro?.status);
+        await carregarIntercessores();
+        abrirItem(id);
+      } catch (err) {
+        setMsg(err.message || 'Erro ao salvar triagem.', true);
+      }
+    }
+
+    (async function init() {
+      const ok = await validarSessao();
+      if (!ok) {
+        document.getElementById('loginAviso').style.display = 'block';
+        return;
+      }
+      document.getElementById('conteudo').style.display = 'grid';
+      await carregarIntercessores();
+    })();
+  </script>
+</body>
+</html>
