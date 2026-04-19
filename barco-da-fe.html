@@ -24,7 +24,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .hamburger span{display:block;width:24px;height:2px;background:var(--ouro-lt);border-radius:2px;transition:all 0.3s}
 @media(max-width:768px){.nav-links{display:none;position:fixed;top:61px;left:0;right:0;background:rgba(44,15,15,0.98);flex-direction:column;padding:1.5rem;gap:1rem;align-items:center;text-align:center}.nav-links.open{display:flex;align-items:center;text-align:center}.hamburger{display:flex}nav{padding:0.9rem 1.2rem}}
 
-/* Hero */
 .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem 4rem;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 30%,rgba(90,32,32,0.6) 0%,transparent 70%)}
 .hero-content{position:relative;z-index:1;max-width:760px}
@@ -41,15 +40,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .btn-ghost:hover{border-color:var(--ouro-lt);color:var(--ouro-pale)}
 .divider{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--ouro),transparent);margin:1.5rem auto}
 
-/* Sections */
 section{padding:5rem 2rem}
 .section-inner{max-width:1100px;margin:0 auto}
 .section-eyebrow{font-size:0.65rem;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:var(--ouro);display:block;margin-bottom:0.6rem;text-align:center}
 .section-title{font-family:'Cinzel',serif;font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:900;color:var(--creme-lt);text-align:center;margin-bottom:0.8rem;line-height:1.15}
 .section-title em{font-style:normal;color:var(--ouro-lt)}
 .section-desc{text-align:center;font-size:0.97rem;font-weight:300;color:rgba(245,236,215,0.7);max-width:600px;margin:0 auto 3rem;line-height:1.8}
-
-/* Cards grid */
 .cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
 @media(max-width:900px){.cards-3{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.cards-3{grid-template-columns:1fr}}
@@ -59,19 +55,13 @@ section{padding:5rem 2rem}
 .card-icon{font-size:2.2rem;margin-bottom:1rem}
 .card-title{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--ouro-lt);margin-bottom:0.6rem}
 .card-desc{font-size:0.9rem;font-weight:300;color:rgba(245,236,215,0.72);line-height:1.7}
-
-/* Pilares */
 .pilares-bg{background:rgba(61,21,21,0.3)}
-
-/* Etapas */
 .steps{display:flex;flex-direction:column;gap:1.2rem;max-width:680px;margin:0 auto}
 .step{display:flex;align-items:flex-start;gap:1.2rem;background:linear-gradient(135deg,rgba(61,21,21,0.8),rgba(44,15,15,0.9));border:1px solid rgba(201,149,42,0.15);border-radius:5px;padding:1.4rem 1.6rem}
 .step-num{min-width:40px;height:40px;background:var(--ouro);color:var(--vinho);font-family:'Cinzel',serif;font-weight:900;font-size:1rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .step-info{flex:1}
 .step-title{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--ouro-lt);margin-bottom:0.3rem}
 .step-desc{font-size:0.88rem;font-weight:300;color:rgba(245,236,215,0.7);line-height:1.6}
-
-/* Níveis */
 .niveis{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
 @media(max-width:900px){.niveis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.niveis{grid-template-columns:1fr 1fr}}
@@ -81,10 +71,7 @@ section{padding:5rem 2rem}
 .nivel-tag{font-size:0.6rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;background:var(--ouro);color:var(--vinho);padding:0.15rem 0.5rem;border-radius:2px;display:inline-block;margin-bottom:0.5rem}
 .nivel-name{font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;color:var(--ouro-lt);margin-bottom:0.5rem}
 .nivel-desc{font-size:0.78rem;font-weight:300;color:rgba(245,236,215,0.65);line-height:1.55}
-
-/* CTA */
 .cta-section{text-align:center;padding:5rem 2rem;background:radial-gradient(ellipse 60% 70% at 50% 50%,rgba(90,32,32,0.4) 0%,transparent 70%)}
-
 footer{text-align:center;padding:2.5rem 2rem;border-top:1px solid rgba(201,149,42,0.1);font-size:0.78rem;color:rgba(245,236,215,0.35)}
 footer a{color:rgba(245,236,215,0.35);text-decoration:none}
 </style>
@@ -117,6 +104,7 @@ footer a{color:rgba(245,236,215,0.35);text-decoration:none}
     <p class="hero-desc">Uma escola, uma rede, uma prática. O Barco da Fé forma intercessores em 5 níveis — do fundamento espiritual ao ministério avançado.</p>
     <div class="hero-btns">
       <a href="/barco-da-fe/inscricao" class="btn-primary">⚓ Inscreva-se agora</a>
+      <a href="/rede/intercessor" class="btn-ghost">🙏 Quero servir como intercessor</a>
       <a href="/agenda" class="btn-ghost">📅 Ver agenda</a>
     </div>
   </div>
