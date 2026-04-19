@@ -24,8 +24,6 @@
       color: var(--creme);
       overflow-x: hidden;
     }
-
-    /* NAVBAR */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
@@ -50,7 +48,6 @@
     .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; }
     .hamburger span { display:block; width:24px; height:2px; background:var(--ouro-lt); border-radius:2px; transition:all 0.3s; }
 
-    /* HERO */
     .hero {
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
@@ -87,7 +84,6 @@
     .hero-actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; opacity:0; animation:fadeUp 0.8s ease 1.1s forwards; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
-    /* BOTÕES */
     .btn-primary {
       display:inline-flex; align-items:center; gap:0.5rem;
       background:var(--ouro); color:var(--vinho);
@@ -107,7 +103,6 @@
     }
     .btn-secondary:hover { background:rgba(201,149,42,0.1); border-color:var(--ouro); transform:translateY(-2px); }
 
-    /* SEÇÕES */
     section { position:relative; z-index:1; }
     .section-header { text-align:center; margin-bottom:3.5rem; }
     .section-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--ouro); display:block; margin-bottom:0.7rem; }
@@ -115,7 +110,6 @@
     .section-title em { font-style:normal; color:var(--ouro-lt); }
     .section-desc { font-size:0.97rem; font-weight:300; line-height:1.8; color:rgba(245,236,215,0.65); max-width:520px; margin:0.8rem auto 0; }
 
-    /* SOBRE */
     .sobre { padding:6rem 3rem; background:linear-gradient(180deg,var(--vinho) 0%,var(--vinho-md) 100%); }
     .sobre-inner { max-width:1080px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
     .sobre-card { background:linear-gradient(135deg,var(--vinho-lt),var(--vinho-md)); border:1px solid rgba(201,149,42,0.2); border-radius:4px; padding:2.5rem; position:relative; overflow:hidden; }
@@ -124,14 +118,10 @@
     .sobre-card cite { font-size:0.75rem; letter-spacing:0.2em; color:var(--ouro); font-style:normal; text-transform:uppercase; }
     .sobre-ornamento { position:absolute; bottom:-1.5rem; right:-1.5rem; width:80px; height:80px; border:1px solid rgba(201,149,42,0.15); border-radius:50%; }
     .sobre-ornamento::after { content:''; position:absolute; inset:8px; border:1px solid rgba(201,149,42,0.08); border-radius:50%; }
-    .sobre-texto h3 { font-family:'Cinzel',serif; font-size:1.8rem; font-weight:700; color:var(--creme-lt); margin-bottom:1.4rem; line-height:1.3; }
-    .sobre-texto h3 em { font-style:normal; color:var(--ouro-lt); }
-    .sobre-texto p { font-size:0.97rem; font-weight:300; line-height:1.9; color:rgba(245,236,215,0.75); margin-bottom:1.1rem; }
     .sobre-stats { display:flex; gap:2rem; margin-top:2rem; padding-top:2rem; border-top:1px solid rgba(201,149,42,0.15); }
     .stat-num { font-family:'Cinzel',serif; font-size:1.8rem; font-weight:900; color:var(--ouro-lt); display:block; }
     .stat-label { font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(245,236,215,0.5); }
 
-    /* CAMINHOS */
     .caminhos { padding:6rem 3rem; background:var(--vinho-md); }
     .caminhos-grid { max-width:1080px; margin:0 auto; display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
     .caminho-card {
@@ -153,7 +143,6 @@
     .caminho-card.destaque .caminho-titulo { font-size:1.3rem; }
     .caminho-badge { font-size:0.63rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; background:var(--ouro); color:var(--vinho); padding:0.18rem 0.55rem; border-radius:2px; display:inline-block; margin-bottom:0.3rem; }
 
-    /* FLUXO */
     .fluxo { padding:6rem 3rem; background:linear-gradient(180deg,var(--vinho-md) 0%,var(--vinho) 100%); }
     .fluxo-steps { max-width:860px; margin:0 auto; }
     .step { display:grid; grid-template-columns:72px 1fr; gap:2rem; align-items:flex-start; padding:1.8rem 0; position:relative; }
@@ -162,7 +151,6 @@
     .step-body h4 { font-family:'Cinzel',serif; font-size:1rem; font-weight:700; color:var(--creme-lt); margin-bottom:0.45rem; }
     .step-body p { font-size:0.93rem; font-weight:300; line-height:1.8; color:rgba(245,236,215,0.62); }
 
-    /* CTA */
     .cta-section { padding:6rem 3rem; text-align:center; position:relative; overflow:hidden; }
     .cta-section::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:600px; background:radial-gradient(ellipse,rgba(201,149,42,0.07) 0%,transparent 70%); pointer-events:none; }
     .cta-inner { position:relative; z-index:1; max-width:660px; margin:0 auto; }
@@ -171,7 +159,6 @@
     .cta-inner p { font-size:1rem; font-weight:300; line-height:1.8; color:rgba(245,236,215,0.68); margin-bottom:2.5rem; }
     .cta-divider { width:60px; height:1px; background:linear-gradient(to right,transparent,var(--ouro),transparent); margin:0 auto 2.5rem; }
 
-    /* RODAPÉ */
     footer { background:#1A0808; border-top:1px solid rgba(201,149,42,0.14); padding:3.5rem 3rem 2rem; }
     .footer-inner { max-width:1080px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr; gap:3rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(201,149,42,0.1); margin-bottom:2rem; }
     .footer-brand img { height:56px; margin-bottom:1rem; }
@@ -183,13 +170,9 @@
     .footer-bottom { max-width:1080px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; font-size:0.76rem; color:rgba(245,236,215,0.28); }
     .footer-bottom a { color:rgba(245,236,215,0.28); text-decoration:none; }
     .footer-bottom a:hover { color:var(--ouro); }
-
-    /* REVEAL */
     .reveal { opacity:0; transform:translateY(26px); transition:opacity 0.7s ease,transform 0.7s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
     .d1{transition-delay:0.1s} .d2{transition-delay:0.2s} .d3{transition-delay:0.3s} .d4{transition-delay:0.4s}
-
-    /* RESPONSIVO */
     @media(max-width:900px){
       nav{padding:0.9rem 1.5rem}
       .nav-links{display:none}
@@ -219,6 +202,7 @@
       <li><a href="#caminhos">Serviços</a></li>
       <li><a href="#como-funciona">Como funciona</a></li>
       <li><a href="pedido-oracao.html">Pedidos</a></li>
+      <li><a href="rede-de-clamor.html">Rede de Clamor</a></li>
       <li><a href="candidatura.html">Barco da Fé</a></li>
       <li><a href="status-inscricao.html">Status</a></li>
       <li><a href="professor.html">Professor</a></li>
@@ -229,7 +213,6 @@
     </div>
   </nav>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-content">
@@ -247,7 +230,6 @@
     </div>
   </section>
 
-  <!-- SOBRE -->
   <section class="sobre" id="sobre">
     <div class="sobre-inner">
       <div class="reveal">
@@ -270,12 +252,11 @@
     </div>
   </section>
 
-  <!-- CAMINHOS -->
   <section class="caminhos" id="caminhos">
     <div class="section-header reveal">
       <span class="section-eyebrow">O que oferecemos</span>
       <h2 class="section-title">Caminhos de <em>Intercessão</em></h2>
-      <p class="section-desc">Seja qual for o seu passo — pedir oração, interceder ou ser formado — a REMO tem um lugar para você.</p>
+      <p class="section-desc">Seja qual for o seu passo — pedir oração, interceder, conectar-se à rede ou ser formado — a REMO tem um lugar para você.</p>
     </div>
     <div class="caminhos-grid">
       <a href="pedido-oracao.html" class="caminho-card reveal d1">
@@ -284,13 +265,19 @@
         <p class="caminho-desc">Envie o seu pedido e ele será recebido por intercessores comprometidos. Você recebe confirmação e atualizações durante todo o processo.</p>
         <span class="caminho-link">Enviar pedido →</span>
       </a>
-      <a href="intercessor.html" class="caminho-card reveal d2">
+      <a href="rede-de-clamor.html" class="caminho-card reveal d2">
+        <div class="caminho-icone">🌍</div>
+        <div class="caminho-titulo">Rede de Clamor</div>
+        <p class="caminho-desc">Entre na área da Rede de Clamor para ver os caminhos de participação, grupos, igrejas, convocações e o Relógio de Oração da REMO.</p>
+        <span class="caminho-link">Acessar a rede →</span>
+      </a>
+      <a href="intercessor.html" class="caminho-card reveal d3">
         <div class="caminho-icone">🌐</div>
         <div class="caminho-titulo">Ser Intercessor</div>
         <p class="caminho-desc">Junte-se à rede de intercessores e ore pelos pedidos cadastrados. Uma missão espiritual real, organizada e com impacto mensurável.</p>
         <span class="caminho-link">Cadastrar-se →</span>
       </a>
-      <a href="relogio.html" class="caminho-card reveal d3">
+      <a href="relogio.html" class="caminho-card reveal d4">
         <div class="caminho-icone">⏱️</div>
         <div class="caminho-titulo">Relógio de Oração</div>
         <p class="caminho-desc">Assuma um horário fixo de oração e garanta que a REMO tenha cobertura de intercessão ininterrupta, 24 horas por dia, todos os dias.</p>
@@ -308,7 +295,6 @@
     </div>
   </section>
 
-  <!-- COMO FUNCIONA -->
   <section class="fluxo" id="como-funciona">
     <div class="section-header reveal">
       <span class="section-eyebrow">O ciclo completo</span>
@@ -354,7 +340,6 @@
     </div>
   </section>
 
-  <!-- CTA -->
   <section class="cta-section">
     <div class="cta-inner">
       <div class="cta-divider"></div>
@@ -362,6 +347,7 @@
       <p class="reveal d1">Não importa onde você esteja — na REMO há um lugar para o seu clamor e para o seu chamado.</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;" class="reveal d2">
         <a href="pedido-oracao.html" class="btn-primary">✉ Enviar meu pedido</a>
+        <a href="rede-de-clamor.html" class="btn-secondary">🌍 Rede de Clamor</a>
         <a href="candidatura.html" class="btn-secondary">⚓ Escola Barco da Fé</a>
         <a href="status-inscricao.html" class="btn-secondary">🔎 Ver status da inscrição</a>
         <a href="aluno.html" class="btn-secondary">📚 Área do Aluno</a>
@@ -369,7 +355,6 @@
     </div>
   </section>
 
-  <!-- RODAPÉ -->
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
@@ -381,6 +366,7 @@
         <ul>
           <li><a href="pedido-oracao.html">Enviar pedido</a></li>
           <li><a href="pedido-oracao.html">Ver pedidos ativos</a></li>
+          <li><a href="rede-de-clamor.html">Rede de Clamor</a></li>
           <li><a href="relogio.html">Relógio de Oração</a></li>
           <li><a href="intercessor.html">Intercessores</a></li>
           <li><a href="admin.html">Acesso restrito</a></li>
@@ -408,18 +394,15 @@
   </footer>
 
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    // Scroll reveal
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-    // Navbar shadow
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').style.boxShadow = window.scrollY > 40 ? '0 4px 30px rgba(0,0,0,0.55)' : 'none';
     });
 
-    // Menu mobile
     let menuOpen = false;
     function toggleMenu() {
       menuOpen = !menuOpen;
@@ -433,7 +416,6 @@
       h.children[2].style.transform = menuOpen ? 'rotate(-45deg) translate(6px,-6px)' : '';
     }
 
-    // Fecha menu ao clicar em link
     document.querySelectorAll('#navLinks a').forEach(a => {
       a.addEventListener('click', () => { if (menuOpen) toggleMenu(); });
     });
