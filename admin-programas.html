@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Programas — Escola Barco da Fé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--ouro:#C9952A;--ouro-lt:#E8B84B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:#1A0808;color:var(--creme);min-height:100vh}
+    .top{position:sticky;top:0;z-index:20;padding:.95rem 1rem;background:rgba(44,15,15,.96);border-bottom:1px solid rgba(201,149,42,.18);display:flex;justify-content:space-between;align-items:center;gap:.8rem}
+    .brand{display:flex;align-items:center;gap:.7rem;color:var(--ouro-lt);font-family:'Cinzel',serif;font-weight:700;text-decoration:none}
+    .brand img{width:36px;height:36px;border-radius:50%}
+    .brand span{display:block;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,236,215,.62)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.6rem .9rem;border-radius:4px;border:1px solid rgba(201,149,42,.3);background:none;color:var(--ouro);font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer}
+    .btn.gold{background:var(--ouro);color:#2C0F0F;border-color:var(--ouro)}
+    .wrap{max-width:1180px;margin:0 auto;padding:1rem}
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:1rem}
+    .menu,.editor{border:1px solid rgba(201,149,42,.14);border-radius:8px;background:linear-gradient(135deg,rgba(61,21,21,.88),rgba(44,15,15,.96))}
+    .menu h2,.editor h2{font-family:'Cinzel',serif;font-size:1.05rem;color:var(--creme-lt);padding:1rem;border-bottom:1px solid rgba(201,149,42,.12)}
+    .menu-list{padding:.5rem}
+    .item{display:flex;align-items:center;gap:.7rem;padding:.8rem;border-radius:6px;cursor:pointer;border:1px solid transparent}
+    .item.active{background:rgba(201,149,42,.08);border-color:rgba(201,149,42,.24)}
+    .item:hover{background:rgba(201,149,42,.05)}
+    .icon{font-size:1.6rem}
+    .item strong{display:block;color:var(--creme-lt)}
+    .item span{font-size:.8rem;color:rgba(245,236,215,.58)}
+    .fields{padding:1rem;display:grid;gap:.9rem}
+    label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ouro);margin-bottom:.35rem}
+    input,textarea,select{width:100%;padding:.78rem .85rem;border-radius:4px;border:1px solid rgba(201,149,42,.22);background:rgba(44,15,15,.68);color:var(--creme);font-size:.95rem}
+    textarea{min-height:100px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    .actions{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;padding:0 1rem 1rem}
+    .msg{font-size:.82rem}
+    .ok{color:#a0e0a0}.err{color:#f1a0a0}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <a class="brand" href="admin-mobile.html"><img src="logo-remo.png" alt="REMO" /><div>REMO Admin<span>Programas por nível</span></div></a>
+    <div style="display:flex;gap:.55rem;flex-wrap:wrap;justify-content:flex-end">
+      <a class="btn" href="admin-mobile.html">Voltar</a>
+      <a class="btn" href="programas-barco-da-fe.html" target="_blank">Abrir público</a>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="grid">
+      <div class="menu">
+        <h2>Níveis da Escola</h2>
+        <div class="menu-list" id="menuLista"><div style="padding:1rem;color:rgba(245,236,215,.55)">Carregando...</div></div>
+      </div>
+      <div class="editor">
+        <h2>Editar conteúdo do nível</h2>
+        <div class="fields">
+          <div class="row">
+            <div><label>Nível</label><input id="nivel" readonly /></div>
+            <div><label>Ordem</label><input id="ordem" type="number" min="1" /></div>
+          </div>
+          <div class="row">
+            <div><label>Ícone</label><input id="icone" /></div>
+            <div><label>Ativo</label><select id="ativo"><option value="true">Sim</option><option value="false">Não</option></select></div>
+          </div>
+          <div><label>Título</label><input id="titulo" /></div>
+          <div><label>Subtítulo</label><input id="subtitulo" /></div>
+          <div><label>Resumo</label><textarea id="resumo"></textarea></div>
+          <div><label>Objetivos (um por linha)</label><textarea id="objetivos"></textarea></div>
+          <div><label>Conteúdos (um por linha)</label><textarea id="conteudos"></textarea></div>
+          <div><label>Público-alvo</label><textarea id="publico"></textarea></div>
+        </div>
+        <div class="actions">
+          <button class="btn gold" onclick="salvar()">Salvar este nível</button>
+          <span id="msg" class="msg"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const KEY = 'remo_admin_token';
+    let TOKEN = localStorage.getItem(KEY) || '';
+    let programas = [];
+    let atual = null;
+
+    function setMsg(texto, erro=false){const el=document.getElementById('msg');el.className='msg '+(erro?'err':'ok');el.textContent=texto||'';}
+    async function validar(){
+      if(!TOKEN){location.href='admin-mobile.html';return false;}
+      const res = await fetch('/.netlify/functions/auth-validate',{headers:{'x-admin-token':TOKEN}}).catch(()=>null);
+      if(!res || !res.ok){location.href='admin-mobile.html';return false;}
+      return true;
+    }
+    function carregarEditor(item){
+      atual=item;
+      document.getElementById('nivel').value=item.nivel||'';
+      document.getElementById('ordem').value=item.ordem||'';
+      document.getElementById('icone').value=item.icone||'';
+      document.getElementById('ativo').value=String(item.ativo!==false);
+      document.getElementById('titulo').value=item.titulo||'';
+      document.getElementById('subtitulo').value=item.subtitulo||'';
+      document.getElementById('resumo').value=item.resumo||'';
+      document.getElementById('objetivos').value=(item.objetivos||[]).join('\n');
+      document.getElementById('conteudos').value=(item.conteudos||[]).join('\n');
+      document.getElementById('publico').value=item.publico||'';
+      document.querySelectorAll('.item').forEach(el=>el.classList.toggle('active', el.dataset.nivel===item.nivel));
+      setMsg('');
+    }
+    function renderMenu(){
+      const box=document.getElementById('menuLista');
+      if(!programas.length){box.innerHTML='<div style="padding:1rem;color:rgba(245,236,215,.55)">Nenhum nível encontrado.</div>';return;}
+      box.innerHTML=programas.map(p=>`<div class="item ${atual&&atual.nivel===p.nivel?'active':''}" data-nivel="${p.nivel}" onclick="selecionar('${p.nivel}')"><div class="icon">${p.icone||'📘'}</div><div><strong>${p.titulo||p.nivel}</strong><span>${p.subtitulo||''}</span></div></div>`).join('');
+    }
+    function selecionar(nivel){ const item=programas.find(p=>p.nivel===nivel); if(item) carregarEditor(item); }
+    async function listar(){
+      const ok = await validar(); if(!ok) return;
+      const res=await fetch('/.netlify/functions/programas-niveis-listar?incluirInativos=true',{headers:{'x-admin-token':TOKEN}});
+      const data=await res.json();
+      programas=Array.isArray(data.programas)?data.programas:[];
+      atual=programas[0]||null;
+      renderMenu();
+      if(atual) carregarEditor(atual);
+    }
+    async function salvar(){
+      if(!atual){setMsg('Selecione um nível.', true);return;}
+      const payload={
+        nivel: document.getElementById('nivel').value,
+        ordem: Number(document.getElementById('ordem').value)||0,
+        icone: document.getElementById('icone').value,
+        ativo: document.getElementById('ativo').value==='true',
+        titulo: document.getElementById('titulo').value,
+        subtitulo: document.getElementById('subtitulo').value,
+        resumo: document.getElementById('resumo').value,
+        objetivos: document.getElementById('objetivos').value.split('\n').map(v=>v.trim()).filter(Boolean),
+        conteudos: document.getElementById('conteudos').value.split('\n').map(v=>v.trim()).filter(Boolean),
+        publico: document.getElementById('publico').value
+      };
+      try{
+        const res=await fetch('/.netlify/functions/programas-niveis-salvar',{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':TOKEN},body:JSON.stringify(payload)});
+        const data=await res.json();
+        if(!res.ok) throw new Error(data.erro||'Falha ao salvar');
+        setMsg('Conteúdo salvo com sucesso.');
+        await listar();
+        selecionar(payload.nivel);
+      }catch(err){setMsg(err.message||'Erro ao salvar.', true)}
+    }
+    listar();
+  </script>
+</body>
+</html>
