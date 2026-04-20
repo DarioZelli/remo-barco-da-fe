@@ -34,6 +34,7 @@
     .admin-brand-text{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--ouro-lt)}
     .admin-brand-text span{display:block;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ouro-pale);font-weight:400}
     .admin-user{font-size:0.75rem;color:rgba(245,236,215,0.5);display:flex;align-items:center;gap:1rem}
+    .mobile-menu-btn{display:none;background:none;border:1px solid rgba(201,149,42,0.3);color:var(--ouro);font-size:1rem;line-height:1;padding:0.32rem 0.55rem;border-radius:2px;cursor:pointer}
     .btn-logout{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ouro);background:none;border:1px solid rgba(201,149,42,0.3);padding:0.3rem 0.8rem;border-radius:2px;cursor:pointer;transition:all 0.2s}
     .btn-logout:hover{background:rgba(201,149,42,0.1)}
 
@@ -87,8 +88,17 @@
     .form-actions{display:flex;gap:0.7rem;align-items:center;margin-top:1rem}
     .msg-ok{font-size:0.8rem;color:#a0e0a0}
     .msg-erro{font-size:0.8rem;color:#e0a0a0}
+    .mobile-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:70}
+    .mobile-nav-drawer{display:none;position:fixed;top:0;left:0;bottom:0;width:min(86vw,320px);background:rgba(44,15,15,0.98);border-right:1px solid rgba(201,149,42,0.2);z-index:71;overflow-y:auto;padding:1.2rem 0}
+    .mobile-nav-drawer .sidebar-link{border-left-width:3px}
 
-    @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.admin-sidebar{display:none}.admin-main{padding:1.2rem}}
+    @media(max-width:900px){
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .admin-sidebar{display:none}
+      .admin-main{padding:1.2rem}
+      .mobile-menu-btn{display:inline-flex}
+      .admin-user span{display:none}
+    }
   </style>
 </head>
 <body>
@@ -120,6 +130,7 @@
         <div class="admin-brand-text">REMO Admin<span>Painel de Gestão</span></div>
       </div>
       <div class="admin-user">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" onclick="toggleMenuMobile()" aria-label="Abrir menu de navegação" aria-controls="mobileAdminDrawer" aria-expanded="false">☰</button>
         <span>Administrador</span>
         <button class="btn-logout" onclick="sair()">Sair</button>
       </div>
@@ -152,6 +163,34 @@
         <div class="sidebar-section">Estudantes</div>
         <div class="sidebar-link" onclick="window.open('aluno.html','_blank')">📚 Área do Aluno</div>
         <div class="sidebar-link" onclick="window.open('index.html','_blank')">🏠 Ver Site</div>
+      </nav>
+      <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="fecharMenuMobile()"></div>
+      <nav class="mobile-nav-drawer" id="mobileAdminDrawer" aria-hidden="true">
+        <div class="sidebar-section">Visão Geral</div>
+        <div class="sidebar-link ativo" onclick="mostrarPagina('dashboard',this)">📊 Dashboard</div>
+
+        <div class="sidebar-section">Cadastros</div>
+        <div class="sidebar-link" onclick="mostrarPagina('pedidos',this);carregarTabela('pedidos-oracao','tabelaPedidos')">🙏 Pedidos de Oração</div>
+        <div class="sidebar-link" onclick="mostrarPagina('candidaturas',this);carregarTabela('candidaturas-bf','tabelaCandidaturas')">⚓ Candidaturas BF</div>
+        <div class="sidebar-link" onclick="mostrarPagina('intercessores',this);carregarTabela('intercessores','tabelaIntercessores')">🌐 Intercessores</div>
+        <div class="sidebar-link" onclick="abrirTriagemIntercessor()">🧭 Triagem de Intercessores</div>
+        <div class="sidebar-link" onclick="mostrarPagina('relogio',this);carregarTabela('relogio-oracao','tabelaRelogio')">⏱️ Relógio de Oração</div>
+
+        <div class="sidebar-section">Conteúdo</div>
+        <div class="sidebar-link" onclick="mostrarPagina('homeConfig',this);carregarHomeConfig()">🏠 Configuração da Home</div>
+        <div class="sidebar-link" onclick="mostrarPagina('homeCards',this);carregarHomeCards()">🧩 Cards da Home</div>
+        <div class="sidebar-link" onclick="mostrarPagina('aulasGravadas',this);carregarAulasGravadas()">🎬 Aulas Gravadas</div>
+        <div class="sidebar-link" onclick="mostrarPagina('atividades',this);carregarAtividades()">📝 Atividades</div>
+        <div class="sidebar-link" onclick="mostrarPagina('alertas',this);carregarAlertas()">🚨 Alertas</div>
+        <div class="sidebar-link" onclick="mostrarPagina('relatorios',this);carregarRelatorioAdmin()">📈 Relatórios</div>
+
+        <div class="sidebar-section">Usuários</div>
+        <div class="sidebar-link" onclick="mostrarPagina('professores',this);carregarTabela('professores','tabelaProfessores')">👨‍🏫 Professores</div>
+        <div class="sidebar-link" onclick="mostrarPagina('alunos',this);carregarTabela('alunos','tabelaAlunos')">🎓 Alunos</div>
+
+        <div class="sidebar-section">Estudantes</div>
+        <div class="sidebar-link" onclick="window.open('aluno.html','_blank');fecharMenuMobile()">📚 Área do Aluno</div>
+        <div class="sidebar-link" onclick="window.open('index.html','_blank');fecharMenuMobile()">🏠 Ver Site</div>
       </nav>
 
       <main class="admin-main">
@@ -574,11 +613,38 @@
     document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') fazerLogin(); });
 
     function sair() {
+      fecharMenuMobile();
       localStorage.removeItem(ADMIN_STORAGE_KEY);
       ADMIN_TOKEN = '';
       document.getElementById('adminScreen').style.display = 'none';
       document.getElementById('loginScreen').style.display = 'flex';
       document.getElementById('loginPass').value = '';
+    }
+    function abrirMenuMobile() {
+      const overlay = document.getElementById('mobileNavOverlay');
+      const drawer = document.getElementById('mobileAdminDrawer');
+      const btn = document.getElementById('mobileMenuBtn');
+      if (!overlay || !drawer || !btn) return;
+      overlay.style.display = 'block';
+      drawer.style.display = 'block';
+      drawer.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+    function fecharMenuMobile() {
+      const overlay = document.getElementById('mobileNavOverlay');
+      const drawer = document.getElementById('mobileAdminDrawer');
+      const btn = document.getElementById('mobileMenuBtn');
+      if (!overlay || !drawer || !btn) return;
+      overlay.style.display = 'none';
+      drawer.style.display = 'none';
+      drawer.setAttribute('aria-hidden', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    function toggleMenuMobile() {
+      const drawer = document.getElementById('mobileAdminDrawer');
+      if (!drawer) return;
+      if (drawer.style.display === 'block') fecharMenuMobile();
+      else abrirMenuMobile();
     }
 
     function mostrarPagina(id, el) {
@@ -586,9 +652,11 @@
       document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('ativo'));
       document.getElementById('page' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('ativo');
       el.classList.add('ativo');
+      fecharMenuMobile();
     }
 
     function abrirTriagemIntercessor(id = '') {
+      fecharMenuMobile();
       const base = '/painel/intercessores';
       window.location.href = id ? `${base}?id=${encodeURIComponent(id)}` : base;
     }
