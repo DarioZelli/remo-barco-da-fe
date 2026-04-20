@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Programa por Nível — Escola Barco da Fé</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{--vinho:#2C0F0F;--vinho-md:#3D1515;--ouro:#C9952A;--ouro-lt:#E8B84B;--creme:#F5ECD7;--creme-lt:#FAF4E8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lato',sans-serif;background:var(--vinho);color:var(--creme);min-height:100vh}
+    nav{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:.95rem 1.2rem;background:rgba(44,15,15,.95);border-bottom:1px solid rgba(201,149,42,.18)}
+    a{text-decoration:none}
+    .brand{display:flex;align-items:center;gap:.75rem;color:var(--ouro-lt);font-family:'Cinzel',serif;font-weight:700}
+    .brand img{width:40px;height:40px;border-radius:50%}
+    .brand span{display:block;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,236,215,.65)}
+    .back{color:var(--creme);font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+    .wrap{max-width:980px;margin:0 auto;padding:1.4rem 1.2rem 4rem}
+    .hero{padding:2rem 0 1.2rem}
+    .icon{font-size:3rem;margin-bottom:.65rem}
+    .eyebrow{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ouro);font-weight:700;margin-bottom:.65rem}
+    h1{font-family:'Cinzel',serif;font-size:clamp(1.9rem,4vw,3rem);line-height:1.15;color:var(--creme-lt)}
+    .subtitle{margin-top:.7rem;font-size:1rem;line-height:1.7;color:var(--ouro-pale)}
+    .summary{margin-top:1rem;font-size:1rem;line-height:1.9;color:rgba(245,236,215,.72)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+    .box{padding:1.2rem;border-radius:8px;background:linear-gradient(135deg,rgba(61,21,21,.9),rgba(44,15,15,.98));border:1px solid rgba(201,149,42,.16)}
+    .box h3{font-family:'Cinzel',serif;font-size:1rem;color:var(--creme-lt);margin-bottom:.8rem}
+    .box ul{padding-left:1rem;display:grid;gap:.55rem}
+    .box li{line-height:1.7;color:rgba(245,236,215,.74)}
+    .publico{margin-top:1rem;padding:1rem 1.1rem;border:1px solid rgba(201,149,42,.16);border-radius:8px;background:rgba(61,21,21,.55);font-size:.96rem;line-height:1.8;color:rgba(245,236,215,.74)}
+    .actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.5rem}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:.8rem 1.15rem;border-radius:4px;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(201,149,42,.3)}
+    .btn.gold{background:var(--ouro);color:#2C0F0F;border-color:var(--ouro)}
+    .btn.line{color:var(--ouro);background:none}
+    .msg{padding:1.2rem;border:1px solid rgba(201,149,42,.16);border-radius:8px;background:rgba(61,21,21,.55);margin-top:1rem;color:rgba(245,236,215,.74)}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" href="index.html"><img src="logo-remo.png" alt="REMO" /><div>Remo<span>Rede Mundial de Orações</span></div></a>
+    <a class="back" href="programas-barco-da-fe.html">← Voltar</a>
+  </nav>
+  <div class="wrap">
+    <section class="hero" id="hero">
+      <div class="msg">Carregando programa...</div>
+    </section>
+  </div>
+  <script>
+    function nivelAtual() {
+      return new URLSearchParams(window.location.search).get('nivel') || 'N1';
+    }
+    async function carregar() {
+      const hero = document.getElementById('hero');
+      try {
+        const res = await fetch('/.netlify/functions/programas-niveis-listar');
+        const data = await res.json();
+        const programas = Array.isArray(data.programas) ? data.programas : [];
+        const item = programas.find((p) => String(p.nivel) === nivelAtual());
+        if (!item) {
+          hero.innerHTML = '<div class="msg">Programa não encontrado.</div>';
+          return;
+        }
+        document.title = item.titulo + ' — Escola Barco da Fé';
+        hero.innerHTML = `
+          <div class="icon">${item.icone || '📘'}</div>
+          <div class="eyebrow">Escola Barco da Fé</div>
+          <h1>${item.titulo || item.nivel}</h1>
+          <div class="subtitle">${item.subtitulo || ''}</div>
+          <div class="summary">${item.resumo || ''}</div>
+          <div class="grid">
+            <div class="box">
+              <h3>Objetivos</h3>
+              <ul>${(item.objetivos || []).map((v) => `<li>${v}</li>`).join('')}</ul>
+            </div>
+            <div class="box">
+              <h3>Conteúdos</h3>
+              <ul>${(item.conteudos || []).map((v) => `<li>${v}</li>`).join('')}</ul>
+            </div>
+          </div>
+          <div class="publico"><strong>Público-alvo:</strong> ${item.publico || 'Não informado.'}</div>
+          <div class="actions">
+            <a class="btn gold" href="candidatura.html">⚓ Quero me inscrever</a>
+            <a class="btn line" href="programas-barco-da-fe.html">Ver os outros níveis</a>
+          </div>
+        `;
+      } catch {
+        hero.innerHTML = '<div class="msg">Não foi possível carregar este programa agora.</div>';
+      }
+    }
+    carregar();
+  </script>
+</body>
+</html>
