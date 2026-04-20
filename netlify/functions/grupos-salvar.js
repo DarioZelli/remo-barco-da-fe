@@ -1,4 +1,5 @@
 const { getStore } = require('@netlify/blobs');
+const { enviarNotificacaoWhatsApp } = require('./_lib/whatsapp-zapi');
 
 const TIPOS_VALIDOS = ['Grupo Doméstico', 'Igreja Local', 'Ministério Parceiro', 'Núcleo Regional'];
 const FORMATOS_VALIDOS = ['Presencial', 'Online', 'Híbrido'];
@@ -81,6 +82,16 @@ exports.handler = async function(event) {
 
     const store = abrirStore('grupos');
     await store.setJSON(id, registro);
+
+    try {
+      await enviarNotificacaoWhatsApp({
+        telefone: registro.telefone,
+        tipoEvento: 'inscricao_geral',
+        contexto: 'grupos-salvar'
+      });
+    } catch (erroWhatsapp) {
+      console.error('Falha no envio de WhatsApp (grupos-salvar):', erroWhatsapp);
+    }
 
     return {
       statusCode: 200,
