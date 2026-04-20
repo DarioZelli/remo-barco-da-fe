@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>REMO — Rede Mundial de Orações</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#2C0F0F" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="REMO" />
+  <link rel="apple-touch-icon" href="/logo-remo.png" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -113,7 +121,7 @@
     .sobre { padding:6rem 3rem; background:linear-gradient(180deg,var(--vinho) 0%,var(--vinho-md) 100%); }
     .sobre-inner { max-width:1080px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
     .sobre-card { background:linear-gradient(135deg,var(--vinho-lt),var(--vinho-md)); border:1px solid rgba(201,149,42,0.2); border-radius:4px; padding:2.5rem; position:relative; overflow:hidden; }
-    .sobre-card::before { content:'\201C'; position:absolute; top:-0.5rem; left:1.5rem; font-family:'Cinzel',serif; font-size:8rem; color:rgba(201,149,42,0.07); line-height:1; pointer-events:none; }
+    .sobre-card::before { content:'“'; position:absolute; top:-0.5rem; left:1.5rem; font-family:'Cinzel',serif; font-size:8rem; color:rgba(201,149,42,0.07); line-height:1; pointer-events:none; }
     .sobre-card blockquote { font-size:1.05rem; font-style:italic; font-weight:300; line-height:1.9; color:var(--creme); margin-bottom:1rem; }
     .sobre-card cite { font-size:0.75rem; letter-spacing:0.2em; color:var(--ouro); font-style:normal; text-transform:uppercase; }
     .sobre-ornamento { position:absolute; bottom:-1.5rem; right:-1.5rem; width:80px; height:80px; border:1px solid rgba(201,149,42,0.15); border-radius:50%; }
@@ -183,6 +191,25 @@
       .footer-inner{grid-template-columns:1fr;gap:2rem}
       .footer-bottom{flex-direction:column;gap:0.5rem;text-align:center}
     }
+
+    /* ── BANNER INSTALAR APP ────────────────────────── */
+    #pwa-banner{
+      display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;
+      background:linear-gradient(135deg,rgba(44,15,15,0.98),rgba(61,21,21,0.99));
+      border-top:1px solid rgba(201,149,42,0.3);
+      padding:0.85rem 1.2rem;
+      box-shadow:0 -4px 24px rgba(0,0,0,0.6);
+      display:none;align-items:center;gap:0.9rem;flex-wrap:wrap
+    }
+    #pwa-banner.visivel{display:flex}
+    #pwa-banner img{width:38px;height:38px;border-radius:8px;border:1px solid rgba(201,149,42,0.25);flex-shrink:0}
+    #pwa-banner .pwa-txt{flex:1;min-width:160px}
+    #pwa-banner .pwa-txt b{display:block;font-family:'Cinzel',serif;font-size:0.9rem;color:var(--creme-lt)}
+    #pwa-banner .pwa-txt span{font-size:0.78rem;color:rgba(245,236,215,0.55)}
+    #pwa-btn-instalar{background:var(--ouro);color:#2C0F0F;border:none;font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:3px;cursor:pointer;white-space:nowrap;transition:background 0.2s}
+    #pwa-btn-instalar:hover{background:var(--ouro-lt)}
+    #pwa-btn-fechar{background:none;border:none;color:rgba(245,236,215,0.4);font-size:1.2rem;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;transition:color 0.2s}
+    #pwa-btn-fechar:hover{color:var(--creme)}
     @media(max-width:600px){
       .hero,.sobre,.caminhos,.fluxo,.cta-section{padding-left:1.5rem;padding-right:1.5rem}
       footer{padding:2.5rem 1.5rem 1.5rem}
@@ -191,6 +218,17 @@
   </style>
 </head>
 <body>
+
+  <!-- BANNER INSTALAR APP -->
+  <div id="pwa-banner" role="banner" aria-label="Instalar aplicativo REMO">
+    <img src="logo-remo.png" alt="REMO" />
+    <div class="pwa-txt">
+      <b>Instalar REMO</b>
+      <span>Adicione ao celular para acesso rápido</span>
+    </div>
+    <button id="pwa-btn-instalar" onclick="instalarApp()">Instalar</button>
+    <button id="pwa-btn-fechar" onclick="fecharBannerPwa()" aria-label="Fechar">✕</button>
+  </div>
 
   <nav id="navbar">
     <a href="#" class="nav-logo">
@@ -394,6 +432,43 @@
   </footer>
 
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+    /* ── PWA: Service Worker + Prompt de instalação ─── */
+    let _pwaPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      _pwaPrompt = e;
+      /* Só mostra o banner se o usuário ainda não instalou/recusou */
+      if (!sessionStorage.getItem('pwa-fechado')) {
+        document.getElementById('pwa-banner').classList.add('visivel');
+      }
+    });
+
+    function instalarApp() {
+      if (!_pwaPrompt) return;
+      _pwaPrompt.prompt();
+      _pwaPrompt.userChoice.then(c => {
+        if (c.outcome === 'accepted') fecharBannerPwa();
+        _pwaPrompt = null;
+      });
+    }
+
+    function fecharBannerPwa() {
+      document.getElementById('pwa-banner').classList.remove('visivel');
+      sessionStorage.setItem('pwa-fechado', '1');
+    }
+
+    window.addEventListener('appinstalled', () => {
+      fecharBannerPwa();
+      _pwaPrompt = null;
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    /* ── Restante do script da página ─────────────────── */
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
     }, { threshold: 0.12 });
