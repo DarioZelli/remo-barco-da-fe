@@ -2,7 +2,8 @@ const ZAPI_BASE_URL = String(process.env.ZAPI_BASE_URL || 'https://api.z-api.io'
 const ZAPI_INSTANCE_ID = String(process.env.ZAPI_INSTANCE_ID || '').trim();
 const ZAPI_INSTANCE_TOKEN = String(process.env.ZAPI_INSTANCE_TOKEN || '').trim();
 const ZAPI_CLIENT_TOKEN = String(process.env.ZAPI_CLIENT_TOKEN || '').trim();
-const MIN_PHONE_LENGTH = 12;
+// 55 + DDD (2) + número local (8 ou 9)
+const MIN_BR_PHONE_LENGTH = 12;
 
 const ZAPI_MESSAGE_TEMPLATES = Object.freeze({
   inscricao_geral: [
@@ -50,11 +51,25 @@ function normalizarTelefone(telefone) {
     ? semPrefixoInternacional
     : `55${semPrefixoInternacional}`;
 
-  if (numero.length < MIN_PHONE_LENGTH) return '';
+  if (numero.length < MIN_BR_PHONE_LENGTH) return '';
   return numero;
 }
 
-async function enviarMensagemZapi({ telefone, mensagem }) {
+function analisarRespostaJsonTolerante(rawBody, status) {
+  try {
+    return JSON.parse(rawBody);
+  } catch (erroParse) {
+    console.warn('Resposta da Z-API sem JSON válido:', {
+      status,
+      detalhe: erroParse?.message || erroParse,
+      bodyPreview: String(rawBody).slice(0, 300)
+    });
+    return {};
+  }
+}
+
+async function enviarMensagemZAPI({ telefone, mensagem }) {
+  // A Z-API define o token de instância no path da URL (/token/{token}).
   const url = `${ZAPI_BASE_URL}/instances/${encodeURIComponent(ZAPI_INSTANCE_ID)}/token/${encodeURIComponent(ZAPI_INSTANCE_TOKEN)}/send-text`;
   const headers = { 'Content-Type': 'application/json' };
   if (ZAPI_CLIENT_TOKEN) {
@@ -70,15 +85,14 @@ async function enviarMensagemZapi({ telefone, mensagem }) {
     })
   });
 
+  const rawBody = await response.text();
   if (!response.ok) {
-    const detalhe = await response.text();
-    throw new Error(`Falha ao enviar WhatsApp via Z-API: ${response.status} ${detalhe}`);
+    const bodyPreview = String(rawBody).slice(0, 300);
+    throw new Error(`Falha ao enviar WhatsApp via Z-API: ${response.status} ${bodyPreview}`);
   }
 
-  return response.json().catch((erroParse) => {
-    console.warn('Resposta da Z-API sem JSON válido:', erroParse?.message || erroParse);
-    return {};
-  });
+  if (!rawBody) return {};
+  return analisarRespostaJsonTolerante(rawBody, response.status);
 }
 
 async function enviarNotificacaoWhatsApp({ telefone, tipoEvento, contexto }) {
@@ -97,7 +111,7 @@ async function enviarNotificacaoWhatsApp({ telefone, tipoEvento, contexto }) {
     return { ok: false, skipped: true, reason: 'zapi_nao_configurada' };
   }
 
-  await enviarMensagemZapi({
+  await enviarMensagemZAPI({
     telefone: telefoneNormalizado,
     mensagem
   });
