@@ -56,3 +56,12 @@ Recomendado usar Netlify CLI para simular static + functions:
 npx netlify dev
 ```
 
+## Variáveis de ambiente (WhatsApp via Z-API)
+
+Para envio automático de WhatsApp nos formulários públicos, configure:
+
+- `ZAPI_BASE_URL` (opcional, padrão: `https://api.z-api.io`)
+- `ZAPI_INSTANCE_ID`
+- `ZAPI_INSTANCE_TOKEN`
+- `ZAPI_CLIENT_TOKEN` (opcional, quando exigido pela instância)
+- `ZAPI_DEFAULT_DDI` (opcional, padrão: `55`)

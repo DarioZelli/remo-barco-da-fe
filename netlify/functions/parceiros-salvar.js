@@ -1,4 +1,5 @@
 const { getStore } = require('@netlify/blobs');
+const { sendWhatsAppByEvent } = require('./_lib/whatsapp-zapi');
 
 const TIPOS_VALIDOS = ['Igreja', 'Ministério', 'Organização', 'Empresa', 'Pessoa'];
 
@@ -71,6 +72,11 @@ exports.handler = async function(event) {
 
     const store = abrirStore('parceiros');
     await store.setJSON(id, registro);
+    await sendWhatsAppByEvent({
+      eventType: 'general_registration',
+      phone: dados.telefone,
+      context: { funcao: 'parceiros-salvar', id }
+    });
 
     return {
       statusCode: 200,
