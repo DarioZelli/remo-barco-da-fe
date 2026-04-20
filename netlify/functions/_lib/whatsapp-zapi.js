@@ -2,6 +2,7 @@ const ZAPI_BASE_URL = String(process.env.ZAPI_BASE_URL || 'https://api.z-api.io'
 const ZAPI_INSTANCE_ID = String(process.env.ZAPI_INSTANCE_ID || '').trim();
 const ZAPI_INSTANCE_TOKEN = String(process.env.ZAPI_INSTANCE_TOKEN || '').trim();
 const ZAPI_CLIENT_TOKEN = String(process.env.ZAPI_CLIENT_TOKEN || '').trim();
+const MIN_PHONE_LENGTH = 12;
 
 const ZAPI_MESSAGE_TEMPLATES = Object.freeze({
   inscricao_geral: [
@@ -49,7 +50,7 @@ function normalizarTelefone(telefone) {
     ? semPrefixoInternacional
     : `55${semPrefixoInternacional}`;
 
-  if (numero.length < 12) return '';
+  if (numero.length < MIN_PHONE_LENGTH) return '';
   return numero;
 }
 
@@ -74,7 +75,10 @@ async function enviarMensagemZapi({ telefone, mensagem }) {
     throw new Error(`Falha ao enviar WhatsApp via Z-API: ${response.status} ${detalhe}`);
   }
 
-  return response.json().catch(() => ({}));
+  return response.json().catch((erroParse) => {
+    console.warn('Resposta da Z-API sem JSON válido:', erroParse?.message || erroParse);
+    return {};
+  });
 }
 
 async function enviarNotificacaoWhatsApp({ telefone, tipoEvento, contexto }) {
