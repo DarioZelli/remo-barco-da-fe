@@ -1,5 +1,6 @@
 const { abrirStore, json } = require('./_lib/admin-auth');
 const { getById, upsert, nowIso } = require('./_lib/data-utils');
+const { enviarNotificacaoWhatsApp } = require('./_lib/whatsapp-zapi');
 
 exports.handler = async function(event) {
   if (event.httpMethod === 'OPTIONS') return json(200, { ok: true });
@@ -60,6 +61,16 @@ exports.handler = async function(event) {
       usado: true,
       usadoEm: nowIso()
     });
+
+    try {
+      await enviarNotificacaoWhatsApp({
+        telefone: atualizado.telefone,
+        tipoEvento: 'inscricao_geral',
+        contexto: 'bf-pre-candidatura-complementar'
+      });
+    } catch (erroWhatsapp) {
+      console.error('Falha no envio de WhatsApp (bf-pre-candidatura-complementar):', erroWhatsapp);
+    }
 
     return json(200, {
       sucesso: true,
