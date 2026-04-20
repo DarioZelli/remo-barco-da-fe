@@ -4,11 +4,9 @@ const { sendWhatsAppByEvent } = require('./_lib/whatsapp-zapi');
 function abrirStore(nome) {
   const siteID = process.env.BLOBS_SITE_ID;
   const token = process.env.BLOBS_TOKEN;
-
   if (siteID && token) {
     return getStore({ name: nome, siteID, token });
   }
-
   return getStore(nome);
 }
 
@@ -68,9 +66,11 @@ exports.handler = async function(event) {
 
     const store = abrirStore('pedidos-oracao');
     await store.setJSON(id, registro);
+
     await sendWhatsAppByEvent({
       eventType: 'prayer_request',
       phone: dados.telefone,
+      data: registro,
       context: { funcao: 'salvar-pedido', id }
     }).catch((notificationError) => {
       console.error('Falha no envio de WhatsApp (pedido):', notificationError);
@@ -86,7 +86,6 @@ exports.handler = async function(event) {
     };
   } catch (err) {
     console.error('Erro ao salvar pedido:', err);
-
     return {
       statusCode: 500,
       headers: {
