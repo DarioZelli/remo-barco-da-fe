@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="REMO" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="icon" type="image/png" href="/logo-remo.png" />
+  <link rel="icon" href="/logo-remo.png" />
   <link rel="apple-touch-icon" href="/logo-remo.png" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />
   <style>
@@ -484,7 +484,7 @@
     }
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js').catch((error) => { console.warn('Falha ao registrar service worker:', error); });
       });
     }
   </script>

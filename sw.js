@@ -11,7 +11,10 @@ const APP_SHELL = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_SHELL))
+      .then(() => self.skipWaiting())
+      .catch(error => console.error('Failed to precache app shell:', error))
   );
 });
 
@@ -31,13 +34,11 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then(response => response)
-        .catch(async () => {
+      fetch(request).catch(async () => {
           const cached = await caches.match(request);
           if (cached) return cached;
           return caches.match('/index.html');
-        })
+      })
     );
     return;
   }
