@@ -31,6 +31,8 @@ exports.handler = async function(event) {
       eventType: 'general_registration',
       phone: dados.telefone,
       context: { funcao: 'salvar-relogio', id }
+    }).catch((notificationError) => {
+      console.error('Falha no envio de WhatsApp (relogio):', notificationError);
     });
 
     return {

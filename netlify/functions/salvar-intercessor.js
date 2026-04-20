@@ -148,6 +148,8 @@ exports.handler = async function(event) {
       eventType: 'intercessor_registration',
       phone: dados.telefoneCelular,
       context: { funcao: 'salvar-intercessor', id }
+    }).catch((notificationError) => {
+      console.error('Falha no envio de WhatsApp (intercessor):', notificationError);
     });
 
     return {

@@ -76,6 +76,8 @@ exports.handler = async function(event) {
       eventType: 'general_registration',
       phone: dados.telefone,
       context: { funcao: 'parceiros-salvar', id }
+    }).catch((notificationError) => {
+      console.error('Falha no envio de WhatsApp (parceiro):', notificationError);
     });
 
     return {

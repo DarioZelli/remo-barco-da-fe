@@ -72,6 +72,8 @@ exports.handler = async function(event) {
       eventType: 'prayer_request',
       phone: dados.telefone,
       context: { funcao: 'salvar-pedido', id }
+    }).catch((notificationError) => {
+      console.error('Falha no envio de WhatsApp (pedido):', notificationError);
     });
 
     return {
