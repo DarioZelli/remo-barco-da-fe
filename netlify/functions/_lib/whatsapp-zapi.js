@@ -1,16 +1,17 @@
 'use strict';
 
-const ZAPI_BASE_URL = String(process.env.ZAPI_BASE_URL || 'https://api.z-api.io').replace(/\/+$/, '');
-const ZAPI_INSTANCE_ID = String(process.env.ZAPI_INSTANCE_ID || '').trim();
+// ─── Configuração via variáveis de ambiente ───────────────────────────────────
+const ZAPI_BASE_URL     = String(process.env.ZAPI_BASE_URL     || 'https://api.z-api.io').replace(/\/+$/, '');
+const ZAPI_INSTANCE_ID  = String(process.env.ZAPI_INSTANCE_ID  || '').trim();
 const ZAPI_INSTANCE_TOKEN = String(process.env.ZAPI_INSTANCE_TOKEN || '').trim();
 const ZAPI_CLIENT_TOKEN = String(process.env.ZAPI_CLIENT_TOKEN || '').trim();
 
-// 55 + DDD (2) + número local (8 ou 9 dígitos)
-const MIN_BR_PHONE_LENGTH = 12;
-// Timeout máximo para chamada à Z-API (evita travar a Netlify Function)
-const ZAPI_TIMEOUT_MS = 5000;
+const MIN_BR_PHONE_LENGTH = 12;   // 55 + DDD(2) + número(8 ou 9)
+const ZAPI_TIMEOUT_MS     = 5000; // 5 s — evita travar a Netlify Function
 
+// ─── Templates de mensagem ────────────────────────────────────────────────────
 const ZAPI_MESSAGE_TEMPLATES = Object.freeze({
+  // Chaves em português (usadas por enviarNotificacaoWhatsApp)
   inscricao_geral: [
     'Olá! 🙏 A paz do Senhor!',
     'Recebemos sua inscrição com gratidão e alegria.',
@@ -42,41 +43,42 @@ const ZAPI_MESSAGE_TEMPLATES = Object.freeze({
   ].join('\n')
 });
 
+// Mapeamento de chaves em inglês → português (compatibilidade com versão anterior)
+const CHAVE_EN_PARA_PT = {
+  general_registration:    'inscricao_geral',
+  intercessor_registration: 'cadastro_intercessor',
+  prayer_request:          'pedido_oracao'
+};
+
+// ─── Helpers internos ─────────────────────────────────────────────────────────
 function zapiConfigurada() {
   return Boolean(ZAPI_INSTANCE_ID && ZAPI_INSTANCE_TOKEN);
 }
 
-/**
- * Normaliza um número de telefone para o formato E.164 brasileiro (55DDXXXXXXXXX).
- * Corrige números com zero à esquerda (ex.: 047..., 011...) que antes geravam
- * formatos inválidos como 550479... ou 550119...
- */
+function resolverTipoEvento(tipoEvento) {
+  return CHAVE_EN_PARA_PT[tipoEvento] || tipoEvento;
+}
+
 function normalizarTelefone(telefone) {
   const apenasDigitos = String(telefone || '').replace(/\D/g, '');
   if (!apenasDigitos) return '';
 
-  // Remove eventual prefixo 00 de discagem internacional
   const semPrefixo00 = apenasDigitos.startsWith('00')
     ? apenasDigitos.slice(2)
     : apenasDigitos;
 
-  // Já tem DDI 55 — aceita diretamente
   if (semPrefixo00.startsWith('55')) {
-    const numero = semPrefixo00;
-    return numero.length >= MIN_BR_PHONE_LENGTH ? numero : '';
+    return semPrefixo00.length >= MIN_BR_PHONE_LENGTH ? semPrefixo00 : '';
   }
 
-  // Número nacional — pode ter 0 inicial (ex.: 047..., 011...)
   let numeroNacional = semPrefixo00;
   if (numeroNacional.startsWith('0')) {
     numeroNacional = numeroNacional.slice(1);
-    // Se ainda tiver 12+ dígitos após remover o 0, descarta mais 2 (código de operadora antigo)
     if (numeroNacional.length >= 12) {
       numeroNacional = numeroNacional.slice(2);
     }
   }
 
-  // Deve ter exatamente 10 (DDD + 8 dígitos) ou 11 (DDD + 9 dígitos)
   if (numeroNacional.length !== 10 && numeroNacional.length !== 11) {
     return '';
   }
@@ -84,30 +86,23 @@ function normalizarTelefone(telefone) {
   return `55${numeroNacional}`;
 }
 
-function analisarRespostaJsonTolerante(rawBody, status) {
+function parsearRespostaTolerant(rawBody, status) {
   try {
     return JSON.parse(rawBody);
-  } catch (erroParse) {
-    // Body omitido do log para evitar vazamento de PII
-    console.warn('Resposta da Z-API sem JSON válido:', {
-      status,
-      detalhe: erroParse?.message || String(erroParse)
-    });
+  } catch (e) {
+    console.warn('[whatsapp-zapi] Resposta sem JSON válido:', { status });
     return {};
   }
 }
 
-async function enviarMensagemZAPI({ telefone, mensagem }) {
+async function enviarViaZAPI({ telefone, mensagem }) {
   const url = `${ZAPI_BASE_URL}/instances/${encodeURIComponent(ZAPI_INSTANCE_ID)}/token/${encodeURIComponent(ZAPI_INSTANCE_TOKEN)}/send-text`;
 
   const headers = { 'Content-Type': 'application/json' };
-  if (ZAPI_CLIENT_TOKEN) {
-    headers['Client-Token'] = ZAPI_CLIENT_TOKEN;
-  }
+  if (ZAPI_CLIENT_TOKEN) headers['Client-Token'] = ZAPI_CLIENT_TOKEN;
 
-  // Timeout de 5 s — impede que a Netlify Function trave se a Z-API não responder
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), ZAPI_TIMEOUT_MS);
+  const timeoutId  = setTimeout(() => controller.abort(), ZAPI_TIMEOUT_MS);
 
   let response;
   try {
@@ -117,64 +112,72 @@ async function enviarMensagemZAPI({ telefone, mensagem }) {
       body: JSON.stringify({ phone: telefone, message: mensagem }),
       signal: controller.signal
     });
-  } catch (erroFetch) {
-    const isTimeout = erroFetch?.name === 'AbortError';
-    throw new Error(
-      isTimeout
-        ? `Z-API: timeout após ${ZAPI_TIMEOUT_MS}ms`
-        : `Z-API: erro de rede — ${erroFetch?.message || String(erroFetch)}`
+  } catch (err) {
+    throw new Error(err?.name === 'AbortError'
+      ? `Z-API: timeout após ${ZAPI_TIMEOUT_MS}ms`
+      : `Z-API: erro de rede — ${err?.message || String(err)}`
     );
   } finally {
     clearTimeout(timeoutId);
   }
 
   const rawBody = await response.text();
-
   if (!response.ok) {
-    // Body não incluído na mensagem para evitar vazamento de PII nos logs
-    throw new Error(`Falha ao enviar WhatsApp via Z-API: HTTP ${response.status}`);
+    throw new Error(`Z-API: HTTP ${response.status}`);
   }
-
-  if (!rawBody) return {};
-  return analisarRespostaJsonTolerante(rawBody, response.status);
+  return rawBody ? parsearRespostaTolerant(rawBody, response.status) : {};
 }
 
-/**
- * Envia notificação WhatsApp de forma segura.
- * Nunca lança exceção — retorna { ok: false, error: '...' } em caso de falha,
- * de modo que nenhum fluxo de formulário é interrompido por falha no envio.
- */
-async function enviarNotificacaoWhatsApp({ telefone, tipoEvento, contexto }) {
-  const mensagem = ZAPI_MESSAGE_TEMPLATES[tipoEvento];
+// ─── Núcleo do envio (nunca lança exceção) ────────────────────────────────────
+async function _enviarSeguro({ telefone, tipoEvento, contexto }) {
+  const chave    = resolverTipoEvento(tipoEvento);
+  const mensagem = ZAPI_MESSAGE_TEMPLATES[chave];
+
   if (!mensagem) {
+    console.warn(`[whatsapp-zapi][${contexto}] Template ausente para evento: ${tipoEvento}`);
     return { ok: false, skipped: true, reason: 'template_ausente' };
   }
 
-  const telefoneNormalizado = normalizarTelefone(telefone);
-  if (!telefoneNormalizado) {
-    console.warn(`[${contexto}] Telefone inválido ou ausente — WhatsApp não enviado.`);
+  const tel = normalizarTelefone(telefone);
+  if (!tel) {
+    console.warn(`[whatsapp-zapi][${contexto}] Telefone inválido ou ausente.`);
     return { ok: false, skipped: true, reason: 'telefone_invalido' };
   }
 
   if (!zapiConfigurada()) {
-    console.warn(`[${contexto}] Z-API não configurada. Defina ZAPI_INSTANCE_ID e ZAPI_INSTANCE_TOKEN nas variáveis de ambiente do Netlify.`);
+    console.warn(`[whatsapp-zapi][${contexto}] ZAPI_INSTANCE_ID / ZAPI_INSTANCE_TOKEN não configurados no Netlify.`);
     return { ok: false, skipped: true, reason: 'zapi_nao_configurada' };
   }
 
   try {
-    await enviarMensagemZAPI({ telefone: telefoneNormalizado, mensagem });
+    await enviarViaZAPI({ telefone: tel, mensagem });
     return { ok: true };
-  } catch (erroEnvio) {
-    // Telefone omitido do log para evitar vazamento de PII
-    console.warn(`[${contexto}] Falha ao enviar notificação de WhatsApp.`, {
-      tipoEvento,
-      detalhe: erroEnvio?.message || String(erroEnvio)
-    });
-    return { ok: false, error: erroEnvio?.message || String(erroEnvio) };
+  } catch (err) {
+    console.warn(`[whatsapp-zapi][${contexto}] Falha no envio:`, { tipoEvento: chave, detalhe: err?.message });
+    return { ok: false, error: err?.message || String(err) };
   }
+}
+
+// ─── API pública — suporta ambas as assinaturas ───────────────────────────────
+
+/**
+ * Assinatura em português (usada nos handlers do PR Copilot):
+ *   enviarNotificacaoWhatsApp({ telefone, tipoEvento, contexto })
+ */
+async function enviarNotificacaoWhatsApp({ telefone, tipoEvento, contexto = 'desconhecido' }) {
+  return _enviarSeguro({ telefone, tipoEvento, contexto });
+}
+
+/**
+ * Assinatura em inglês (usada nos handlers da versão anterior):
+ *   sendWhatsAppByEvent({ phone, eventType, context })
+ */
+async function sendWhatsAppByEvent({ phone, eventType, context = 'desconhecido' }) {
+  return _enviarSeguro({ telefone: phone, tipoEvento: eventType, contexto: context });
 }
 
 module.exports = {
   ZAPI_MESSAGE_TEMPLATES,
-  enviarNotificacaoWhatsApp
+  enviarNotificacaoWhatsApp,
+  sendWhatsAppByEvent
 };
