@@ -1,4 +1,5 @@
 const { getStore } = require('@netlify/blobs');
+const { sendWhatsAppByEvent } = require('./_lib/whatsapp-zapi');
 
 function abrirStore(nome) {
   const siteID = process.env.BLOBS_SITE_ID;
@@ -67,6 +68,13 @@ exports.handler = async function(event) {
 
     const store = abrirStore('pedidos-oracao');
     await store.setJSON(id, registro);
+    await sendWhatsAppByEvent({
+      eventType: 'prayer_request',
+      phone: dados.telefone,
+      context: { funcao: 'salvar-pedido', id }
+    }).catch((notificationError) => {
+      console.error('Falha no envio de WhatsApp (pedido):', notificationError);
+    });
 
     return {
       statusCode: 200,
