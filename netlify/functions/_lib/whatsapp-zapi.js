@@ -34,22 +34,35 @@ function getMessageForEvent(eventType) {
 
 function normalizePhone(phone) {
   let digits = String(phone || '').replace(/\D/g, '');
+
   if (!digits) return '';
+
+  // Remove prefixo 00 se vier em formato internacional “00DDI...”
   if (digits.startsWith('00')) digits = digits.slice(2);
-  if (digits.startsWith('55')) return digits;
+
+  // Se já vier com DDI brasileiro
+  if (digits.startsWith('55')) {
+    return digits;
+  }
+
+  // Se for número BR sem DDI, precisa ter pelo menos DDD + 8/9 dígitos
   if (digits.length < 10) return '';
 
   const defaultDdi = String(process.env.ZAPI_DEFAULT_DDI || '55').replace(/\D/g, '');
   if (!defaultDdi) return digits;
+
+  // Remove zeros à esquerda antes de prefixar DDI
   digits = digits.replace(/^0+/, '');
+
   return `${defaultDdi}${digits}`;
 }
 
 function getZApiConfig() {
-  const baseUrl = String(process.env.ZAPI_BASE_URL || 'https://api.z-api.io').replace(/\/+$/, '');
+  const baseUrl = String(process.env.ZAPI_BASE_URL || 'https://api.z-api.io').replace(/\/+$/'', '');
   const instanceId = String(process.env.ZAPI_INSTANCE_ID || '').trim();
   const instanceToken = String(process.env.ZAPI_INSTANCE_TOKEN || '').trim();
   const clientToken = String(process.env.ZAPI_CLIENT_TOKEN || '').trim();
+
   if (!instanceId || !instanceToken) return null;
 
   return {
@@ -70,12 +83,13 @@ async function sendWhatsAppByEvent({ eventType, phone, context }) {
 
   const phoneNumber = normalizePhone(phone);
   if (!phoneNumber) {
-    console.warn('[whatsapp-zapi] Telefone inválido para envio.', { context });
+    console.warn('[whatsapp-zapi] Telefone inválido para envio.', { context, phone });
     return { ok: false, skipped: true, reason: 'invalid_phone' };
   }
 
   const message = getMessageForEvent(eventType);
   const headers = { 'Content-Type': 'application/json' };
+
   if (cfg.clientToken) {
     headers['Client-Token'] = cfg.clientToken;
   }
@@ -87,20 +101,50 @@ async function sendWhatsAppByEvent({ eventType, phone, context }) {
       body: JSON.stringify({ phone: phoneNumber, message })
     });
 
+    const responseText = await response.text();
+    let parsedResponse = null;
+
+    try {
+      parsedResponse = responseText ? JSON.parse(responseText) : null;
+    } catch {
+      parsedResponse = responseText;
+    }
+
     if (!response.ok) {
-      const responseText = await response.text();
       console.error('[whatsapp-zapi] Falha no envio.', {
         context,
         status: response.status,
-        response: responseText
+        response: parsedResponse
       });
-      return { ok: false, skipped: false, reason: 'zapi_http_error', status: response.status };
+
+      return {
+        ok: false,
+        skipped: false,
+        reason: 'zapi_http_error',
+        status: response.status,
+        response: parsedResponse
+      };
     }
 
-    return { ok: true, skipped: false };
+    console.log('[whatsapp-zapi] Envio realizado com sucesso.', {
+      context,
+      status: response.status,
+      response: parsedResponse
+    });
+
+    return {
+      ok: true,
+      skipped: false,
+      status: response.status,
+      response: parsedResponse
+    };
   } catch (err) {
-    console.error('[whatsapp-zapi] Erro inesperado no envio.', { context, erro: err.message });
-    return { ok: false, skipped: false, reason: 'zapi_request_error' };
+    console.error('[whatsapp-zapi] Erro inesperado no envio.', {
+      context,
+      erro: err.message
+    });
+
+    return { ok: false, skipped: false, reason: 'zapi_request_error', error: err.message };
   }
 }
 
