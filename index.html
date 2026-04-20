@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>REMO — Rede Mundial de Orações</title>
+  <meta name="theme-color" content="#2C0F0F" />
+  <meta name="description" content="REMO — Rede Mundial de Orações. Envie pedidos de oração, participe da rede de clamor e acompanhe a intercessão." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="REMO" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/logo-remo.png" />
+  <link rel="apple-touch-icon" href="/logo-remo.png" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -173,6 +181,15 @@
     .reveal { opacity:0; transform:translateY(26px); transition:opacity 0.7s ease,transform 0.7s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
     .d1{transition-delay:0.1s} .d2{transition-delay:0.2s} .d3{transition-delay:0.3s} .d4{transition-delay:0.4s}
+    .install-banner{
+      position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:120;display:none;align-items:center;justify-content:space-between;gap:0.8rem;
+      background:rgba(44,15,15,0.96);border:1px solid rgba(201,149,42,0.35);border-radius:6px;padding:0.75rem 0.85rem;
+      box-shadow:0 10px 30px rgba(0,0,0,0.45)
+    }
+    .install-banner span{font-size:0.8rem;color:var(--creme);line-height:1.4}
+    .install-banner-actions{display:flex;align-items:center;gap:0.5rem;flex-shrink:0}
+    .install-banner-btn{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--ouro);color:var(--vinho);border:none;border-radius:2px;padding:0.45rem 0.65rem;cursor:pointer}
+    .install-banner-close{font-size:0.92rem;background:none;border:none;color:rgba(245,236,215,0.75);cursor:pointer;line-height:1;padding:0 0.2rem}
     @media(max-width:900px){
       nav{padding:0.9rem 1.5rem}
       .nav-links{display:none}
@@ -187,6 +204,8 @@
       .hero,.sobre,.caminhos,.fluxo,.cta-section{padding-left:1.5rem;padding-right:1.5rem}
       footer{padding:2.5rem 1.5rem 1.5rem}
       .sobre-stats{gap:1.2rem}
+      .install-banner{left:0.7rem;right:0.7rem;bottom:0.7rem}
+      .install-banner span{font-size:0.74rem}
     }
   </style>
 </head>
@@ -392,6 +411,13 @@
       </span>
     </div>
   </footer>
+  <div class="install-banner" id="installBanner" role="region" aria-label="Instalar aplicativo REMO">
+    <span>Instale o app REMO para acessar mais rápido no celular.</span>
+    <div class="install-banner-actions">
+      <button class="install-banner-btn" id="installAppBtn" type="button">Instalar</button>
+      <button class="install-banner-close" id="dismissInstallBanner" type="button" aria-label="Fechar aviso de instalação">✕</button>
+    </div>
+  </div>
 
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     const obs = new IntersectionObserver(entries => {
@@ -419,6 +445,48 @@
     document.querySelectorAll('#navLinks a').forEach(a => {
       a.addEventListener('click', () => { if (menuOpen) toggleMenu(); });
     });
+
+    const installDismissKey = 'remo_install_banner_dismissed';
+    let deferredInstallPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const installBtn = document.getElementById('installAppBtn');
+    const dismissInstallBtn = document.getElementById('dismissInstallBanner');
+    const shouldHideInstallBanner = () => localStorage.getItem(installDismissKey) === '1';
+
+    function hideInstallBanner(dismissed = false) {
+      if (installBanner) installBanner.style.display = 'none';
+      if (dismissed) localStorage.setItem(installDismissKey, '1');
+    }
+    function showInstallBanner() {
+      if (!installBanner || shouldHideInstallBanner()) return;
+      installBanner.style.display = 'flex';
+    }
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      showInstallBanner();
+    });
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      hideInstallBanner(true);
+    });
+    if (dismissInstallBtn) {
+      dismissInstallBtn.addEventListener('click', () => hideInstallBanner(true));
+    }
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+      });
+    }
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch((error) => { console.warn('Falha ao registrar service worker:', error); });
+      });
+    }
   </script>
 </body>
 </html>
