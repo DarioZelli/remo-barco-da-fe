@@ -65,6 +65,7 @@
         <div><b>REMO Admin</b><span>Painel mobile</span></div>
       </div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end">
+        <a class="btn" href="index.html">Início</a>
         <a class="btn" href="admin.html">Admin completo</a>
         <button class="btn" onclick="sair()">Sair</button>
       </div>
@@ -73,7 +74,7 @@
     <div class="wrap">
       <div class="hero">
         <h1>Acesso rápido no celular</h1>
-        <p>Esta página resolve a limitação atual do admin no telefone e já entrega o que você mais precisa: contadores, listas recentes e acesso direto à triagem de intercessores.</p>
+        <p>Esta página resolve a limitação atual do admin no telefone e já entrega o que você mais precisa: contadores, listas recentes, editor dos programas por nível e acesso direto à triagem de intercessores.</p>
       </div>
 
       <div class="grid">
@@ -85,6 +86,7 @@
 
       <div class="actions">
         <a class="btn gold" href="/painel/intercessores">🧭 Abrir triagem de intercessores</a>
+        <a class="btn" href="admin-programas.html">📘 Editar programas por nível</a>
         <a class="btn" href="intercessores-admin.html">Abrir página clássica da triagem</a>
         <a class="btn" href="admin.html">Abrir admin completo</a>
       </div>
@@ -152,8 +154,7 @@
     function sair() {
       localStorage.removeItem(KEY);
       TOKEN = '';
-      document.getElementById('appView').classList.add('hidden');
-      document.getElementById('loginView').classList.remove('hidden');
+      window.location.href = 'index.html';
     }
 
     async function listar(colecao) {
