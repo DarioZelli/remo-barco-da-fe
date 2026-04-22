@@ -73,8 +73,9 @@ exports.handler = async function(event) {
     const store = abrirStore('parceiros');
     await store.setJSON(id, registro);
     await sendWhatsAppByEvent({
-      eventType: 'general_registration',
+     eventType: 'partner_registration',
       phone: dados.telefone,
+      data: registro, 
       context: { funcao: 'parceiros-salvar', id }
     }).catch((notificationError) => {
       console.error('Falha no envio de WhatsApp (parceiro):', notificationError);
