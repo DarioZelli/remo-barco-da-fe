@@ -83,7 +83,7 @@ exports.handler = async function(event) {
     const store = abrirStore('grupos');
     await store.setJSON(id, registro);
     await sendWhatsAppByEvent({
-      eventType: 'general_registration',
+      eventType: 'group_registration',
       phone: dados.telefone,
        data: registro,
       context: { funcao: 'grupos-salvar', id }
