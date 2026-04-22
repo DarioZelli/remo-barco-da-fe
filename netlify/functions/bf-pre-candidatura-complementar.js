@@ -1,5 +1,6 @@
 const { abrirStore, json } = require('./_lib/admin-auth');
 const { getById, upsert, nowIso } = require('./_lib/data-utils');
+const { sendWhatsAppByEvent } = require('./_lib/whatsapp-zapi');
 
 exports.handler = async function(event) {
   if (event.httpMethod === 'OPTIONS') return json(200, { ok: true });
@@ -55,10 +56,20 @@ exports.handler = async function(event) {
     };
 
     await upsert('candidaturas-bf', candidatura.id, atualizado);
+
     await tokenStore.setJSON(token, {
       ...tokenRegistro,
       usado: true,
       usadoEm: nowIso()
+    });
+
+    await sendWhatsAppByEvent({
+      eventType: 'general_registration',
+      phone: obrigatorios.telefone,
+      data: atualizado,
+      context: { funcao: 'bf-pre-candidatura-complementar', id: candidatura.id }
+    }).catch((notificationError) => {
+      console.error('Falha no envio de WhatsApp (bf-complementar):', notificationError);
     });
 
     return json(200, {
