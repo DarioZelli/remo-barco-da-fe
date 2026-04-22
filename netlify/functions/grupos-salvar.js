@@ -85,6 +85,7 @@ exports.handler = async function(event) {
     await sendWhatsAppByEvent({
       eventType: 'general_registration',
       phone: dados.telefone,
+       data: registro,
       context: { funcao: 'grupos-salvar', id }
     }).catch((notificationError) => {
       console.error('Falha no envio de WhatsApp (grupo):', notificationError);
